@@ -8,7 +8,7 @@ const { ApolloServerPluginLandingPageGraphQLPlayground } = require('@apollo/serv
 import { typeDefs, resolvers } from './graphql'
 import app from './koa'
 import prisma from './db/prisma'
-import { doesUserExist } from './methods/user'
+import { doesUserExist } from './services/user'
 
 const run = async () => {
   // Check database connection

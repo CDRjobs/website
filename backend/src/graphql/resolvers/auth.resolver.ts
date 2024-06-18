@@ -1,8 +1,9 @@
 import { Context } from 'koa'
 import { Session } from 'koa-session'
 import { GraphQLError } from 'graphql'
-import { doesUserExist, createUser, getUserWithCredentials } from '../../methods/user'
-import { pick } from 'lodash/fp'
+import { addForgetPasswordTokenFor, getUserByEmail, doesUserExist, createUser, getUserByCredentials } from '../../services/user'
+import { sendForgotPasswordEmail } from '../../services/email'
+import config from '../../config'
 
 // TODO: to move to proper type files
 interface SessionData {
@@ -39,7 +40,7 @@ export default {
       return user
     },
     login : async (parent: never, { email, password }: { email: string, password: string }, ctx: ContextWithSession) => {
-      const user = await getUserWithCredentials({ email, password })
+      const user = await getUserByCredentials({ email, password })
 
       if (user) {
         ctx.session.userId = user.id
@@ -49,6 +50,25 @@ export default {
     },
     logout: async (parent: never, args: never, ctx: Context) => {
       ctx.session = null
+
+      return true
+    },
+    forgotPassword: async (parent: never, { email }: { email: string }, ctx: Context) => {
+      // execute without waiting in order to always have the same response time (security)
+      (async () => {
+        const user = await getUserByEmail(email)
+        if (user) {
+          try {
+            const { forgotPasswordToken } = await addForgetPasswordTokenFor(user.id)
+            const link = new URL(forgotPasswordToken!, config.forgotPassword.resetUrl).href
+            await sendForgotPasswordEmail(user.email, { firstname: user.firstname, link })
+          } catch (e) {
+            // TO DO : add sentry
+            console.error('forgot password error:', e);
+            // silent error
+          }
+        }
+      })()
 
       return true
     }

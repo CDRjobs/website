@@ -23,14 +23,18 @@
     "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.1",
     "@prisma/client": "^5.15.0",
+    "@types/jsonwebtoken": "^9.0.6",
     "bcrypt": "^5.1.1",
+    "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "graphql": "^16.8.1",
+    "jsonwebtoken": "^9.0.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
     "koa-helmet": "^7.0.2",
     "koa-session": "^6.4.0",
     "lodash": "^4.17.21",
+    "postmark": "^4.0.2",
     "typescript": "^5.4.5"
   },
   "devDependencies": {

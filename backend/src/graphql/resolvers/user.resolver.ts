@@ -1,5 +1,5 @@
 import { Context } from 'koa'
-import { getUserById, deleteUser } from '../../methods/user'
+import { getUserById, deleteUser } from '../../services/user'
 import checkLogin from '../utils/checkLogin'
 
 export default {
