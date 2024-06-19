@@ -49,7 +49,9 @@ export default {
       return user
     },
     logout: async (parent: never, args: never, ctx: Context) => {
-      ctx.session = null
+      if (ctx.session?.userId) {
+        ctx.session = null
+      }
 
       return true
     },

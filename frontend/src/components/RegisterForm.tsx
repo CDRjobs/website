@@ -4,6 +4,7 @@ import { useMutation, gql } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/context/AuthContext'
 import Button from '@/components/atoms/Button'
+import TextInput from './atoms/TextInput'
 
 const registerMutation = gql`
   mutation Register ($firstname: String!, $lastname: String!, $email: String!, $password: String!) {
@@ -27,8 +28,6 @@ const RegisterForm = () => {
   const {
     register,
     handleSubmit,
-    watch,
-    // formState: { errors },
   } = useForm<Inputs>()
   
   const { setAuthUser } = useAuth()
@@ -46,12 +45,12 @@ const RegisterForm = () => {
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='flex flex-col items-center w-64'>
-          <div className='flex mb-1 w-full'>
-            <input className='mr-1 px-1 w-full' placeholder='Firstname' {...register('firstname', { required: true })} />
-            <input className='ml-1 px-1 w-full' placeholder='Lastname' {...register('lastname', { required: true })} />
+          <div className='flex w-full'>
+            <TextInput placeholder='Firstname' {...register('firstname', { required: true })} />
+            <TextInput placeholder='Lastname' {...register('lastname', { required: true })} />
           </div>
-          <input className='m-1 px-1 w-full' placeholder='email' type='email' {...register('email', { required: true })} />
-          <input className='m-1 px-1 w-full' placeholder='password' type='password' {...register('password', { required: true })} />
+          <TextInput placeholder='email' type='email' {...register('email', { required: true })} />
+          <TextInput placeholder='password' type='password' {...register('password', { required: true })} />
           <Button onClick={handleSubmit(onSubmit)} text='Register' />
         </div>
       </form>
