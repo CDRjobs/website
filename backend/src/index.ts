@@ -3,6 +3,8 @@ import Router from '@koa/router'
 import { ApolloServer } from '@apollo/server'
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
 import { koaMiddleware } from '@as-integrations/koa'
+import { makeExecutableSchema } from '@graphql-tools/schema'
+import { rateLimitDirective } from 'graphql-rate-limit-directive'
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('@apollo/server-plugin-landing-page-graphql-playground')
 import { typeDefs, resolvers } from './graphql'
@@ -22,12 +24,21 @@ const run = async () => {
   const router = new Router()
   const httpServer = http.createServer(app.callback())
 
+  const { rateLimitDirectiveTypeDefs, rateLimitDirectiveTransformer } = rateLimitDirective()
+  const schema = makeExecutableSchema({
+    typeDefs: [rateLimitDirectiveTypeDefs, typeDefs],
+    resolvers,
+  })
+
   const plugins = [ApolloServerPluginDrainHttpServer({ httpServer })];
   if (process.env.NODE_ENV !== 'production') {
     plugins.push(ApolloServerPluginLandingPageGraphQLPlayground())
   }
 
-  const server = new ApolloServer({ typeDefs, resolvers, plugins })
+  const server = new ApolloServer({
+    schema: rateLimitDirectiveTransformer(schema),
+    plugins
+  })
   await server.start()
 
   router.all(
