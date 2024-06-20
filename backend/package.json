@@ -29,6 +29,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^16.4.5",
     "graphql": "^16.8.1",
+    "graphql-rate-limit-directive": "^2.0.5",
     "jsonwebtoken": "^9.0.2",
     "koa": "^2.15.3",
     "koa-bodyparser": "^4.4.1",
@@ -36,6 +37,7 @@
     "koa-session": "^6.4.0",
     "lodash": "^4.17.21",
     "postmark": "^4.0.2",
+    "rate-limiter-flexible": "4",
     "typescript": "^5.4.5"
   },
   "devDependencies": {
