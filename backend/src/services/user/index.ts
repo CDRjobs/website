@@ -14,6 +14,8 @@ const forgotPasswordUserSelect = { ...safeUserSelect, forgotPasswordToken: true 
 
 const sanitizeUser = (user: User): SafeUser => pick(Object.keys(safeUserSelect))(user) as unknown as SafeUser
 
+const hashPassword = async (password: string) => bcrypt.hash(password, 12)
+
 export const doesUserExist = async (email: string): Promise<boolean> => {
   const count = await prisma.user.count({
     where: {
@@ -30,6 +32,12 @@ export const getUserById = async (id: string): Promise<SafeUser|null> => {
   return user
 }
 
+export const getUserByIdAndForgotPasswordToken = async ({ id, token }: { id: string, token: string}): Promise<SafeUser|null> => {
+  const user = await prisma.user.findUnique({ select: safeUserSelect, where: { id, forgotPasswordToken: token } })
+
+  return user
+}
+
 export const getUserByEmail = async (email: string): Promise<SafeUser|null> => {
   const user = await prisma.user.findUnique({ select: safeUserSelect, where: { email: email.toLowerCase() } })
 
@@ -42,7 +50,7 @@ export const createUser = async ({ firstname, lastname, email, password }: {
   email: string,
   password: string,
 }): Promise<SafeUser> => {
-  const passwordHash = await bcrypt.hash(password, 12)
+  const passwordHash = await hashPassword(password)
 
   const user = await prisma.user.create({
     select: safeUserSelect,
@@ -54,6 +62,20 @@ export const createUser = async ({ firstname, lastname, email, password }: {
     },
   })
  
+  return user
+}
+
+export const updateUserPassword = async (id: string, newPassword: string) => {
+  const passwordHash = await hashPassword(newPassword)
+  const user = await prisma.user.update({
+    select: safeUserSelect,
+    where: { id },
+    data: {
+      passwordHash,
+      forgotPasswordToken: null
+    },
+  })
+
   return user
 }
 

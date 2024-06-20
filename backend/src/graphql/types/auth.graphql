@@ -4,4 +4,5 @@ type Mutation {
   login(email: String!, password: String!): User!
   logout: Boolean!
   forgotPassword(email: String!): Boolean!
+  resetPassword(password: String!, userId: String!, token: String!): User!
 }

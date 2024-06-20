@@ -26,7 +26,7 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     </ApolloProvider>
 
   return (
-    <div>
+    <div className='flex flex-col items-center'>
       {content}
     </div>
   )

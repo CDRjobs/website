@@ -9,9 +9,11 @@ import DeleteAccountButton from '@/components/DeleteAccountButton'
 const Page = () => {
   const { authUser } = useAuth()
 
-  return <div className='flex flex-col items-center'>
-    {authUser && <LogoutButton />}
-    {authUser && <DeleteAccountButton />}
+  return <div>
+    {authUser && <div className='flex flex-col items-center w-64 gap-2 my-2'>
+      <LogoutButton />
+      <DeleteAccountButton />
+      </div>}
     {!authUser && <RegisterForm />}
     {!authUser && <LoginForm />}
   </div>
