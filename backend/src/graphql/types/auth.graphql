@@ -1,6 +1,6 @@
 
 type Mutation {
-  register(email: String!, firstname: String!, lastname: String!, password: String!): User! @rateLimit(limit: 5, duration: 60 * 60)
+  register(email: String!, firstname: String!, lastname: String!, password: String!): User! @rateLimit(limit: 5, duration: 3600)
   login(email: String!, password: String!): User! @rateLimit(limit: 5, duration: 60)
   logout: Boolean!
   forgotPassword(email: String!): Boolean! @rateLimit(limit: 5, duration: 60)
