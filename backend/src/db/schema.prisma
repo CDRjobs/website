@@ -1,20 +1,76 @@
 generator client {
   provider        = "prisma-client-js"
-  previewFeatures = ["omitApi"]
+  previewFeatures = ["omitApi", "postgresqlExtensions"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+enum JobStatus {
+  open
+  closed
+}
+
+enum Remote {
+  yes
+  hybrid
+  no
+}
+
+enum Education {
+  bachelor
+  master
+  doctoral
+}
+
+enum Discipline {
+  strategyAndConsulting
+  sustainability
+  operationsAndProjectManagement
+  researchAndDevelopment
+  businessDevelopmentAndSales
+  policy
+  engineering
+  marketingAndCommunications
+  administrativeAndSupport
+  financialAndLegal
+  softwareEngineering
+  humanResourcesAndPeopleManagement
+  maintenanceAndTechnicians
+}
+
+enum CompanySize {
+  xxs // 1-10
+  xs // 11-50
+  s // 51-200
+  m // 201-500
+  l // 501-1000
+  xl // 1001-5000
+  xxl // 5001-infinity
+}
+
+enum CdrCategory {
+  biomass
+  ecosystemServices
+  soil
+  mineralization
+  directAirCapture
+  algae
+  utilization
+  mCdr
+  forest
 }
 
 model User {
-  id            String  @id @default(cuid())
-  email         String  @unique
-  firstname     String
-  lastname      String
-  passwordHash  String
-  verifiedEmail Boolean @default(false)
+  id                  String  @id @default(cuid())
+  email               String  @unique
+  firstname           String
+  lastname            String
+  passwordHash        String
+  verifiedEmail       Boolean @default(false)
   forgotPasswordToken String?
 
   createdAt DateTime @default(now())
@@ -22,7 +78,483 @@ model User {
 }
 
 model Session {
-  id      String @id @default(cuid())
-  key     String @unique
-  data    Json
+  id   String @id @default(cuid())
+  key  String @unique
+  data Json
+}
+
+model Location {
+  id          String                                 @id @default(cuid())
+  coordinates Unsupported("geography(Point, 4326)")?
+  city        String?
+  country     CountryCode?
+  jobs        Job[]
+  companies   Company[]
+}
+
+model Job {
+  id                  String     @id @default(cuid())
+  title               String
+  sourceUrl           String
+  discipline          Discipline
+  status              JobStatus
+  description         String
+  locations           Location[]
+  remote              Remote
+  currencyCode        CurrencyCodes?
+  minSalary           Int?
+  maxSalary           Int?
+  minYearOfExperience Int?
+  minEducation        Education?
+  publishedDate       DateTime?
+  foundDate           DateTime
+  company             Company @relation(fields: [companyId], references: [id])
+  companyId           String
+  // contractType
+  // lastChecked DateTime
+}
+
+model Company {
+  id            String   @id @default(cuid())
+  airTableId    String   @unique
+  name          String
+  companyUrl    String
+  careerPageUrl String
+  hqLocation    Location @relation(fields: [hqLocationId], references: [id])
+  hqLocationId  String
+  companySize   CompanySize
+  cdrCategory   CdrCategory
+  jobs          Job[]
+}
+
+enum CountryCode {
+  af
+  ax
+  al
+  dz
+  as
+  ad
+  ao
+  ai
+  aq
+  ag
+  ar
+  am
+  aw
+  au
+  at
+  az
+  bs
+  bh
+  bd
+  bb
+  by
+  be
+  bz
+  bj
+  bm
+  bt
+  bo
+  bq
+  ba
+  bw
+  bv
+  br
+  io
+  bn
+  bg
+  bf
+  bi
+  kh
+  cm
+  ca
+  cv
+  ky
+  cf
+  td
+  cl
+  cn
+  cx
+  cc
+  co
+  km
+  cg
+  cd
+  ck
+  cr
+  ci
+  hr
+  cu
+  cw
+  cy
+  cz
+  dk
+  dj
+  dm
+  do
+  ec
+  eg
+  sv
+  gq
+  er
+  ee
+  et
+  fk
+  fo
+  fj
+  fi
+  fr
+  gf
+  pf
+  tf
+  ga
+  gm
+  ge
+  de
+  gh
+  gi
+  gr
+  gl
+  gd
+  gp
+  gu
+  gt
+  gg
+  gn
+  gw
+  gy
+  ht
+  hm
+  va
+  hn
+  hk
+  hu
+  is
+  in
+  id
+  ir
+  iq
+  ie
+  im
+  il
+  it
+  jm
+  jp
+  je
+  jo
+  kz
+  ke
+  ki
+  kp
+  kr
+  kw
+  kg
+  la
+  lv
+  lb
+  ls
+  lr
+  ly
+  li
+  lt
+  lu
+  mo
+  mk
+  mg
+  mw
+  my
+  mv
+  ml
+  mt
+  mh
+  mq
+  mr
+  mu
+  yt
+  mx
+  fm
+  ma
+  md
+  mc
+  mn
+  me
+  ms
+  mz
+  mm
+  na
+  nr
+  np
+  nl
+  nc
+  nz
+  ni
+  ne
+  ng
+  nu
+  nf
+  mp
+  no
+  om
+  pk
+  pw
+  ps
+  pa
+  pg
+  py
+  pe
+  ph
+  pn
+  pl
+  pt
+  pr
+  qa
+  re
+  ro
+  ru
+  rw
+  bl
+  sh
+  kn
+  lc
+  mf
+  pm
+  vc
+  ws
+  sm
+  st
+  sa
+  sn
+  rs
+  sc
+  sl
+  sg
+  sx
+  sk
+  si
+  sb
+  so
+  za
+  gs
+  ss
+  es
+  lk
+  sd
+  sr
+  sj
+  sz
+  se
+  ch
+  sy
+  tw
+  tj
+  tz
+  th
+  tl
+  tg
+  tk
+  to
+  tt
+  tn
+  tr
+  tm
+  tc
+  tv
+  ug
+  ua
+  ae
+  gb
+  us
+  um
+  uy
+  uz
+  vu
+  ve
+  vn
+  vg
+  vi
+  wf
+  eh
+  ye
+  zm
+  zw
+}
+
+enum CurrencyCodes {
+  aed
+  afn
+  all
+  amd
+  ang
+  aoa
+  ars
+  aud
+  awg
+  azn
+  bam
+  bbd
+  bdt
+  bgn
+  bhd
+  bif
+  bmd
+  bnd
+  bob
+  bov
+  brl
+  bsd
+  btn
+  bwp
+  byn
+  bzd
+  cad
+  cdf
+  che
+  chf
+  chw
+  clf
+  clp
+  cny
+  cop
+  cou
+  crc
+  cup
+  cve
+  czk
+  djf
+  dkk
+  dop
+  dzd
+  egp
+  ern
+  etb
+  eur
+  fjd
+  fkp
+  gbp
+  gel
+  ghs
+  gip
+  gmd
+  gnf
+  gtq
+  gyd
+  hkd
+  hnl
+  htg
+  huf
+  idr
+  ils
+  inr
+  iqd
+  irr
+  isk
+  jmd
+  jod
+  jpy
+  kes
+  kgs
+  khr
+  kmf
+  kpw
+  krw
+  kwd
+  kyd
+  kzt
+  lak
+  lbp
+  lkr
+  lrd
+  lsl
+  lyd
+  mad
+  mdl
+  mga
+  mkd
+  mmk
+  mnt
+  mop
+  mru
+  mur
+  mvr
+  mwk
+  mxn
+  mxv
+  myr
+  mzn
+  nad
+  ngn
+  nio
+  nok
+  npr
+  nzd
+  omr
+  pab
+  pen
+  pgk
+  php
+  pkr
+  pln
+  pyg
+  qar
+  ron
+  rsd
+  rub
+  rwf
+  sar
+  sbd
+  scr
+  sdg
+  sek
+  sgd
+  shp
+  sle
+  sos
+  srd
+  ssp
+  stn
+  svc
+  syp
+  szl
+  thb
+  tjs
+  tmt
+  tnd
+  top
+  try
+  ttd
+  twd
+  tzs
+  uah
+  ugx
+  usd
+  usn
+  uyi
+  uyu
+  uyw
+  uzs
+  ved
+  ves
+  vnd
+  vuv
+  wst
+  xaf
+  xag
+  xau
+  xba
+  xbb
+  xbc
+  xbd
+  xcd
+  xdr
+  xof
+  xpd
+  xpf
+  xpt
+  xsu
+  xua
+  yer
+  zar
+  zmw
+  zwg
+  zwl
 }

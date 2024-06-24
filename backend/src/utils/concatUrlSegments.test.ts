@@ -1,4 +1,4 @@
-import concatUrl from "./concatUrlSegments";
+import concatUrl from './concatUrlSegments'
 
 describe('concatUrlSegments', () => {
   test.each([
@@ -19,7 +19,7 @@ describe('concatUrlSegments', () => {
     [['/////a/////', '/////b/////', '/////c/////'], 'a/b/c'],
     [['https://cdrjobs.earth/', '/a/', '/b/'], 'https://cdrjobs.earth/a/b'],
   ])('%p => %s', (segments, expectedResult) => {
-    const result = concatUrl(...segments);
-    expect(result).toBe(expectedResult);
+    const result = concatUrl(...segments)
+    expect(result).toBe(expectedResult)
   })
 })
