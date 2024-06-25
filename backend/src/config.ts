@@ -6,7 +6,8 @@ const requiredEnvVars = [
   'NO_REPLY_EMAIL',
   'POSTMARK_KEY',
   'KOA_KEYS',
-  'DATABASE_URL'
+  'DATABASE_URL',
+  'API_TOKEN',
 ]
 
 for (const name of requiredEnvVars) {
@@ -33,5 +34,8 @@ export default {
   },
   jwt: {
     key: process.env.JWT_KEY!
+  },
+  api: {
+    token: process.env.API_TOKEN!
   }
 }

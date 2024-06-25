@@ -1,6 +1,7 @@
 import Koa from 'koa'
 import session from 'koa-session'
 import bodyParser from 'koa-bodyparser'
+import Router from '@koa/router'
 import cors from '@koa/cors'
 import config from './config'
 import prisma from './db/prisma'
@@ -25,7 +26,9 @@ const store = {
   }
 }
 
-const app = new Koa()
+export const app = new Koa()
+export const router = new Router()
+
 app.keys = config.koa.keys
 
 const sessionConfig = {
@@ -42,5 +45,3 @@ app.use(cors({
   credentials: true
 }))
 app.use(bodyParser())
-
-export default app
