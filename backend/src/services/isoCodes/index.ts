@@ -10,6 +10,12 @@ const languageCodes = isoLanguages.map(({ code }: { code: string }) => code)
 const countryCodes = isoCountries.map(({ code }: { code: string }) => code)
 const currencyCodes = isoCurrencies.map(({ code }: { code: string }) => code)
 
-export const isIsoLanguageCodeValid = (code: string) => languageCodes.includes(code)
-export const isIsoCountryCodeValid = (code: string) => countryCodes.includes(code)
-export const isIsoCurrencyCodeValid = (code: string) => currencyCodes.includes(code)
+const isIsoLanguageCodeValid = (code: string) => languageCodes.includes(code)
+const isIsoCountryCodeValid = (code: string) => countryCodes.includes(code)
+const isIsoCurrencyCodeValid = (code: string) => currencyCodes.includes(code)
+
+export default {
+  isIsoLanguageCodeValid,
+  isIsoCountryCodeValid,
+  isIsoCurrencyCodeValid
+}
