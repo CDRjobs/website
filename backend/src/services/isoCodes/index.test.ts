@@ -1,7 +1,8 @@
 import isoLanguages from './iso-languages.json'
 import isoCountries from './iso-countries.json'
 import isoCurrencies from './iso-currencies.json'
-import { isIsoLanguageCodeValid, isIsoCountryCodeValid, isIsoCurrencyCodeValid } from '.'
+import isoCodesServices from '.'
+const { isIsoLanguageCodeValid, isIsoCountryCodeValid, isIsoCurrencyCodeValid } = isoCodesServices
 
 describe('isoLanguages', () => {
   describe('isIsoLanguageCodeValid', () => {

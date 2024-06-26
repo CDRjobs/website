@@ -22,8 +22,12 @@ const sendEmail = async ({ from, to, subject, html, text }: SendEmailInput) => {
   })
 }
 
-export const sendForgotPasswordEmail = async (to: string, templateInput: ForgotPasswordTemplateInput) => {
+const sendForgotPasswordEmail = async (to: string, templateInput: ForgotPasswordTemplateInput) => {
   const { subject, html, text } = getForgotPasswordEmail(templateInput)
 
   return sendEmail({ from: config.email.noReplyAddress, to, subject, html, text })
+}
+
+export default {
+  sendForgotPasswordEmail
 }

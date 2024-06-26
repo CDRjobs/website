@@ -1,16 +1,8 @@
 import http from 'http'
-import Router from '@koa/router'
-import { ApolloServer } from '@apollo/server'
-import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
-import { koaMiddleware } from '@as-integrations/koa'
-import { makeExecutableSchema } from '@graphql-tools/schema'
-import { rateLimitDirective } from 'graphql-rate-limit-directive'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const { ApolloServerPluginLandingPageGraphQLPlayground } = require('@apollo/server-plugin-landing-page-graphql-playground')
-import { typeDefs, resolvers } from './graphql'
-import app from './koa'
+import { app, router } from './koa'
 import prisma from './db/prisma'
-import { doesUserExist } from './services/user'
+import { addGraphQLServer } from './graphqlServer'
+import { addRestServer } from './restApi'
 
 const run = async () => {
   // Check database connection
@@ -21,42 +13,12 @@ const run = async () => {
   }
 
   // Set up graphql server
-  const router = new Router()
   const httpServer = http.createServer(app.callback())
+  await addGraphQLServer(httpServer, router, '/graphql')
 
-  const { rateLimitDirectiveTypeDefs, rateLimitDirectiveTransformer } = rateLimitDirective()
-  const schema = makeExecutableSchema({
-    typeDefs: [rateLimitDirectiveTypeDefs, typeDefs],
-    resolvers,
-  })
-
-  const plugins = [ApolloServerPluginDrainHttpServer({ httpServer })];
-  if (process.env.NODE_ENV !== 'production') {
-    plugins.push(ApolloServerPluginLandingPageGraphQLPlayground())
-  }
-
-  const server = new ApolloServer({
-    schema: rateLimitDirectiveTransformer(schema),
-    plugins
-  })
-  await server.start()
-
-  router.all(
-    '/graphql',
-    koaMiddleware(server, {
-      context: async ({ ctx }) => {
-        if (ctx.session?.userId) {
-          const exists = doesUserExist(ctx.session?.userId)
-          if (!exists) {
-            ctx.session = null
-          }
-        }
-
-        return ctx
-      },
-    }),
-  )
-
+  // Set up rest server
+  addRestServer(router, '/api')
+  
   app.use(router.routes())
 
   await new Promise((resolve) => httpServer.listen({ port: 4000 }, () => resolve(undefined)))

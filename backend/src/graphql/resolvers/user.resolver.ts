@@ -1,12 +1,12 @@
 import { Context } from 'koa'
-import { getUserById, deleteUser } from '../../services/user'
+import services from '../../services'
 import checkLogin from '../utils/checkLogin'
 
 export default {
   Query: {
     me: async (parent: never, args: never, ctx: Context) => {
       checkLogin(ctx)
-      const user = await getUserById(ctx.session!.userId)
+      const user = await services.user.getUserById(ctx.session!.userId)
       
       return user
     },
@@ -14,7 +14,7 @@ export default {
   Mutation: {
     deleteAccount: async (parent: never, args: never, ctx: Context) => {
       checkLogin(ctx)
-      const user = await deleteUser(ctx.session!.userId)
+      const user = await services.user.deleteUser(ctx.session!.userId)
       
       return user
     },

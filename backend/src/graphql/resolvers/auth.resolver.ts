@@ -2,8 +2,7 @@ import { Context } from 'koa'
 import { Session } from 'koa-session'
 import { GraphQLError } from 'graphql'
 import jwt, { JwtPayload } from 'jsonwebtoken'
-import { addForgetPasswordTokenFor, getUserByEmail, getUserByIdAndForgotPasswordToken, doesUserExist, createUser, getUserByCredentials, updateUserPassword } from '../../services/user'
-import { sendForgotPasswordEmail } from '../../services/email'
+import services from '../../services'
 import config from '../../config'
 import concatUrlSegments from '../../utils/concatUrlSegments'
 
@@ -28,21 +27,21 @@ export default {
       { firstname, lastname, email, password }: { email: string, firstname: string, lastname: string, password: string },
       ctx: ContextWithSession
     ) => {
-      const alreadyExists = await doesUserExist(email)
+      const alreadyExists = await services.user.doesUserExist(email)
 
       if (alreadyExists) {
         throw new GraphQLError('Already exists', { extensions: { code: 'BAD_USER_INPUT' } })
       }
 
       // TODO: validate email and password
-      const user = await createUser({ firstname, lastname, email, password })
+      const user = await services.user.createUser({ firstname, lastname, email, password })
 
       ctx.session.userId = user.id
 
       return user
     },
     login : async (parent: never, { email, password }: { email: string, password: string }, ctx: ContextWithSession) => {
-      const user = await getUserByCredentials({ email, password })
+      const user = await services.user.getUserByCredentials({ email, password })
 
       if (user) {
         ctx.session.userId = user.id
@@ -57,22 +56,22 @@ export default {
 
       return true
     },
-    forgotPassword: async (parent: never, { email }: { email: string }, ctx: Context): Promise<boolean> => {
+    forgotPassword: async (parent: never, { email }: { email: string }): Promise<boolean> => {
       // execute without waiting in order to always have the same response time (security)
       (async () => {
-        const user = await getUserByEmail(email)
+        const user = await services.user.getUserByEmail(email)
         if (user) {
           try {
-            const { forgotPasswordToken } = await addForgetPasswordTokenFor(user.id)
+            const { forgotPasswordToken } = await services.user.addForgetPasswordTokenFor(user.id)
             const link = concatUrlSegments(config.forgotPassword.resetUrl, user.id, forgotPasswordToken!)
             if (process.env.NODE_ENV === 'production') {
-              await sendForgotPasswordEmail(user.email, { firstname: user.firstname, link })
+              await services.email.sendForgotPasswordEmail(user.email, { firstname: user.firstname, link })
             } else {
               console.log(`Email is disabled when not in production. Reset link for ${user.email}:`, link)
             }
           } catch (e) {
             // TO DO : add sentry
-            console.error('forgot password error:', e);
+            console.error('forgot password error:', e)
             // silent error
           }
         }
@@ -84,7 +83,7 @@ export default {
       try {
         const { name, expire } = jwt.verify(token, config.jwt.key) as JwtPayload // will throw if not valid
         
-        const user = await getUserByIdAndForgotPasswordToken({ id: userId, token })
+        const user = await services.user.getUserByIdAndForgotPasswordToken({ id: userId, token })
   
         if (!user || name !== 'Reset password' || (new Date(expire) < new Date())) {
           throw new Error()
@@ -93,7 +92,7 @@ export default {
         throw new GraphQLError('Invalid token', { extensions: { code: 'BAD_USER_INPUT' } })
       }
 
-      const newUser = await updateUserPassword(userId, password)
+      const newUser = await services.user.updateUserPassword(userId, password)
 
       return newUser
     }

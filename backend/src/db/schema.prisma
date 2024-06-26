@@ -93,7 +93,8 @@ model Location {
 }
 
 model Job {
-  id                  String     @id @default(cuid())
+  id                  String         @id @default(cuid())
+  airTableId          String         @unique
   title               String
   sourceUrl           String
   discipline          Discipline
@@ -108,19 +109,19 @@ model Job {
   minEducation        Education?
   publishedDate       DateTime?
   foundDate           DateTime
-  company             Company @relation(fields: [companyId], references: [id])
+  company             Company        @relation(fields: [companyId], references: [id])
   companyId           String
   // contractType
   // lastChecked DateTime
 }
 
 model Company {
-  id            String   @id @default(cuid())
-  airTableId    String   @unique
+  id            String      @id @default(cuid())
+  airTableId    String      @unique
   name          String
   companyUrl    String
   careerPageUrl String
-  hqLocation    Location @relation(fields: [hqLocationId], references: [id])
+  hqLocation    Location    @relation(fields: [hqLocationId], references: [id])
   hqLocationId  String
   companySize   CompanySize
   cdrCategory   CdrCategory
