@@ -1,28 +1,58 @@
-import { CountryCode } from '@prisma/client'
-import { difference } from 'lodash/fp'
+import { CountryCode, Location } from '@prisma/client'
+import { differenceBy, uniqBy, map } from 'lodash/fp'
+import { createId } from '@paralleldrive/cuid2'
 import prisma from '../../db/prisma'
+import { knex } from '../../db/knex'
 import { PrismaClientOrTrx } from '../../types'
 
-const getOrCreateCountries = async (countriesCode: CountryCode[], trx: PrismaClientOrTrx = prisma) => {
-  const existingCountries = await trx.location.findMany({
-    select: { id: true, country: true },
+const getCountryCityKey = ({ country, city }: { country: CountryCode, city?: string | null }) => `${country};${city ? city.trim().toLowerCase() : ''}`
+
+type LocationInput = {
+  country: CountryCode,
+  city?: string | null
+}
+
+type LocationOutput = Pick<Location, 'id' | 'country' | 'city' | 'countryCityKey'>
+
+const getOrCreateLocations = async (locations: LocationInput[], trx: PrismaClientOrTrx = prisma): Promise<LocationOutput[]> => {
+  const locationsWithKey = locations.map(l => ({ ...l, countryCityKey: getCountryCityKey(l) }))
+  const uniqLocations = uniqBy('countryCityKey', locationsWithKey)
+  const locationsToReturn = []
+
+  const existingLocations = await trx.location.findMany({
+    select: { id: true, country: true, city: true, countryCityKey: true },
     where: {
-      // add coordinates: null ?
-      city: null,
-      country: { in: countriesCode }
+      countryCityKey: { in: map('countryCityKey', uniqLocations) }
     },
   })
+  locationsToReturn.push(...existingLocations)
 
-  const countriesToCreate = difference(countriesCode, existingCountries.map(c => c.country))
+  const locationsToCreate = differenceBy('countryCityKey', uniqLocations, existingLocations)
 
-  const createdCountries = await trx.location.createManyAndReturn({
-    select: { id: true, country: true },
-    data: countriesToCreate.map(c => ({ country: c })),
-  })
+  if (locationsToCreate.length) {
+    // To do : find real coordinates
+    const long = 0
+    const lat = 0
 
-  return [...existingCountries, ...createdCountries]
+    const data = locationsToCreate.map(l => ({
+      ...l,
+      id: createId(),
+      country: knex.raw('?::"CountryCode"', [l.country]),
+      ...(l.city ? { coordinates: knex.raw('ST_geomFromText(?, 4326)', [`Point(${long} ${lat})`]) } : {})
+    }))
+  
+    const createdLocations = await knex('Location')
+      .insert(data)
+      .onConflict('countryCityKey').ignore()
+      .returning(['id', 'country', 'city', 'countryCityKey'])
+      .execWithPrisma(trx) as LocationOutput[]
+    locationsToReturn.push(...createdLocations)
+  }
+
+  return locationsToReturn as LocationOutput[]
 }
 
 export default {
-  getOrCreateCountries
+  getOrCreateLocations,
+  getCountryCityKey,
 }

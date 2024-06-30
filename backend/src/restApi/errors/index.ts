@@ -39,9 +39,13 @@ export class InternalError extends Error {
   }
 }
 
-export const validateZodSchema = (schema: ZodSchema) => (input: unknown) => {
+export const validateZodSchema = (schema: ZodSchema, isAsync = false) => async (input: unknown) => {
   try {
-    schema.parse(input)
+    if (isAsync) {
+      await schema.parseAsync(input)
+    } else {
+      schema.parse(input)
+    }
   } catch (e) {
     if (e instanceof ZodError) {
       throw new ZodValidationError(e)

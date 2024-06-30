@@ -84,17 +84,18 @@ model Session {
 }
 
 model Location {
-  id          String                                 @id @default(cuid())
-  coordinates Unsupported("geography(Point, 4326)")?
-  city        String?
-  country     CountryCode?
-  jobs        Job[]
-  companies   Company[]
+  id             String                                 @id @default(cuid())
+  coordinates    Unsupported("geography(Point, 4326)")?
+  city           String?
+  country        CountryCode
+  countryCityKey String                                 @unique
+  jobs           Job[]
+  companies      Company[]
 }
 
 model Job {
-  id                  String         @id @default(cuid())
-  airTableId          String         @unique
+  id                  String        @id @default(cuid())
+  airTableId          String        @unique
   title               String
   sourceUrl           String
   discipline          Discipline
@@ -102,17 +103,17 @@ model Job {
   description         String
   locations           Location[]
   remote              Remote
-  currencyCode        CurrencyCodes?
+  currency            CurrencyCode?
   minSalary           Int?
   maxSalary           Int?
   minYearOfExperience Int?
   minEducation        Education?
-  publishedDate       DateTime?
-  foundDate           DateTime
-  company             Company        @relation(fields: [companyId], references: [id])
+  publishedAt         DateTime?
+  foundAt             DateTime
+  lastCheckedAt       DateTime
+  company             Company       @relation(fields: [companyId], references: [id])
   companyId           String
   // contractType
-  // lastChecked DateTime
 }
 
 model Company {
@@ -380,7 +381,7 @@ enum CountryCode {
   zw
 }
 
-enum CurrencyCodes {
+enum CurrencyCode {
   aed
   afn
   all
