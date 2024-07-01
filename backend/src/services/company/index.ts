@@ -17,11 +17,12 @@ type CountryMap = {
   [key in CountryCode]: string
 }
 
-const getCompaniesbyAirTableIds = async (ids: string[]) => {
+const getCompaniesByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
   const companies = await prisma.company.findMany({
     where: {
       airTableId: { in: ids }
-    }
+    },
+    ...(select ? { select } : {})
   })
 
   return companies
@@ -30,7 +31,8 @@ const getCompaniesbyAirTableIds = async (ids: string[]) => {
 const createCompanies = async (companies: CompanyInput[]): Promise<string[]> => {
   let createdCompanies = [] as Pick<Company, 'id'>[]
   await prisma.$transaction(async (trx) => {
-    const countries = await services.location.getOrCreateCountries(map('hqCountry', companies), trx)
+
+    const countries = await services.location.getOrCreateLocations(companies.map(c => ({ country: c.hqCountry })), trx)
     const countryMap = countries.reduce((map, c) => Object.assign(map, { [c.country!]: c.id }), {}) as CountryMap
     const companiesData = companies.map(({ hqCountry, ...company }: CompanyInput) => ({
       ...company,
@@ -45,10 +47,10 @@ const createCompanies = async (companies: CompanyInput[]): Promise<string[]> => 
     })
   })
 
-  return createdCompanies.map(({ id }) => id)
+  return map('id', createdCompanies)
 }
 
 export default {
   createCompanies,
-  getCompaniesbyAirTableIds,
+  getCompaniesByAirTableIds,
 }

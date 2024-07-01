@@ -1,11 +1,8 @@
 import Router from '@koa/router'
-import {
-  createCompanies
-} from '../controllers/company'
+import { createCompanies } from '../controllers/company'
 
-
-const getCompanyRoutes = (router: Router) => {
-  router.post('/company', createCompanies)
+const addCompanyRoutes = (router: Router) => {
+  router.post('/companies', createCompanies)
 }
 
-export default getCompanyRoutes
+export default addCompanyRoutes
