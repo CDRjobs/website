@@ -10,8 +10,6 @@ export const createCompanies = async (ctx: Context) => {
   const createdCompaniesIds = await services.company.createCompanies(body.data.companies)
 
   ctx.body = {
-    data: {
-      companies: createdCompaniesIds
-    }
+    data: createdCompaniesIds
   }
 }

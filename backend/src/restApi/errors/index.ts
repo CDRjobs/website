@@ -39,17 +39,28 @@ export class InternalError extends Error {
   }
 }
 
-export const validateZodSchema = (schema: ZodSchema, isAsync = false) => async (input: unknown) => {
-  try {
-    if (isAsync) {
-      await schema.parseAsync(input)
-    } else {
-      schema.parse(input)
+export const validateZodSchema = (schema: ZodSchema, isAsync = false) => {
+  if (isAsync) {
+    return async (input: unknown) => {
+      try {
+        return await schema.parseAsync(input)
+      } catch (e) {
+        if (e instanceof ZodError) {
+          throw new ZodValidationError(e)
+        }
+        throw e
+      }
     }
-  } catch (e) {
-    if (e instanceof ZodError) {
-      throw new ZodValidationError(e)
+  }
+
+  return (input: unknown) => {
+    try {
+      return schema.parse(input)
+    } catch (e) {
+      if (e instanceof ZodError) {
+        throw new ZodValidationError(e)
+      }
+      throw e
     }
-    throw e
   }
 }

@@ -1,7 +1,23 @@
 import { Context } from 'koa'
-import { CreateJobBodyType, UpdateJobBodyType, validateCreateJobsBody, validateUpdateBody } from './validation/job'
+import {
+  CreateJobBodyType,
+  UpdateJobBodyType,
+  validateCreateJobsBody,
+  validateUpdateBody,
+  validateGetJobsQuery,
+} from './validation/job'
 import services from '../../services'
 import { ValidationError } from '../errors'
+
+export const getJobs = async (ctx: Context) => {
+  const queryArgs = validateGetJobsQuery(ctx.query)
+
+  const foundJobs = await services.job.getAllJobs(queryArgs)
+
+  ctx.body = {
+    data: foundJobs,
+  }
+}
 
 export const createJobs = async (ctx: Context) => {
   const body = ctx.request.body as CreateJobBodyType
@@ -11,9 +27,7 @@ export const createJobs = async (ctx: Context) => {
   const createdJobsIds = await services.job.createJobs(body.data.jobs)
 
   ctx.body = {
-    data: {
-      jobs: createdJobsIds
-    }
+    data: createdJobsIds
   }
 }
 

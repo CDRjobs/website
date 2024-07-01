@@ -139,10 +139,14 @@ const createJobsBodySchema = z.object({
   }).strict()
 }).strict()
 
+const getJobsQuerySchema = z.object({
+  limit: z.coerce.number().int().positive().optional(),
+  lastId: z.string().min(1).optional(),
+})
 
 export const validateCreateJobsBody = validateZodSchema(createJobsBodySchema, true)
 export const validateUpdateBody = (currentJob: JobWithLocations) => validateZodSchema(getUpdateJobBodySchema(currentJob), true)
-
+export const validateGetJobsQuery = validateZodSchema(getJobsQuerySchema)
 
 const updateJobBodySchema = z.object({ data: z.object({ job: updateJobSchemaWithoutRefine }) })
 export type CreateJobBodyType = z.infer<typeof createJobsBodySchema>

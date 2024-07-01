@@ -58,6 +58,16 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
+const getAllJobs = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
+  const jobs = await prisma.job.findMany({
+    orderBy: { id: 'asc' },
+    ...(lastId ? { where: { id: { gt: lastId }} } : {}),
+    ...(limit ? { take: limit } : {})
+  })
+
+  return jobs
+}
+
 const createJobs = async (jobs: JobInput[]) => {
   let createdJobs = [] as Pick<Job, 'id'>[]
 
@@ -113,6 +123,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 export default {
   getJobByIdWithLocations,
   getJobsByAirTableIds,
+  getAllJobs,
   createJobs,
   updateJob,
 }
