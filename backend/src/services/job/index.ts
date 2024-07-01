@@ -1,7 +1,7 @@
 import { CountryCode, CurrencyCode, Discipline, Education, Job, JobStatus, Prisma, Remote } from '@prisma/client'
 import pMap from 'p-map'
 import services from '..'
-import { flatten, map } from 'lodash/fp'
+import { flatten, map, omit } from 'lodash/fp'
 import prisma from '../../db/prisma'
 
 type JobInput = {
@@ -27,8 +27,24 @@ type JobInput = {
   lastCheckedAt: string
 }
 
+type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'companyAirTableId' | 'locations'> & {
+  locations?: {
+    country: CountryCode
+    city?: string | null
+  }[]
+}
+
 type Map = {
   [key: string]: string
+}
+
+const getJobByIdWithLocations = async (id: string) => {
+  const job = await prisma.job.findUnique({
+    where: { id },
+    include: { locations: true },
+  })
+
+  return job
 }
 
 const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
@@ -73,7 +89,30 @@ const createJobs = async (jobs: JobInput[]) => {
   return map('id', createdJobs)
 }
 
+const updateJob = async (id: string, job: UpdateJobInput) => {
+  let updatedJob: Job | undefined
+  await prisma.$transaction(async (trx) => {
+    const jobData: Prisma.JobUpdateInput = omit('locations', job)
+    if (job.locations) {
+      const locations = await services.location.getOrCreateLocations(job.locations, trx)
+      const locationMap = locations.reduce((map, l) => Object.assign(map, { [l.countryCityKey]: l.id }), {}) as Map
+      jobData.locations = {
+        connect: job.locations.map(l => ({ id: locationMap[services.location.getCountryCityKey(l)] }))
+      }
+    }
+  
+    updatedJob = await trx.job.update({
+      where: { id },
+      data: jobData,
+    })
+  })
+  
+  return updatedJob || null
+}
+
 export default {
+  getJobByIdWithLocations,
   getJobsByAirTableIds,
   createJobs,
+  updateJob,
 }

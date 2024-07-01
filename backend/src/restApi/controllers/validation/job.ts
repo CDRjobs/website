@@ -1,10 +1,12 @@
-import { CountryCode, CurrencyCode, Discipline, Education, JobStatus, Remote } from '@prisma/client'
+import { CountryCode, CurrencyCode, Discipline, Education, Job, JobStatus, Remote, Location } from '@prisma/client'
 import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
 import { difference, map, uniq } from 'lodash/fp'
 import services from '../../../services'
 
-const jobSchema = z.object({
+type JobWithLocations = Job & { locations: Location[] }
+
+const createJobSchema = z.object({
   airTableId: z.string(),
   companyAirTableId: z.string(),
   title: z.string().min(5),
@@ -52,10 +54,65 @@ const jobSchema = z.object({
     path: ['locations'],
   })
 
-const createJobBodySchema = z.object({
+const updateJobSchemaWithoutRefine = z.object({
+  title: z.string().min(5).optional(),
+  sourceUrl: z.string().url().optional(),
+  discipline: z.nativeEnum(Discipline).optional(),
+  status: z.nativeEnum(JobStatus).optional(),
+  description: z.string().optional(),
+  locations: z.array(
+    z.object({
+      country: z.nativeEnum(CountryCode),
+      city: z
+        .string()
+        .min(1)
+        .nullish()
+        .refine(city => !city || !city.includes(';'), { message: "The city name cannot contains ';' character"}),
+    }).strict()
+  ).optional(),
+  remote: z.nativeEnum(Remote).optional(),
+  currency: z.nativeEnum(CurrencyCode).optional(),
+  minSalary: z.number().int().nonnegative().nullish(),
+  maxSalary: z.number().int().nonnegative().nullish(),
+  minYearOfExperience: z.number().int().nonnegative().nullish(),
+  minEducation: z.nativeEnum(Education).optional(),
+  publishedAt: z.string().datetime().nullish(),
+  foundAt: z.string().datetime().optional(),
+  lastCheckedAt: z.string().datetime().optional(),
+}).strict()
+
+const getUpdateJobBodySchema = (currentJob: JobWithLocations) => z.object({
+  data: z.object({
+    job: updateJobSchemaWithoutRefine
+      .refine(({ minSalary, maxSalary}) => {
+        const finalMinSalary = minSalary || currentJob.minSalary
+        const finalMaxSalary = maxSalary || currentJob.maxSalary
+        if (finalMinSalary && finalMaxSalary) {
+          return finalMinSalary <= finalMaxSalary
+        }
+        return true
+      }, {
+        message: 'maxSalary has to be greater than minSalary',
+        path: ['maxSalary'],
+      })
+      .refine(({ locations, remote }) => {
+        const finalRemote = remote || currentJob.remote
+        if (finalRemote === 'yes') {
+          return true
+        }
+        const finalLocations = locations || currentJob.locations
+        return finalLocations.some(l => l.city)
+      }, {
+        message: 'A city location is required when remote is hybrid or no',
+        path: ['locations'],
+      })
+    })
+  })
+
+const createJobsBodySchema = z.object({
   data: z.object({
     jobs: z
-      .array(jobSchema)
+      .array(createJobSchema)
       .min(1)
       .superRefine(async (jobs, ctx) => {
         const companiesAirTableIds = uniq(map('companyAirTableId', jobs))
@@ -82,6 +139,11 @@ const createJobBodySchema = z.object({
   }).strict()
 }).strict()
 
-export const validateCreateJobsBody = validateZodSchema(createJobBodySchema, true)
 
-export type CreateJobBodyType = z.infer<typeof createJobBodySchema>
+export const validateCreateJobsBody = validateZodSchema(createJobsBodySchema, true)
+export const validateUpdateBody = (currentJob: JobWithLocations) => validateZodSchema(getUpdateJobBodySchema(currentJob), true)
+
+
+const updateJobBodySchema = z.object({ data: z.object({ job: updateJobSchemaWithoutRefine }) })
+export type CreateJobBodyType = z.infer<typeof createJobsBodySchema>
+export type UpdateJobBodyType = z.infer<typeof updateJobBodySchema>
