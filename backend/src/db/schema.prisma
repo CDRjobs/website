@@ -64,6 +64,19 @@ enum CdrCategory {
   forest
 }
 
+enum ContractTime {
+  fullTime
+  partTime
+}
+
+enum ContractNature {
+  employee
+  volunteer
+  contractor
+  internship
+  paidFellowship
+}
+
 model User {
   id                  String  @id @default(cuid())
   email               String  @unique
@@ -113,7 +126,8 @@ model Job {
   lastCheckedAt       DateTime
   company             Company       @relation(fields: [companyId], references: [id])
   companyId           String
-  // contractType
+  contractNature      ContractNature
+  contractTime        ContractTime
 }
 
 model Company {
