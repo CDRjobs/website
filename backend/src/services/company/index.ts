@@ -1,7 +1,7 @@
-import { CompanySize, CdrCategory, CountryCode, Company } from '@prisma/client'
+import { CompanySize, CdrCategory, CountryCode, Company, Prisma } from '@prisma/client'
 import prisma from '../../db/prisma'
 import services from '../../services'
-import { map } from 'lodash/fp'
+import { map, omit } from 'lodash/fp'
 
 type CompanyInput = {
   airTableId: string
@@ -13,18 +13,31 @@ type CompanyInput = {
   cdrCategory: CdrCategory
 }
 
+type UpdateCompanyInput = Omit<Prisma.CompanyUpdateInput, 'id' | 'airTableId' | 'hqLocation' | 'jobs'> & { hqCountry?: CountryCode }
+
 type CountryMap = {
   [key in CountryCode]: string
 }
 
-const getAllCompanies = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
+const getAllCompaniesWithHqLocation = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
   const jobs = await prisma.company.findMany({
+    include: { hqLocation: true },
+    omit: { hqLocationId: true },
     orderBy: { id: 'asc' },
     ...(lastId ? { where: { id: { gt: lastId }} } : {}),
     ...(limit ? { take: limit } : {})
   })
 
   return jobs
+}
+
+const getCompanyByIdWithLocations = async (id: string) => {
+  const job = await prisma.company.findUnique({
+    where: { id },
+    include: { hqLocation: true },
+  })
+
+  return job
 }
 
 const getCompaniesByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
@@ -60,8 +73,30 @@ const createCompanies = async (companies: CompanyInput[]): Promise<string[]> => 
   return map('id', createdCompanies)
 }
 
+const updateCompany = async (id: string, company: UpdateCompanyInput) => {
+  let updatedCompany: Omit<Company, 'hqLocationId'> | undefined
+  await prisma.$transaction(async (trx) => {
+    const companyData: Prisma.CompanyUpdateInput = omit('hqCountry', company)
+    if (company.hqCountry) {
+      const [location] = await services.location.getOrCreateLocations([{ country: company.hqCountry}], trx)
+      companyData.hqLocation = { connect: { id: location.id } }
+    }
+  
+    updatedCompany = await trx.company.update({
+      include: { hqLocation: true },
+      omit: { hqLocationId: true },
+      where: { id },
+      data: companyData,
+    })
+  })
+  
+  return updatedCompany || null
+}
+
 export default {
   createCompanies,
   getCompaniesByAirTableIds,
-  getAllCompanies,
+  getAllCompaniesWithHqLocation,
+  updateCompany,
+  getCompanyByIdWithLocations,
 }

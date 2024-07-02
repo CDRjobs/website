@@ -4,9 +4,9 @@ import { validateZodSchema } from '../../errors'
 import { map } from 'lodash/fp'
 import services from '../../../services'
 
-const companySchema = z.object({
+const createCompanySchema = z.object({
   airTableId: z.string(),
-  name: z.string(),
+  name: z.string().min(1),
   companyUrl: z.string().url(),
   careerPageUrl: z.string().url(),
   companySize: z.nativeEnum(CompanySize),
@@ -14,10 +14,19 @@ const companySchema = z.object({
   cdrCategory: z.nativeEnum(CdrCategory)
 }).strict()
 
-const createCompanyBodySchema = z.object({
+const updateCompanySchema = z.object({
+  name: z.string().min(1).optional(),
+  companyUrl: z.string().url().optional(),
+  careerPageUrl: z.string().url().optional(),
+  companySize: z.nativeEnum(CompanySize).optional(),
+  hqCountry: z.nativeEnum(CountryCode).optional(),
+  cdrCategory: z.nativeEnum(CdrCategory).optional()
+}).strict()
+
+const createCompaniesBodySchema = z.object({
   data: z.object({
     companies: z
-      .array(companySchema)
+      .array(createCompanySchema)
       .min(1)
       .superRefine(async (companies, ctx) => {
         const existingCompanies = await services.company.getCompaniesByAirTableIds(map('airTableId', companies), { airTableId: true })
@@ -32,12 +41,20 @@ const createCompanyBodySchema = z.object({
   }).strict()
 }).strict()
 
+const updateCompanyBodySchema = z.object({
+  data: z.object({
+    company: updateCompanySchema
+  }).strict()
+}).strict()
+
 const getCompaniesQuerySchema = z.object({
   limit: z.coerce.number().int().positive().optional(),
   lastId: z.string().min(1).optional(),
 })
 
-export const validateCreateCompaniesBody = validateZodSchema(createCompanyBodySchema, true)
+export const validateCreateCompaniesBody = validateZodSchema(createCompaniesBodySchema, true)
+export const validateUpdateCompaniesBody = validateZodSchema(updateCompanyBodySchema)
 export const validateGetCompaniesQuery = validateZodSchema(getCompaniesQuerySchema)
 
-export type CreateCompanyBodyType = z.infer<typeof createCompanyBodySchema>
+export type CreateCompaniesBodyType = z.infer<typeof createCompaniesBodySchema>
+export type UpdateCompanyBodyType = z.infer<typeof updateCompanyBodySchema>
