@@ -3,7 +3,7 @@ import {
   CreateJobBodyType,
   UpdateJobBodyType,
   validateCreateJobsBody,
-  validateUpdateBody,
+  validateUpdateJobBody,
   validateGetJobsQuery,
 } from './validation/job'
 import services from '../../services'
@@ -12,7 +12,7 @@ import { ValidationError } from '../errors'
 export const getJobs = async (ctx: Context) => {
   const queryArgs = validateGetJobsQuery(ctx.query)
 
-  const foundJobs = await services.job.getAllJobs(queryArgs)
+  const foundJobs = await services.job.getAllJobsWithLocations(queryArgs)
 
   ctx.body = {
     data: foundJobs,
@@ -40,7 +40,7 @@ export const updateJob = async (ctx: Context) => {
     throw new ValidationError("The job you are trying to update doesn't exist. Please, verify the id.")
   }
 
-  await validateUpdateBody(currentJob)(body)
+  await validateUpdateJobBody(currentJob)(body)
 
   const updatedJob = await services.job.updateJob(id, body.data.job)
 

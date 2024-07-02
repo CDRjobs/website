@@ -145,7 +145,7 @@ const getJobsQuerySchema = z.object({
 })
 
 export const validateCreateJobsBody = validateZodSchema(createJobsBodySchema, true)
-export const validateUpdateBody = (currentJob: JobWithLocations) => validateZodSchema(getUpdateJobBodySchema(currentJob), true)
+export const validateUpdateJobBody = (currentJob: JobWithLocations) => validateZodSchema(getUpdateJobBodySchema(currentJob), true)
 export const validateGetJobsQuery = validateZodSchema(getJobsQuerySchema)
 
 const updateJobBodySchema = z.object({ data: z.object({ job: updateJobSchemaWithoutRefine }) })

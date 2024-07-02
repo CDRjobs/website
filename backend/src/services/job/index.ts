@@ -58,8 +58,9 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
-const getAllJobs = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
+const getAllJobsWithLocations = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
   const jobs = await prisma.job.findMany({
+    include: { locations: true },
     orderBy: { id: 'asc' },
     ...(lastId ? { where: { id: { gt: lastId }} } : {}),
     ...(limit ? { take: limit } : {})
@@ -107,7 +108,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
       const locations = await services.location.getOrCreateLocations(job.locations, trx)
       const locationMap = locations.reduce((map, l) => Object.assign(map, { [l.countryCityKey]: l.id }), {}) as Map
       jobData.locations = {
-        connect: job.locations.map(l => ({ id: locationMap[services.location.getCountryCityKey(l)] }))
+        set: job.locations.map(l => ({ id: locationMap[services.location.getCountryCityKey(l)] }))
       }
     }
   
@@ -123,7 +124,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 export default {
   getJobByIdWithLocations,
   getJobsByAirTableIds,
-  getAllJobs,
+  getAllJobsWithLocations,
   createJobs,
   updateJob,
 }
