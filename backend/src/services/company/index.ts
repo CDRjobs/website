@@ -17,6 +17,16 @@ type CountryMap = {
   [key in CountryCode]: string
 }
 
+const getAllCompanies = async ({ limit, lastId }: { limit?: number, lastId?: string } = {})  => {
+  const jobs = await prisma.company.findMany({
+    orderBy: { id: 'asc' },
+    ...(lastId ? { where: { id: { gt: lastId }} } : {}),
+    ...(limit ? { take: limit } : {})
+  })
+
+  return jobs
+}
+
 const getCompaniesByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
   const companies = await prisma.company.findMany({
     where: {
@@ -53,4 +63,5 @@ const createCompanies = async (companies: CompanyInput[]): Promise<string[]> => 
 export default {
   createCompanies,
   getCompaniesByAirTableIds,
+  getAllCompanies,
 }

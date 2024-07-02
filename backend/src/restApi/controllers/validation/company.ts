@@ -32,6 +32,12 @@ const createCompanyBodySchema = z.object({
   }).strict()
 }).strict()
 
+const getCompaniesQuerySchema = z.object({
+  limit: z.coerce.number().int().positive().optional(),
+  lastId: z.string().min(1).optional(),
+})
+
 export const validateCreateCompaniesBody = validateZodSchema(createCompanyBodySchema, true)
+export const validateGetCompaniesQuery = validateZodSchema(getCompaniesQuerySchema)
 
 export type CreateCompanyBodyType = z.infer<typeof createCompanyBodySchema>
