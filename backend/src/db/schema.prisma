@@ -20,10 +20,12 @@ enum Remote {
   no
 }
 
-enum Education {
-  bachelor
-  master
-  doctoral
+enum Seniority {
+  entryLevel // < 2 years
+  earlyStage // 2-5 years
+  midLevel // 5-10 years
+  senior // 10-20 years
+  verySenior // 20+ years
 }
 
 enum Discipline {
@@ -119,8 +121,7 @@ model Job {
   currency            CurrencyCode?
   minSalary           Int?
   maxSalary           Int?
-  minYearOfExperience Int?
-  minEducation        Education?
+  seniority           Seniority?
   publishedAt         DateTime?
   foundAt             DateTime
   lastCheckedAt       DateTime
