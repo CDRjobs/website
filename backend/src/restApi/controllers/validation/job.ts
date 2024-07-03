@@ -1,4 +1,4 @@
-import { CountryCode, CurrencyCode, Discipline, Education, Job, JobStatus, Remote, Location } from '@prisma/client'
+import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractNature, ContractTime } from '@prisma/client'
 import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
 import { difference, map, uniq } from 'lodash/fp'
@@ -28,8 +28,9 @@ const createJobSchema = z.object({
   currency: z.nativeEnum(CurrencyCode),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
-  minYearOfExperience: z.number().int().nonnegative().nullish(),
-  minEducation: z.nativeEnum(Education),
+  seniority: z.nativeEnum(Seniority).nullish(),
+  contractNature: z.nativeEnum(ContractNature),
+  contractTime: z.nativeEnum(ContractTime),
   publishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime(),
   lastCheckedAt: z.string().datetime(),
@@ -74,8 +75,9 @@ const updateJobSchemaWithoutRefine = z.object({
   currency: z.nativeEnum(CurrencyCode).optional(),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
-  minYearOfExperience: z.number().int().nonnegative().nullish(),
-  minEducation: z.nativeEnum(Education).optional(),
+  seniority: z.nativeEnum(Seniority).nullish(),
+  contractNature: z.nativeEnum(ContractNature).optional(),
+  contractTime: z.nativeEnum(ContractTime).optional(),
   publishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime().optional(),
   lastCheckedAt: z.string().datetime().optional(),

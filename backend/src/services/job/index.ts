@@ -1,33 +1,18 @@
-import { CountryCode, CurrencyCode, Discipline, Education, Job, JobStatus, Prisma, Remote } from '@prisma/client'
+import { CountryCode, Job, Prisma } from '@prisma/client'
 import pMap from 'p-map'
 import services from '..'
 import { flatten, map, omit } from 'lodash/fp'
 import prisma from '../../db/prisma'
 
-type JobInput = {
-  airTableId: string
-  companyAirTableId: string
-  title: string
-  sourceUrl: string
-  discipline: Discipline
-  status: JobStatus
-  description: string
+type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
+  companyAirTableId: string,
   locations: {
     country: CountryCode
     city?: string | null
   }[]
-  remote: Remote
-  currency: CurrencyCode
-  minSalary?: number | null
-  maxSalary?: number | null
-  minYearOfExperience?: number | null
-  minEducation: Education
-  publishedAt?: string | null
-  foundAt: string
-  lastCheckedAt: string
 }
 
-type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'companyAirTableId' | 'locations'> & {
+type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations'> & {
   locations?: {
     country: CountryCode
     city?: string | null
@@ -69,7 +54,7 @@ const getAllJobsWithLocations = async ({ limit, lastId }: { limit?: number, last
   return jobs
 }
 
-const createJobs = async (jobs: JobInput[]) => {
+const createJobs = async (jobs: CreateJobInput[]) => {
   let createdJobs = [] as Pick<Job, 'id'>[]
 
   await prisma.$transaction(async (trx) => {
