@@ -8,6 +8,7 @@ const requiredEnvVars = [
   'KOA_KEYS',
   'DATABASE_URL',
   'API_TOKEN',
+  'MAPBOX_TOKEN',
 ]
 
 for (const name of requiredEnvVars) {
@@ -37,5 +38,8 @@ export default {
   },
   api: {
     token: process.env.API_TOKEN!
+  },
+  mapbox: {
+    token: process.env.MAPBOX_TOKEN!
   }
 }
