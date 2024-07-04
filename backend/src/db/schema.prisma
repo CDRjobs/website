@@ -60,7 +60,6 @@ enum CdrCategory {
   soil
   mineralization
   directAirCapture
-  algae
   utilization
   mCdr
   forest
