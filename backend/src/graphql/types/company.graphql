@@ -1,0 +1,9 @@
+type Company {
+  id: ID!
+  name: String!
+  companyUrl: String!
+  careerPAgeUrl: String
+  hqLocation: Location
+  companySize: String!
+  cdrCategory: String!
+}

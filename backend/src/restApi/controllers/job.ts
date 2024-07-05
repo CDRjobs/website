@@ -12,7 +12,7 @@ import { ValidationError } from '../errors'
 export const getJobs = async (ctx: Context) => {
   const queryArgs = validateGetJobsQuery(ctx.query)
 
-  const foundJobs = await services.job.getAllJobsWithLocations(queryArgs)
+  const foundJobs = await services.job.getAllJobs(queryArgs, { locations: true })
 
   ctx.body = {
     data: foundJobs,
