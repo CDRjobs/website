@@ -3,6 +3,8 @@ import session from 'koa-session'
 import bodyParser from 'koa-bodyparser'
 import Router from '@koa/router'
 import cors from '@koa/cors'
+import mount from 'koa-mount'
+import serve from 'koa-static'
 import config from './config'
 import prisma from './db/prisma'
 
@@ -45,3 +47,5 @@ app.use(cors({
   credentials: true
 }))
 app.use(bodyParser())
+
+app.use(mount('/public', serve(config.public.path)))
