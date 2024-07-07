@@ -4,6 +4,8 @@ import { validateZodSchema } from '../../errors'
 import { map } from 'lodash/fp'
 import services from '../../../services'
 
+const base64ImageRegex = /^data:image\/(jpeg|png|jpg|webp);base64,[A-Za-z0-9+/=]+$/
+
 const createCompanySchema = z.object({
   airTableId: z.string(),
   name: z.string().min(1),
@@ -11,7 +13,8 @@ const createCompanySchema = z.object({
   careerPageUrl: z.string().url(),
   companySize: z.nativeEnum(CompanySize),
   hqCountry: z.nativeEnum(CountryCode),
-  cdrCategory: z.nativeEnum(CdrCategory)
+  cdrCategory: z.nativeEnum(CdrCategory),
+  logo: z.string().regex(base64ImageRegex),
 }).strict()
 
 const updateCompanySchema = z.object({
@@ -20,7 +23,8 @@ const updateCompanySchema = z.object({
   careerPageUrl: z.string().url().optional(),
   companySize: z.nativeEnum(CompanySize).optional(),
   hqCountry: z.nativeEnum(CountryCode).optional(),
-  cdrCategory: z.nativeEnum(CdrCategory).optional()
+  cdrCategory: z.nativeEnum(CdrCategory).optional(),
+  logo: z.string().regex(base64ImageRegex).optional(),
 }).strict()
 
 const createCompaniesBodySchema = z.object({
