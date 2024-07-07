@@ -1,7 +1,13 @@
 import { CompanySize, CdrCategory, CountryCode, Company, Prisma } from '@prisma/client'
+import { map, omit, kebabCase } from 'lodash/fp'
+import { Buffer } from 'node:buffer'
+import { createId } from '@paralleldrive/cuid2'
+import fs from 'node:fs/promises'
+import config from '../../config'
+import concatUrlSegments from '../../utils/concatUrlSegments'
+import path from 'node:path'
 import prisma from '../../db/prisma'
 import services from '../../services'
-import { map, omit } from 'lodash/fp'
 
 type CompanyInput = {
   airTableId: string
@@ -11,6 +17,7 @@ type CompanyInput = {
   hqCountry: CountryCode
   companySize: CompanySize
   cdrCategory: CdrCategory
+  logoUrl: string
 }
 
 type UpdateCompanyInput = Omit<Prisma.CompanyUpdateInput, 'id' | 'airTableId' | 'hqLocation' | 'jobs'> & { hqCountry?: CountryCode }
@@ -93,10 +100,26 @@ const updateCompany = async (id: string, company: UpdateCompanyInput) => {
   return updatedCompany || null
 }
 
+const writeLogoFileAndGetUrl = async (base64File: string, companyName: string) => {
+  const ext = base64File.split('/')[1].split(';')[0]
+  const logoFile = Buffer.from(base64File.split(',')[1], 'base64')
+  const logoUrl = concatUrlSegments('.', config.public.imageFolder, `${kebabCase(companyName)}-${createId()}.${ext}`)
+  
+  await fs.writeFile(path.join(config.public.path, logoUrl), logoFile)
+
+  return logoUrl
+}
+
+const deleteLogo = async (logoUrl: string) => {
+  await fs.unlink(path.join(config.public.path, logoUrl))
+}
+
 export default {
   createCompanies,
   getCompaniesByAirTableIds,
   getAllCompaniesWithHqLocation,
   updateCompany,
   getCompanyByIdWithLocations,
+  writeLogoFileAndGetUrl,
+  deleteLogo,
 }
