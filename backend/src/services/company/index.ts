@@ -58,6 +58,16 @@ const getCompaniesByAirTableIds = async (ids: string[], select: { [key: string]:
   return companies
 }
 
+const getCompaniesByIds = async (ids: string[]) => {
+  const companies = await prisma.company.findMany({
+    where: {
+      id: { in: ids }
+    },
+  })
+
+  return companies
+}
+
 const createCompanies = async (companies: CompanyInput[]): Promise<string[]> => {
   let createdCompanies = [] as Pick<Company, 'id'>[]
   await prisma.$transaction(async (trx) => {
@@ -122,4 +132,5 @@ export default {
   getCompanyByIdWithLocations,
   writeLogoFileAndGetUrl,
   deleteLogo,
+  getCompaniesByIds,
 }
