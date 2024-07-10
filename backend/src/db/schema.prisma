@@ -141,6 +141,7 @@ model Company {
   companySize   CompanySize
   cdrCategory   CdrCategory
   jobs          Job[]
+  logoUrl       String
 }
 
 enum CountryCode {

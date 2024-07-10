@@ -9,6 +9,8 @@ const requiredEnvVars = [
   'DATABASE_URL',
   'API_TOKEN',
   'MAPBOX_TOKEN',
+  'PUBLIC_PATH',
+  'IMAGE_FOLDER',
 ]
 
 for (const name of requiredEnvVars) {
@@ -41,5 +43,9 @@ export default {
   },
   mapbox: {
     token: process.env.MAPBOX_TOKEN!
-  }
+  },
+  public: {
+    path: process.env.PUBLIC_PATH!,
+    imageFolder: process.env.IMAGE_FOLDER!,
+  },
 }

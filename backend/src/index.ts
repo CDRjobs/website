@@ -1,10 +1,19 @@
+import path from 'node:path'
+import fs from 'node:fs'
 import http from 'http'
 import { app, router } from './koa'
 import prisma from './db/prisma'
 import { addGraphQLServer } from './graphqlServer'
 import { addRestServer } from './restApi'
+import config from './config'
 
 const run = async () => {
+  // Create necessary directories
+  const dir = path.join(config.public.path, config.public.imageFolder)
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true })
+  }
+
   // Check database connection
   try {
     await prisma.$connect()
