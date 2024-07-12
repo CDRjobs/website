@@ -1,0 +1,4 @@
+type Location {
+  country: String!
+  city: String
+}

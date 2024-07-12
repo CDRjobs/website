@@ -1,0 +1,36 @@
+type Job {
+  id: ID!
+  title: String!
+  sourceUrl: String!
+  discipline: String!
+  locations: [Location!]
+  remote: String!
+  currency: String
+  minSalary: Int
+  maxSalary: Int
+  seniority: String
+  publishedAt: String
+  company: Company!
+  contractNature: String
+  contractTime: String
+}
+
+input jobFiltersInput {
+  country: String
+  discipline: String
+  cdrCategory: [String!]
+  seniority: [String!]
+  remote: [String!]
+  contractNature: [String!]
+  contractTime: [String!]
+  companySize: [String!]
+}
+
+input paginationInput {
+  limit: Int = 24
+  lastId: String
+}
+
+type Query {
+  searchJobs(filters: jobFiltersInput, pagination: paginationInput): [Job!]
+}

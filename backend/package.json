@@ -8,13 +8,14 @@
     "schema": "src/db/schema.prisma"
   },
   "scripts": {
-    "build": "rm -rf ./dist && yarn prisma:generate && npx tsc && yarn copy-files",
+    "build": "rm -rf ./dist && yarn gen-graphql-types && yarn prisma:generate && npx tsc && yarn copy-files",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
+    "dev": "yarn gen-graphql-types && nodemon src/index.ts",
     "copy-files": "copyfiles -u 1 src/**/*.graphql dist/",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
-    "test": "jest"
+    "test": "jest",
+    "gen-graphql-types": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
     "@apollo/server": "4.10.4",
@@ -24,7 +25,7 @@
     "@koa/cors": "5.0.0",
     "@koa/router": "12.0.1",
     "@mapbox/search-js-core": "1.0.0-beta.21",
-    "@prisma/client": "5.15.1",
+    "@prisma/client": "5.16.2",
     "@types/jsonwebtoken": "9.0.6",
     "@types/koa2-ratelimit": "0.9.6",
     "bcrypt": "5.1.1",
@@ -51,6 +52,9 @@
   },
   "devDependencies": {
     "@eslint/js": "9.4.0",
+    "@graphql-codegen/cli": "5.0.2",
+    "@graphql-codegen/typescript": "4.0.9",
+    "@graphql-codegen/typescript-resolvers": "4.2.1",
     "@types/bcrypt": "5.0.2",
     "@types/jest": "29.5.12",
     "@types/koa": "2.15.0",
@@ -69,7 +73,8 @@
     "nodemon": "3.1.3",
     "ts-jest": "29.1.5",
     "ts-node": "10.9.2",
-    "typescript-eslint": "7.12.0"
+    "typescript-eslint": "7.12.0",
+    "@graphql-codegen/introspection": "4.0.3"
   },
   "peerDependencies": {
     "@paralleldrive/cuid2": "2.2.2"

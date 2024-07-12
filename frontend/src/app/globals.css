@@ -2,10 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* body {
   background: #4DA1A9;
   font-size: small;
-}
+} */
 
 /* :root {
   --foreground-rgb: 0, 0, 0;

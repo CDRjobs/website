@@ -4,6 +4,7 @@ import isoCodes from './isoCodes'
 import job from './job'
 import location from './location'
 import user from './user'
+import client from './client'
 
 const services = {
   company,
@@ -12,6 +13,7 @@ const services = {
   job,
   location,
   user,
+  client
 }
 
 export default services
