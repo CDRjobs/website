@@ -24,14 +24,14 @@ type Map = {
 }
 
 type SearchFilters = {
-  country: CountryCode
-  discipline: Discipline
-  cdrCategory: CdrCategory[]
-  seniority: Seniority[]
-  remote: Remote[]
-  contractNature: ContractNature[]
-  contractTime: ContractTime[]
-  companySize: CompanySize[]
+  country?: CountryCode
+  discipline?: Discipline
+  cdrCategory?: CdrCategory[]
+  seniority?: Seniority[]
+  remote?: Remote[]
+  contractNature?: ContractNature[]
+  contractTime?: ContractTime[]
+  companySize?: CompanySize[]
 }
 
 type Pagination = {
@@ -70,7 +70,7 @@ const getAllJobs = async ({ limit, lastId }: Pagination = {}, include?: Prisma.J
   return jobs
 }
 
-const searchJobs = async (filters: SearchFilters, { limit, lastId }: Pagination) => {
+const searchJobs = async (filters: SearchFilters = {}, { limit, lastId }: Pagination) => {
   const jobFilters = {
     ...(filters.discipline ? { discipline: filters.discipline }: {}),
     ...(filters.seniority ? { seniority: { in: filters.seniority } }: {}),
