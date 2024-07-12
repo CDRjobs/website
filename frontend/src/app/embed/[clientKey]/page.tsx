@@ -3,7 +3,8 @@
 import { useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import Button from '@/components/atoms/Button'
-import MapboxSearch from '@/components/molecules/MapboxSearch'
+import LocationCombobox from '@/components/molecules/LocationCombobox'
+import CategoryListbox from '@/components/molecules/CategoryListbox'
 
 const Page = () => {
   const { clientKey } = useParams()
@@ -22,8 +23,8 @@ const Page = () => {
       <h1>CDRjobs - {clientKey}</h1>
       <p>Find Job</p>
       <p>Powered by CDR Jobs © 2024</p>
-      <MapboxSearch onSelect={(sug) => { console.log('selected', sug?.name) }}/>
-
+      <LocationCombobox onSelect={(sug) => { console.log('loc selected', sug?.name) }}/>
+      <CategoryListbox onSelect={(cat) => { console.log('cat selected', cat) }}/>
       <Button text='Search' onClick={() => console.log('click')}/>
 
     </div>

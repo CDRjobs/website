@@ -30,13 +30,13 @@ const MapboxSearch = ({ onSelect }: Props) => {
 
   useEffect(() => { onSelect(selectedSug) }, [selectedSug, onSelect])
 
-  return <Field>
-    <Label>City/Country:</Label>
+  return <Field className='w-full'>
     <Combobox value={selectedSug} onChange={setSelectedSug}>
       <ComboboxInput
         aria-label="city/country"
-        displayValue={(sug: SearchBoxSuggestion) => sug && `${sug.name} ${sug.place_formatted}`}
+        displayValue={(sug: SearchBoxSuggestion) => sug ? `${sug.name} ${sug.place_formatted}` : 'Country or City'}
         onChange={(event) => onTyping(event.target.value)}
+        className='w-full'
       />
       <ComboboxOptions anchor="bottom">
         {suggestions.map((sug) => (
