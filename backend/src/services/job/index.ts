@@ -1,7 +1,7 @@
 import { CdrCategory, CompanySize, ContractNature, ContractTime, CountryCode, Discipline, Job, Prisma, Remote, Seniority } from '@prisma/client'
 import pMap from 'p-map'
 import services from '..'
-import { flatten, map, omit } from 'lodash/fp'
+import { flatten, map, omit, isEmpty } from 'lodash/fp'
 import prisma from '../../db/prisma'
 
 type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
@@ -36,6 +36,11 @@ type SearchFilters = {
 
 type Pagination = {
   limit?: number
+  start?: number
+}
+
+type CursorPagination = {
+  limit?: number
   lastId?: string
 }
 
@@ -59,7 +64,7 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
-const getAllJobs = async ({ limit, lastId }: Pagination = {}, include?: Prisma.JobInclude)  => {
+const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
   const jobs = await prisma.job.findMany({
     ...(include ? { include } : {}),
     orderBy: { id: 'asc' },
@@ -70,38 +75,43 @@ const getAllJobs = async ({ limit, lastId }: Pagination = {}, include?: Prisma.J
   return jobs
 }
 
-const searchJobs = async (filters: SearchFilters = {}, { limit, lastId }: Pagination) => {
+const searchJobs = async (filters: SearchFilters = {}, { limit, start }: Pagination) => {
   const jobFilters = {
-    ...(filters.discipline ? { discipline: filters.discipline }: {}),
-    ...(filters.seniority ? { seniority: { in: filters.seniority } }: {}),
-    ...(filters.remote ? { remote: { in: filters.remote } }: {}),
-    ...(filters.contractNature ? { contractNature: { in: filters.contractNature } }: {}),
-    ...(filters.contractTime ? { contractTime: { in: filters.contractTime } }: {}),
+    ...(!isEmpty(filters.discipline) ? { discipline: filters.discipline }: {}),
+    ...(!isEmpty(filters.seniority) ? { seniority: { in: filters.seniority } }: {}),
+    ...(!isEmpty(filters.remote) ? { remote: { in: filters.remote } }: {}),
+    ...(!isEmpty(filters.contractNature) ? { contractNature: { in: filters.contractNature } }: {}),
+    ...(!isEmpty(filters.contractTime) ? { contractTime: { in: filters.contractTime } }: {}),
   }
 
   const companyFilters = {
-    ...(filters.cdrCategory ? { cdrCategory: { in: filters.cdrCategory } }: {}),
-    ...(filters.companySize ? { companySize: { in: filters.companySize } }: {}),
+    ...(!isEmpty(filters.cdrCategory) ? { cdrCategory: { in: filters.cdrCategory } }: {}),
+    ...(!isEmpty(filters.companySize) ? { companySize: { in: filters.companySize } }: {}),
   }
 
   const locationFilters = {
-    ...(filters.country ? { country: filters.country }: {}),
+    ...(!isEmpty(filters.country) ? { country: filters.country }: {}),
+  }
+
+  const where = {
+    ...jobFilters,
+    company: companyFilters,
+    locations: {
+      some: locationFilters,
+    },
   }
 
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
-    where: {
-      ...jobFilters,
-      company: companyFilters,
-      locations: {
-        some: locationFilters,
-      }
-    },
-    ...(lastId ? { where: { id: { gt: lastId }} } : {}),
+    where,
+    orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
     ...(limit ? { take: limit } : {}),
+    ...(start ? { skip: start } : {}),
   })
+
+  const total = await prisma.job.count({ where })
   
-  return jobs
+  return { total, jobs }
 }
 
 const createJobs = async (jobs: CreateJobInput[]) => {

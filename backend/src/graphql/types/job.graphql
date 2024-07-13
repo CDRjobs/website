@@ -28,9 +28,20 @@ input jobFiltersInput {
 
 input paginationInput {
   limit: Int = 24
-  lastId: String
+  start: Int = 0
+}
+
+type Pagination {
+  limit: Int!
+  total: Int!
+  start: Int!
+}
+
+type jobSearchResults {
+  pagination: Pagination!
+  data: [Job!]!
 }
 
 type Query {
-  searchJobs(filters: jobFiltersInput, pagination: paginationInput): [Job!]
+  searchJobs(filters: jobFiltersInput, pagination: paginationInput): jobSearchResults
 }

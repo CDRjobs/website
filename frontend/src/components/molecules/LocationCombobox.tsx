@@ -2,7 +2,7 @@ import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, Field, Label 
 import { useEffect, useState } from 'react'
 import mapbox from '@/lib/mapbox'
 import { SearchBoxSuggestion } from '@mapbox/search-js-core'
-import useMapboxSessionId from '@/app/hooks/useMapboxSessionId'
+import useMapboxSessionId from '@/hooks/useMapboxSessionId'
 
 type Props = {
   onSelect: (suggestion: SearchBoxSuggestion | null) => void

@@ -2,5 +2,5 @@ import z from 'zod'
 
 export const paginationSchema = z.object({
   limit: z.coerce.number().int().positive().optional(),
-  lastId: z.string().min(1).optional(),
-})
+  start: z.coerce.number().int().nonnegative().optional(),
+}).strict()

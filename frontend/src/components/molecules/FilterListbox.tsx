@@ -15,8 +15,8 @@ export interface FilterListboxRef {
 const FilterListbox = ({ text, valueMap, onSelect }: Props, ref: ForwardedRef<FilterListboxRef>) => {
   const [selectedKeys, setSelectedKeys] = useState<Keys>([])
 
-  useEffect(() => { onSelect(selectedKeys) }, [selectedKeys, onSelect])
-  const reset = () => { setSelectedKeys([]) }
+  useEffect(() => onSelect(selectedKeys), [selectedKeys, onSelect])
+  const reset = () => setSelectedKeys([])
   useImperativeHandle(ref, () => ({ reset }))
 
   const name = text + (selectedKeys.length ? ` (${selectedKeys.length})` : '')

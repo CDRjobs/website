@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ApolloProvider } from '@apollo/client'
 import createApolloClient from '@/lib/apolloClient'
-import { AuthProvider } from '@/context/AuthContext'
 import Loading from '@/components/Loading'
 
 const client = createApolloClient()
@@ -20,13 +19,11 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const content = isLoading
     ? <Loading />
     : <ApolloProvider client={client}>
-      <AuthProvider>
-        {children}
-      </AuthProvider>
+      {children}
     </ApolloProvider>
 
   return (
-    <div className='flex flex-col items-center'>
+    <div>
       {content}
     </div>
   )
