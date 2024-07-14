@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import TextInput from './atoms/TextInput'
-import Button from './atoms/Button'
+import Button from './atoms/MainButton'
 
 const ForgotPasswordMutation = gql`
   mutation ForgotPassword ($email: String!) {

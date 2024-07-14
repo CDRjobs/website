@@ -1,14 +1,14 @@
 'use client'
 
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+const ManropeFont = localFont({ src: '../fonts/Manrope-VariableFont_wght.ttf', variable: '--font-manrope' })
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   return (
     <html lang='en'>
-      <body className={inter.className}>
+      <body className={`${ManropeFont.variable} font-sans`}>
         {children}
       </body>
     </html>

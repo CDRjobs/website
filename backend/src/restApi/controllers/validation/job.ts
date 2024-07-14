@@ -1,7 +1,7 @@
 import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractNature, ContractTime } from '@prisma/client'
 import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
-import { difference, map, uniq } from 'lodash/fp'
+import { difference, intersectionBy, map, uniq } from 'lodash/fp'
 import services from '../../../services'
 
 type JobWithLocations = Job & { locations: Location[] }
@@ -31,7 +31,8 @@ const createJobSchema = z.object({
   seniority: z.nativeEnum(Seniority).nullish(),
   contractNature: z.nativeEnum(ContractNature),
   contractTime: z.nativeEnum(ContractTime),
-  publishedAt: z.string().datetime().nullish(),
+  publishedAt: z.string().datetime(),
+  realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime(),
   lastCheckedAt: z.string().datetime(),
 })
@@ -78,7 +79,8 @@ const updateJobSchemaWithoutRefine = z.object({
   seniority: z.nativeEnum(Seniority).nullish(),
   contractNature: z.nativeEnum(ContractNature).optional(),
   contractTime: z.nativeEnum(ContractTime).optional(),
-  publishedAt: z.string().datetime().nullish(),
+  publishedAt: z.string().datetime().optional(),
+  realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime().optional(),
   lastCheckedAt: z.string().datetime().optional(),
 }).strict()
@@ -135,6 +137,17 @@ const createJobsBodySchema = z.object({
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: `Some jobs already exist, of airTableId: ${map('airTableId', existingjobs)}.`,
+          })
+        }
+      })
+      .superRefine(async (jobs, ctx) => {
+        const existingjobs = await services.job.getJobsByPublishedAt(jobs.map(job => job.publishedAt))
+        const nonUniqueJobs = intersectionBy('publishedAt', jobs, existingjobs.map(j => ({ publishedAt: j.publishedAt.toISOString() })))
+
+        if (existingjobs.length) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `publishedAt values for jobs of following airTableId already exist: ${map('airTableId', nonUniqueJobs)}.`,
           })
         }
       })

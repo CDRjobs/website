@@ -28,13 +28,15 @@ input jobFiltersInput {
 
 input paginationInput {
   limit: Int = 24
-  start: Int = 0
+  countAfter: String
+  takeAfter: String
 }
 
 type Pagination {
   limit: Int!
+  countAfter: String!
+  takeAfter: String!
   total: Int!
-  start: Int!
 }
 
 type jobSearchResults {

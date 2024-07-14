@@ -1,4 +1,5 @@
 import { QuerySearchJobsArgs } from '../../types/graphql'
+import { Job } from '@prisma/client'
 import services from '../../services'
 import { validateGetJobsParams } from '../validation/job'
 
@@ -18,6 +19,9 @@ const resolvers = {
       }
     },
   },
+  Job: {
+    publishedAt: (job: Job) => job.publishedAt ? job.publishedAt.toISOString() : job.publishedAt
+  }
 }
 
 export default resolvers

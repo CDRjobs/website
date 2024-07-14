@@ -36,7 +36,8 @@ type SearchFilters = {
 
 type Pagination = {
   limit?: number
-  start?: number
+  countAfter?: string
+  takeAfter?: string
 }
 
 type CursorPagination = {
@@ -51,6 +52,14 @@ const getJobByIdWithLocations = async (id: string) => {
   })
 
   return job
+}
+
+const getJobsByPublishedAt = async (publishedAt: string[]) => {
+  const jobs = await prisma.job.findMany({
+    where: { publishedAt: { in: publishedAt }}
+  })
+
+  return jobs
 }
 
 const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
@@ -75,7 +84,7 @@ const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Pr
   return jobs
 }
 
-const searchJobs = async (filters: SearchFilters = {}, { limit, start }: Pagination) => {
+const searchJobs = async (filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
   const jobFilters = {
     ...(!isEmpty(filters.discipline) ? { discipline: filters.discipline }: {}),
     ...(!isEmpty(filters.seniority) ? { seniority: { in: filters.seniority } }: {}),
@@ -93,7 +102,7 @@ const searchJobs = async (filters: SearchFilters = {}, { limit, start }: Paginat
     ...(!isEmpty(filters.country) ? { country: filters.country }: {}),
   }
 
-  const where = {
+  const baseWhere = {
     ...jobFilters,
     company: companyFilters,
     locations: {
@@ -103,13 +112,20 @@ const searchJobs = async (filters: SearchFilters = {}, { limit, start }: Paginat
 
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
-    where,
+    where: {
+      ...baseWhere,
+      ...(takeAfter ? { publishedAt: { lt: takeAfter } } : {}),
+    },
     orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
     ...(limit ? { take: limit } : {}),
-    ...(start ? { skip: start } : {}),
   })
 
-  const total = await prisma.job.count({ where })
+  const total = await prisma.job.count({
+    where: {
+      ...baseWhere,
+      ...(countAfter ? { publishedAt: { lte: countAfter } } : {}),
+    }
+  })
   
   return { total, jobs }
 }
@@ -167,6 +183,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 }
 
 export default {
+  getJobsByPublishedAt,
   getJobByIdWithLocations,
   getJobsByAirTableIds,
   getAllJobs,

@@ -1,6 +1,6 @@
 import { useMutation, gql } from '@apollo/client'
 import { useAuth } from '@/context/AuthContext'
-import Button from './atoms/Button'
+import Button from './atoms/MainButton'
 
 const deleteAccountMutation = gql`
   mutation DeleteAccount {

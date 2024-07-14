@@ -108,26 +108,27 @@ model Location {
 }
 
 model Job {
-  id             String         @id @default(cuid())
-  airTableId     String         @unique
-  title          String
-  sourceUrl      String
-  discipline     Discipline
-  status         JobStatus
-  description    String
-  locations      Location[]
-  remote         Remote
-  currency       CurrencyCode?
-  minSalary      Int?
-  maxSalary      Int?
-  seniority      Seniority?
-  publishedAt    DateTime?
-  foundAt        DateTime
-  lastCheckedAt  DateTime
-  company        Company        @relation(fields: [companyId], references: [id])
-  companyId      String
-  contractNature ContractNature
-  contractTime   ContractTime
+  id              String         @id @default(cuid())
+  airTableId      String         @unique
+  title           String
+  sourceUrl       String
+  discipline      Discipline
+  status          JobStatus
+  description     String
+  locations       Location[]
+  remote          Remote
+  currency        CurrencyCode?
+  minSalary       Int?
+  maxSalary       Int?
+  seniority       Seniority?
+  publishedAt     DateTime       @unique
+  realPublishedAt DateTime?
+  foundAt         DateTime
+  lastCheckedAt   DateTime
+  company         Company        @relation(fields: [companyId], references: [id])
+  companyId       String
+  contractNature  ContractNature
+  contractTime    ContractTime
 }
 
 model Company {

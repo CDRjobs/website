@@ -2,14 +2,15 @@
 
 import { useParams } from 'next/navigation'
 import { useState, useEffect, useRef, useCallback } from 'react'
-import Button from '@/components/atoms/Button'
+import MainButton from '@/components/atoms/MainButton'
 import LocationCombobox from '@/components/molecules/LocationCombobox'
 import CategoryListbox from '@/components/molecules/CategoryListbox'
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
-import { gql, useLazyQuery, useQuery } from '@apollo/client'
-import { intersection, uniqBy } from 'lodash/fp'
+import JobCard, { Job } from '@/components/molecules/JobCard'
+import { gql, useLazyQuery } from '@apollo/client'
+import { first, intersection, last } from 'lodash/fp'
 import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals } from './filters'
-import { Filters, Pagination, SearchJob } from './types'
+import { Filters, Pagination } from './types'
 
 const SearchJobQuery = gql`
   query searchJobs ($filters: jobFiltersInput!, $pagination: paginationInput!) {
@@ -54,8 +55,8 @@ const Page = () => {
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
   const [filters, setFilters] = useState<Filters>({})
-  const [pagination, setPagination] = useState<Pagination>({ limit: 1, start: 0 })
-  const [jobs, setJobs] = useState<SearchJob[]>([])
+  const [pagination, setPagination] = useState<Pagination>({ limit: 1 })
+  const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loadingJobs, setLoadingJobs] = useState(true)
   const [loadMore, setLoadMore] = useState(true)
@@ -89,33 +90,29 @@ const Page = () => {
 
   const queryJobs = async (queryPagination: Pagination, queryFilters: Filters) => {
     const { data } = await querySearchJobs({ variables: { filters: queryFilters, pagination: queryPagination } })
-    return { total: data.searchJobs.pagination.total, jobs: data.searchJobs.data }
+    return { total: data.searchJobs.pagination.total, jobs: data.searchJobs.data as Job[] }
   }
 
   const queryMoreJobs = async () => {
     setLoadingJobs(true)
-    const newPagination = { ...pagination, start: jobs.length }
-    const { total, jobs: newJobs } = await queryJobs(newPagination, filters)
-    setPagination(newPagination)
-    setJobs((prevJobs) => uniqBy('id', prevJobs.concat(newJobs)))
+    const { total, jobs: moreJobs } = await queryJobs(pagination, filters)
+    const newJobs = jobs.concat(moreJobs)
+    setPagination({ ...pagination, takeAfter: last(newJobs)?.publishedAt, countAfter: first(newJobs)?.publishedAt })
+    setJobs(newJobs)
     setTotalCount(total)
-    if (newJobs.length < total) {
+    if (moreJobs.length < pagination.limit || newJobs.length >= total) {
       setLoadMore(false)
     }
-    console.log('loadmorejobs', newJobs)
     setLoadingJobs(false)
   }
 
   const queryNewJobs = async () => {
     setLoadingJobs(true)
-    const newPagination = { ...pagination, start: 0 }
-    const { total, jobs: newJobs } = await queryJobs(newPagination, filters)
-    setPagination(newPagination)
+    const { total, jobs: newJobs } = await queryJobs({ limit: pagination.limit }, filters)
+    setPagination({ ...pagination, takeAfter: last(newJobs)?.publishedAt, countAfter: first(newJobs)?.publishedAt })
     setJobs(newJobs)
     setTotalCount(total)
     setLoadMore(newJobs.length < total)
-    console.log('newJobs', newJobs)
-    console.log('total', total)
     setLoadingJobs(false)
   }
 
@@ -136,26 +133,47 @@ const Page = () => {
   }
 
   return (
-    <div className='flex flex-col items-center'>
-      <h1>CDRjobs - {clientKey}</h1>
-      <p>Find Job</p>
-      <p>Powered by CDR Jobs © 2024</p>
-      <LocationCombobox onSelect={onLocationSelect} />
-      <CategoryListbox onSelect={onDisciplineSelect} />
-      <div>
-        <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={verticals} onSelect={onVerticalSelect}/>
-        <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect}/>
-        <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect}/>
-        <FilterListbox ref={seniorityFilterRef} text='seniority' valueMap={seniority} onSelect={onSenioritySelect}/>
-        <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect}/>
-      </div>
-      <Button text='Search' onClick={queryNewJobs} disabled={loadingJobs} />
-        <p>All Jobs</p>
-        <div className='flex justify-between w-full'>
-          <p>{totalCount === 0 ? 'No results' : `${totalCount} job${totalCount > 1 ? 's' : ''}`}</p>
-          <button className='underline' onClick={resetAll}>Reset filters</button>
+    <div className='flex py-6 flex-col justify-center items-center gap-2.5 rounder-[1.25rem] bg-white'>
+      <div className='flex pb-3 flex-col justify-center items-start gap-6 self-stretch'>
+
+        <div className='flex items-center content-center gap-6 self-stretch flex-wrap'>
+          <div className='flex py-1 flex-col content-center items-start gap-1 flex-[1_0_0]'>
+            <p className='text-[1.6875rem] font-medium leading-7'>Find job</p>
+            <div className='flex items-center gap-1.5 self-stretch'>
+              <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'>Powered by <span className='font-bold'>CDR Jobs © 2024</span></p>
+            </div>
+          </div>
+          <LocationCombobox onSelect={onLocationSelect} />
+          <CategoryListbox onSelect={onDisciplineSelect} />
+          <MainButton onClick={queryNewJobs} loading={loadingJobs}>Search</MainButton>
+
         </div>
-        {loadMore && <Button text='Load more' onClick={queryMoreJobs} />}
+
+
+        <div className='flex h-10 py-2 items-center gap-3 self-stretch'>
+          <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={verticals} onSelect={onVerticalSelect}/>
+          <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect}/>
+          <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect}/>
+          <FilterListbox ref={seniorityFilterRef} text='seniority' valueMap={seniority} onSelect={onSenioritySelect}/>
+          <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect}/>
+        </div>
+      </div>
+
+      <div className='flex py-3 justify-center items-center gap-2.5 self-stretch border-b border-solid border-[#9F9F9F]'>
+        <p className='flex-[1_0_0] text-2xl font-medium leading-7'>All Jobs</p>
+      </div>
+
+      <div className='flex py-2 items-center gap-1.5 self-stretch'>
+        <p className='flex-[1_0_0] text-base font-medium leading-[1.125rem]'>{totalCount === 0 ? 'No results' : `${totalCount} job${totalCount > 1 ? 's' : ''}`}</p>
+        <button className='text-[#DBE0F1] text-right text-base font-semibold leading-[1.125rem]' onClick={resetAll}>Reset filters</button>
+      </div>
+
+      <div className='flex p-3 justify-center items-center content-center gap-3 self-stretch flex-wrap'>
+        {jobs.map((job) => <JobCard key={job.id} job={job} />)}
+      </div>
+
+      {loadMore && <MainButton onClick={queryMoreJobs} loading={loadingJobs}>Load More Jobs</MainButton>}
+
     </div>
   )
 }

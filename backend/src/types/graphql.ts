@@ -90,8 +90,9 @@ export type MutationResetPasswordArgs = {
 
 export type Pagination = {
   __typename?: 'Pagination';
+  countAfter: Scalars['String']['output'];
   limit: Scalars['Int']['output'];
-  start: Scalars['Int']['output'];
+  takeAfter: Scalars['String']['output'];
   total: Scalars['Int']['output'];
 };
 
@@ -133,8 +134,9 @@ export type JobSearchResults = {
 };
 
 export type PaginationInput = {
+  countAfter?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
-  start?: InputMaybe<Scalars['Int']['input']>;
+  takeAfter?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -288,8 +290,9 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
 };
 
 export type PaginationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination']> = {
+  countAfter?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
-  start?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  takeAfter?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

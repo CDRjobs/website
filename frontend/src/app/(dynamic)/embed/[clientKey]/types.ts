@@ -1,29 +1,7 @@
-export type SearchJob = {
-  id: string
-  title: string
-  sourceUrl: string
-  locations: {
-    country: string
-    city: string
-  }[]
-  remote: string
-  currency?: string
-  minSalary?: number
-  maxSalary?: number
-  seniority?: string
-  publishedAt: string
-  company: {
-    id: string
-    name: string
-    companySize: string
-    logoUrl: string
-    cdrCategory: string
-  }
-}
-
 export type Pagination = {
   limit: number
-  start?: number
+  takeAfter?: string
+  countAfter?: string
 }
 
 export type Filters = {

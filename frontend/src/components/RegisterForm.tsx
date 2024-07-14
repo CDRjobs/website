@@ -1,7 +1,7 @@
 import { useMutation, gql } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/context/AuthContext'
-import Button from '@/components/atoms/Button'
+import MainButton from '@/components/atoms/MainButton'
 import TextInput from '@/components/atoms/TextInput'
 
 const registerMutation = gql`
@@ -49,7 +49,7 @@ const RegisterForm = () => {
           </div>
           <TextInput placeholder='email' type='email' {...register('email', { required: true })} />
           <TextInput placeholder='password' type='password' {...register('password', { required: true })} />
-          <Button onClick={handleSubmit(onSubmit)} text='Register' />
+          <MainButton onClick={handleSubmit(onSubmit)}>Register</MainButton>
         </div>
       </form>
     </div>
