@@ -76,7 +76,7 @@ const Page = () => {
       setFilters(prev => ({
         ...prev,
         ...(contractTime.length ? { contractTime } : {}),
-        ...(contractNature.length ? { contractTime } : {}),
+        ...(contractNature.length ? { contractNature } : {}),
       }))
     } else {
       setFilters(prev => ({
@@ -111,9 +111,9 @@ const Page = () => {
     setLoadingJobs(false)
   }
 
-  const queryNewJobs = async () => {
+  const queryNewJobs = async ({ reset = false } = {}) => {
     setLoadingJobs(true)
-    const { total, jobs: newJobs } = await queryJobs({ limit: pagination.limit }, filters)
+    const { total, jobs: newJobs } = await queryJobs({ limit: pagination.limit }, reset ? {} : filters)
     setPagination({ ...pagination, takeAfter: last(newJobs)?.publishedAt, countAfter: first(newJobs)?.publishedAt })
     setJobs(newJobs)
     setTotalCount(total)
@@ -143,13 +143,14 @@ const Page = () => {
     remoteFilterRef.current?.reset()
     seniorityFilterRef.current?.reset()
     contractTypeFilterRef.current?.reset()
+    queryNewJobs({ reset: true })
   }
 
   if (!isClient) {
     return null
   }
 
-  const content = <div className='flex px-4 py-4 min-h-96 max-w-[86rem] flex-col justify-center items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
+  const content = <div className='flex px-4 py-4 min-h-96 max-w-[86rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
@@ -161,7 +162,7 @@ const Page = () => {
         </div>
         <LocationCombobox ref={locationFilterRef} onSelect={onLocationSelect} />
         <CategoryListbox ref={categoryFilterRef} onSelect={onDisciplineSelect} />
-        {!isMobile && <MainButton onClick={queryNewJobs} loading={loadingJobs}>Search</MainButton>}
+        {!isMobile && <MainButton onClick={() => queryNewJobs()} loading={loadingJobs}>Search</MainButton>}
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
@@ -172,7 +173,7 @@ const Page = () => {
         <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect}/>
       </div>
 
-      {isMobile && <MainButton onClick={queryNewJobs} loading={loadingJobs}>Search</MainButton>}
+      {isMobile && <MainButton onClick={() => queryNewJobs()} loading={loadingJobs}>Search</MainButton>}
 
     </div>
 

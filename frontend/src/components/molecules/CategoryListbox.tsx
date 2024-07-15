@@ -58,10 +58,12 @@ const CategoryListbox = ({ onSelect }: Props, ref: ForwardedRef<CategoryListboxR
         </svg>
       </ListboxButton>
     </div>
-    <ListboxOptions anchor="bottom">
+    <ListboxOptions anchor="bottom start" className='border'>
       {Object.entries(categories).map(([key, value]) => (
-        <ListboxOption key={key} value={key} className="data-[focus]:bg-blue-100">
-          {value}
+        <ListboxOption key={key} value={key}>
+          {({ focus, selected }) => <div className={`${selected ? 'bg-[#DBE0F1]' : focus ? 'bg-[#EFEFF8]' : 'bg-white' } px-2 cursor-pointer transition-[width] min-w-[var(--button-width)]`}>
+            {value}
+            </div>}
         </ListboxOption>
       ))}
     </ListboxOptions>

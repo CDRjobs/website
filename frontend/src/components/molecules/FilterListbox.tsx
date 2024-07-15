@@ -22,16 +22,20 @@ const FilterListbox = ({ text, valueMap, onSelect }: Props, ref: ForwardedRef<Fi
   const name = text + (selectedKeys.length ? ` (${selectedKeys.length})` : '')
 
   return <Listbox value={selectedKeys} onChange={setSelectedKeys} multiple>
-    <ListboxButton className='flex py:1 px-2 justify-center items-center gap-0.5 rounded-sm bg-[#DBE0F1] data-[open]:bg-[#132D59] data-[open]:text-white sm:py-1.5'>
-      <p className='flex items-center text-base font-normal leading-[1.375] text-nowrap'>{name}</p>
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M6.99995 9.53333L4.19995 5.33333L9.79995 5.33333L6.99995 9.53333Z" fill="black"/>
-      </svg>
+    <ListboxButton>
+      {({ open, hover }) => <div className={`flex py:1 px-2 justify-center items-center gap-0.5 rounded-sm ${ open || hover ? 'bg-[#132D59] text-white' : 'bg-[#DBE0F1]'} sm:py-1.5 transition-[width]`}>
+          <p className='flex items-center text-base font-normal leading-[1.375] text-nowrap'>{name}</p>
+          <svg width="14" height="14" viewBox="0 0 14 14">
+            <path d="M6.99995 9.53333L4.19995 5.33333L9.79995 5.33333L6.99995 9.53333Z" className={open ? 'fill-white' : 'fill-black' }/>
+          </svg>
+        </div>}
     </ListboxButton>
-    <ListboxOptions anchor="bottom">
+    <ListboxOptions anchor="bottom start" className='border'>
       {Object.entries(valueMap).map(([key, value]) => (
-        <ListboxOption key={key} value={key} className="data-[focus]:bg-blue-100">
-          {value}
+        <ListboxOption key={key} value={key}>
+          {({ focus, selected }) => <div className={`${selected ? 'bg-[#DBE0F1]' : focus ? 'bg-[#EFEFF8]' : 'bg-white' } px-2 cursor-pointer transition-[width] min-w-[var(--button-width)]`}>
+            {value}
+            </div>}
         </ListboxOption>
       ))}
     </ListboxOptions>

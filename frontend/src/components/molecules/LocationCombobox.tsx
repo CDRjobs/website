@@ -54,10 +54,12 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
           <path d="M10 13L6 7H14L10 13Z" fill="#777777"/>
         </svg>
       </div>
-      <ComboboxOptions anchor="bottom"> 
+      <ComboboxOptions anchor="bottom start" className='border'> 
         {suggestions.map((sug) => (
-          <ComboboxOption key={sug.mapbox_id} value={sug} className="data-[focus]:bg-blue-100">
-            {sug.name} {sug.place_formatted}
+          <ComboboxOption key={sug.mapbox_id} value={sug}>
+            {({ focus, selected }) => <div className={`${selected ? 'bg-[#DBE0F1]' : focus ? 'bg-[#EFEFF8]' : 'bg-white' } px-2 cursor-pointer transition-[width] w-[var(--input-width)] ellipsis`}>
+            {sug.name}{sug.place_formatted ? `, ${sug.place_formatted}` : ''}
+            </div>}
           </ComboboxOption>
         ))}
       </ComboboxOptions>
