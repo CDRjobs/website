@@ -1,6 +1,7 @@
 'use client'
 
-import { useParams } from 'next/navigation'
+// import { useParams } from 'next/navigation'
+import Pym from 'pym.js'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import MainButton from '@/components/atoms/MainButton'
 import LocationCombobox, { LocationComboboxRef } from '@/components/molecules/LocationCombobox'
@@ -46,7 +47,6 @@ const SearchJobQuery = gql`
 
 const Page = () => {
   let mediaWatcher = window.matchMedia('(max-width: 640px)')
-
   // const { clientKey } = useParams()
   const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
@@ -123,6 +123,10 @@ const Page = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { queryNewJobs() }, [])
+  useEffect(() => {
+    new Pym.Child().sendHeight()
+    setTimeout(() => new Pym.Child().sendHeight(), 500)
+  })
   useEffect(() => { setIsClient(true) }, [])
   useEffect(() => {
     const updateIsMobile = () => setIsMobile(mediaWatcher.matches)
@@ -145,7 +149,7 @@ const Page = () => {
     return null
   }
 
-  const content = <div className='flex px-4 pb-4 min-h-96 max-w-[84rem] flex-col justify-center items-center gap-3 rounder-[1.25rem] bg-white sm:px-0 sm:py-6 sm:gap-2.5'>
+  const content = <div className='flex px-4 py-4 min-h-96 max-w-[86rem] flex-col justify-center items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
