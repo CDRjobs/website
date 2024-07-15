@@ -1,6 +1,6 @@
 import { useMutation, gql } from '@apollo/client'
 import { useAuth } from '@/context/AuthContext'
-import Button from './atoms/MainButton'
+import MainButton from './atoms/MainButton'
 
 const deleteAccountMutation = gql`
   mutation DeleteAccount {
@@ -21,7 +21,7 @@ const DeleteAccountButton = () => {
     }
   }
 
-  return <Button onClick={onClick} text='Delete account' />
+  return <MainButton onClick={onClick}>Delete account</MainButton>
 }
 
 export default DeleteAccountButton

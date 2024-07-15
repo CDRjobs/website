@@ -4,6 +4,7 @@ type Props = {
   children: React.ReactNode
   onClick: (event: React.MouseEvent) => void
   loading?: boolean
+  fixedSize?: boolean
 }
 
 const Button = (props: Props) => {
@@ -11,9 +12,9 @@ const Button = (props: Props) => {
     <button
       onClick={props.onClick}
       disabled={props.loading}
-      className='relative flex py-3.5 px-2 flex-col justify-center items-center gap-2.5 flex-[1_0_0] rounded bg-[#7087F0]'
+      className={`${props.fixedSize ? 'w-72' : ''} relative flex py-2.5 px-2 flex-col justify-center items-center gap-2.5 flex-[1_0_0] rounded bg-[#7087F0] self-stretch md:self-auto md:py-3.5`}
     >
-      <div className={`absolute inset-0 flex justify-center items-center transition-opacity duration-300 ${props.loading ? 'opacity-100' : 'opacity-0'}`}>
+      <div className={`absolute inset-0 flex md:justify-center items-center transition-opacity duration-300 ${props.loading ? 'opacity-100' : 'opacity-0'}`}>
         <svg
           xmlns='http://www.w3.org/2000/svg'
           viewBox='0 0 100 100'
