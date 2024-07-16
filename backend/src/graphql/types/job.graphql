@@ -15,8 +15,18 @@ type Job {
   contractTime: String
 }
 
-input jobFiltersInput {
+input coordinatesInput {
+  lat: Float!
+  long: Float!
+}
+
+input locationInput {
   country: String
+  coordinates: coordinatesInput
+}
+
+input jobFiltersInput {
+  location: locationInput
   discipline: String
   cdrCategory: [String!]
   seniority: [String!]
@@ -39,11 +49,11 @@ type Pagination {
   total: Int!
 }
 
-type jobSearchResults {
+type JobSearchResults {
   pagination: Pagination!
   data: [Job!]!
 }
 
 type Query {
-  searchJobs(filters: jobFiltersInput, pagination: paginationInput): jobSearchResults
+  searchJobs(filters: jobFiltersInput, pagination: paginationInput): JobSearchResults
 }

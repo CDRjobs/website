@@ -82,7 +82,7 @@ const getOrCreateLocations = async (locations: LocationInput[], trx: PrismaClien
       country: knex.raw('?::"CountryCode"', [l.country]),
       ...(l.city ? { coordinates: knex.raw('ST_geomFromText(?, 4326)', [`Point(${coordinatesMap[l.countryCityKey].long} ${coordinatesMap[l.countryCityKey].lat})`]) } : {})
     }))
-  
+
     const createdLocations = await knex('Location')
       .insert(data)
       .onConflict('countryCityKey').ignore()

@@ -1,6 +1,8 @@
 import { PrismaClient } from '@prisma/client'
 import cuid2Extension from 'prisma-extension-cuid2'
 
-const prisma = new PrismaClient().$extends(cuid2Extension())
+const prisma = new PrismaClient()
 
-export default prisma
+const extendedPrisma = prisma.$extends(cuid2Extension())
+
+export default extendedPrisma

@@ -67,16 +67,14 @@ const Page = () => {
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
 
   const setFilterFor = (filterName: string, value: unknown) => {
-    if (filterName === 'location') {
-      console.log('selected location', value)
-    } else if (filterName === 'contractType') {
+    if (filterName === 'contractType') {
       const contractTime = intersection(Object.keys(contractTimes))(value as [])
       const contractNature = intersection(Object.keys(contractNatures))(value as [])
 
       setFilters(prev => ({
         ...prev,
-        ...(contractTime.length ? { contractTime } : {}),
-        ...(contractNature.length ? { contractNature } : {}),
+        contractTime,
+        contractNature,
       }))
     } else {
       setFilters(prev => ({

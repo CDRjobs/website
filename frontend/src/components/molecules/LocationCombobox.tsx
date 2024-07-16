@@ -1,11 +1,19 @@
 import { Combobox, ComboboxInput, ComboboxOption, ComboboxOptions, Field, Label } from '@headlessui/react'
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 import mapbox from '@/lib/mapbox'
-import { SearchBoxSuggestion } from '@mapbox/search-js-core'
+import { SearchBoxSuggestion, SearchBoxFeatureSuggestion } from '@mapbox/search-js-core'
 import useMapboxSessionId from '@/hooks/useMapboxSessionId'
 
+type SelectedLocation = {
+  country?: string,
+  coordinates?: {
+    lat: number,
+    long: number,
+  }
+}
+
 type Props = {
-  onSelect: (suggestion: SearchBoxSuggestion | null) => void
+  onSelect: (selectedLocation: SelectedLocation | null) => void
 }
 
 export interface LocationComboboxRef {
@@ -14,7 +22,8 @@ export interface LocationComboboxRef {
 
 const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationComboboxRef>) => {
   const [suggestions, setSuggestions] = useState<SearchBoxSuggestion[]>([])
-  const [selectedSug, setSelectedSug] = useState<SearchBoxSuggestion | null>(null)
+  const [selectedSug, setSelectedSug] = useState<SearchBoxSuggestion | null | undefined>(null)
+  const [selectedFeat, setSelectedFeat] = useState<SearchBoxFeatureSuggestion | null | undefined>(null)
   const sessionToken = useMapboxSessionId()
 
   const onTyping = async (value: string) => {
@@ -31,12 +40,39 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
       setSuggestions([])
     }
   }
+  const onSelectSug = async (suggestion: SearchBoxSuggestion) => {
+    setSelectedSug(suggestion)
+    if (suggestion) {
+      const { features } = await mapbox.retrieve(suggestion, { sessionToken })
+      console.log('features', features)
+      let newSelectFeat = null
+      if (suggestion.feature_type === 'country') {
+        newSelectFeat = features.find(f => f.properties.feature_type === 'country')
+      } else if (['place', 'region'].includes(suggestion.feature_type)) {
+        newSelectFeat = features.find(f => f.properties.feature_type === 'place')
+      } else {
+        console.log('coulnd find', suggestion)
+      }
+      setSelectedFeat(newSelectFeat)
+    }
+  }
 
-  useEffect(() => { onSelect(selectedSug) }, [selectedSug, onSelect])
-  const reset = () => setSelectedSug(null)
+  useEffect(() => {
+    if (selectedFeat?.properties.feature_type === 'place') {
+      onSelect({ coordinates: { lat: selectedFeat.properties.coordinates.latitude, long: selectedFeat.properties.coordinates.longitude }})
+    } else if (selectedFeat?.properties.feature_type === 'country') {
+      onSelect({ country: selectedFeat.properties.context.country?.country_code.toLowerCase() })
+    } else {
+      onSelect(null)
+    }
+  }, [selectedFeat, onSelect])
+  const reset = () => {
+    setSelectedSug(null)
+    setSelectedFeat(null)
+  }
   useImperativeHandle(ref, () => ({ reset }))
 
-  return <Combobox value={selectedSug} onChange={setSelectedSug}>
+  return <Combobox value={selectedSug} onChange={onSelectSug}>
     <div className='flex py-1 justify-center items-center gap-3 max-sm:self-stretch sm:h-12 sm:flex-[1_0_0] sm:flex-wrap'>
       <div className='flex p-1.5 items-center gap-1.5 flex-[1_0_0] border-b border-solid border-[#7087F0] sm:self-stretch'>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +80,7 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
         </svg>
         <ComboboxInput
           aria-label="city/country"
-          displayValue={(sug: SearchBoxSuggestion) => sug && `${sug.name} ${sug.place_formatted}`}
+          displayValue={(sug: SearchBoxSuggestion) => sug && `${sug.name}${sug.place_formatted ? `, ${sug.place_formatted}` : ''}`}
           onChange={(event) => onTyping(event.target.value)}
           placeholder='City/Country'
           size={1}
