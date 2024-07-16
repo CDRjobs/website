@@ -149,8 +149,9 @@ model Company {
 model Client {
   id        String    @id @default(cuid())
   name      String    @unique
-  iFrameKey String    @default(uuid())
+  iFrameKey String    @unique @default(uuid())
   companies Company[]
+  countries CountryCode[] // countries to include in job search in addition to companies jobs
 }
 
 enum CountryCode {

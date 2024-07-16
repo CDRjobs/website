@@ -2,6 +2,7 @@ import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
 import { map, difference } from 'lodash/fp'
 import services from '../../../services'
+import { CountryCode } from '@prisma/client'
 
 const checkCompaniesBySuperRefine = async (companiesIds: string[] | undefined, ctx: z.RefinementCtx) => {
   if (companiesIds) {
@@ -29,7 +30,8 @@ const createClientSchema = z.object({
   companies: z
     .array(z.string())
     .optional()
-    .superRefine(checkCompaniesBySuperRefine)
+    .superRefine(checkCompaniesBySuperRefine),
+  countries: z.array(z.nativeEnum(CountryCode)).optional()
 }).strict()
 
 const updateCompanySchema = z.object({
@@ -37,7 +39,8 @@ const updateCompanySchema = z.object({
   companies: z
     .array(z.string())
     .optional()
-    .superRefine(checkCompaniesBySuperRefine)
+    .superRefine(checkCompaniesBySuperRefine),
+  countries: z.array(z.nativeEnum(CountryCode)).optional()
 }).strict()
 
 const createClientBodySchema = z.object({

@@ -110,6 +110,7 @@ export type Query = {
 
 
 export type QuerySearchJobsArgs = {
+  clientKey: Scalars['String']['input'];
   filters?: InputMaybe<JobFiltersInput>;
   pagination?: InputMaybe<PaginationInput>;
 };
@@ -122,9 +123,17 @@ export type User = {
   lastname: Scalars['String']['output'];
 };
 
+export type AfenClient = {
+  afenOnly?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 export type CoordinatesInput = {
   lat: Scalars['Float']['input'];
   long: Scalars['Float']['input'];
+};
+
+export type CustomClient = {
+  afen?: InputMaybe<AfenClient>;
 };
 
 export type JobFiltersInput = {
@@ -132,6 +141,7 @@ export type JobFiltersInput = {
   companySize?: InputMaybe<Array<Scalars['String']['input']>>;
   contractNature?: InputMaybe<Array<Scalars['String']['input']>>;
   contractTime?: InputMaybe<Array<Scalars['String']['input']>>;
+  customClient?: InputMaybe<CustomClient>;
   discipline?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<LocationInput>;
   remote?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -233,7 +243,9 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<User>;
+  afenClient: AfenClient;
   coordinatesInput: CoordinatesInput;
+  customClient: CustomClient;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
   paginationInput: PaginationInput;
@@ -254,7 +266,9 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   User: User;
+  afenClient: AfenClient;
   coordinatesInput: CoordinatesInput;
+  customClient: CustomClient;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
   paginationInput: PaginationInput;
@@ -321,7 +335,7 @@ export type PaginationResolvers<ContextType = any, ParentType extends ResolversP
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  searchJobs?: Resolver<Maybe<ResolversTypes['JobSearchResults']>, ParentType, ContextType, Partial<QuerySearchJobsArgs>>;
+  searchJobs?: Resolver<Maybe<ResolversTypes['JobSearchResults']>, ParentType, ContextType, RequireFields<QuerySearchJobsArgs, 'clientKey'>>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {

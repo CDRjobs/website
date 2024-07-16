@@ -19,6 +19,11 @@ export const companySizes = {
   xxl: '5001+',
 }
 
+export const afenOnly = {
+  yes: 'Yes',
+  no: 'No'
+}
+
 export const remote = {
   yes: 'Yes',
   hybrid: 'Hybrid',

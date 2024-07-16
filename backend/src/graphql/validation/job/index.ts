@@ -2,10 +2,20 @@ import z from 'zod'
 import { paginationSchema } from '../pagination'
 import { CdrCategory, CompanySize, ContractNature, ContractTime, CountryCode, Discipline, Remote, Seniority } from '@prisma/client'
 import { validateZodSchema } from '../validate'
+import services from '../../../services'
 
 const getJobsSchema = z.object({
+  clientKey: z
+    .string()
+    .refine(async (clientKey) => {
+      console.log('oh !')
+      const client = await services.client.getClientByIFrameKey(clientKey)
+      console.log('cl !', client)
+      return !!client
+    }, { message: 'clientKey is incorrect, client not found.' }),
   pagination: paginationSchema.optional(),
   filters: z.object({
+    openSearchToCountries: z.boolean().optional(),
     location: z.object({
       country: z.nativeEnum(CountryCode).optional(),
       coordinates: z.object({
@@ -29,4 +39,4 @@ const getJobsSchema = z.object({
   }).optional()
 })
 
-export const validateGetJobsParams = validateZodSchema(getJobsSchema)
+export const validateGetJobsParams = validateZodSchema(getJobsSchema, true)

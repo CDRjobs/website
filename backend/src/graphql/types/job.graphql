@@ -26,6 +26,7 @@ input locationInput {
 }
 
 input jobFiltersInput {
+  openSearchToCountries: Boolean
   location: locationInput
   discipline: String
   cdrCategory: [String!]
@@ -55,5 +56,5 @@ type JobSearchResults {
 }
 
 type Query {
-  searchJobs(filters: jobFiltersInput, pagination: paginationInput): JobSearchResults
+  searchJobs(clientKey: String!, filters: jobFiltersInput, pagination: paginationInput): JobSearchResults
 }

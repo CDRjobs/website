@@ -7,8 +7,8 @@ const resolvers = {
   Query: {
     searchJobs: async (parent: object, params: Partial<QuerySearchJobsArgs>) => {
       // TODO: check client token or domain ? X-Frame-Options ?
-      const { filters, pagination } = validateGetJobsParams(params)
-      const { total, jobs } = await services.job.searchJobs(filters, pagination)
+      const { clientKey, filters, pagination } = await validateGetJobsParams(params)
+      const { total, jobs } = await services.job.searchJobs(clientKey, filters, pagination)
 
       return {
         pagination: {

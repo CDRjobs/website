@@ -1,6 +1,6 @@
 'use client'
 
-// import { useParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import Pym from 'pym.js'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import MainButton from '@/components/atoms/MainButton'
@@ -9,13 +9,13 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { first, intersection, last } from 'lodash/fp'
-import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals } from './filters'
+import { first, intersection, last, omit } from 'lodash/fp'
+import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 
 const SearchJobQuery = gql`
-  query searchJobs ($filters: jobFiltersInput!, $pagination: paginationInput!) {
-    searchJobs (filters: $filters, pagination: $pagination) {
+  query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
+    searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
       pagination {
         total
       }
@@ -47,7 +47,8 @@ const SearchJobQuery = gql`
 
 const Page = () => {
   let mediaWatcher = window.matchMedia('(max-width: 640px)')
-  // const { clientKey } = useParams()
+  const { clientKey, clientName } = useParams() as { [key: string]: string }
+
   const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
   const categoryFilterRef = useRef<CategoryListboxRef>(null)
@@ -56,6 +57,7 @@ const Page = () => {
   const remoteFilterRef = useRef<FilterListboxRef>(null)
   const seniorityFilterRef = useRef<FilterListboxRef>(null)
   const contractTypeFilterRef = useRef<FilterListboxRef>(null)
+  const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
   const [filters, setFilters] = useState<Filters>({})
@@ -66,8 +68,17 @@ const Page = () => {
   const [loadMore, setLoadMore] = useState(true)
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
 
+  const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
+  const isAfen = clientName.toLowerCase() === 'afen'
+  const customVerticals = isDaccoalition ? omit(['forest', 'biomass', 'mCdr', 'soil'], verticals) : verticals
+
   const setFilterFor = (filterName: string, value: unknown) => {
-    if (filterName === 'contractType') {
+    if (filterName === 'afenOnly') {
+      setFilters(prev => ({
+        ...prev,
+        openSearchToCountries: value !== 'yes',
+      }))
+    } else if (filterName === 'contractType') {
       const contractTime = intersection(Object.keys(contractTimes))(value as [])
       const contractNature = intersection(Object.keys(contractNatures))(value as [])
 
@@ -85,14 +96,15 @@ const Page = () => {
   }
   const onLocationSelect = useCallback((value: unknown) => setFilterFor('location', value), [])
   const onDisciplineSelect = useCallback((value?: string | null) => setFilterFor('discipline', value), [])
-  const onVerticalSelect = useCallback((value: string[]) => setFilterFor('cdrCategory', value), [])
-  const onCompanySizeSelect = useCallback((value: string[]) => setFilterFor('companySize', value), [])
-  const onRemoteSelect = useCallback((value: string[]) => setFilterFor('remote', value), [])
-  const onSenioritySelect = useCallback((value: string[]) => setFilterFor('seniority', value), [])
-  const onContractTypeSelect = useCallback((value: string[]) => setFilterFor('contractType', value), [])
+  const onVerticalSelect = useCallback((value: string[] | string | null) => setFilterFor('cdrCategory', value), [])
+  const onCompanySizeSelect = useCallback((value: string[] | string | null) => setFilterFor('companySize', value), [])
+  const onRemoteSelect = useCallback((value: string[] | string | null) => setFilterFor('remote', value), [])
+  const onSenioritySelect = useCallback((value: string[] | string | null) => setFilterFor('seniority', value), [])
+  const onContractTypeSelect = useCallback((value: string[] | string | null) => setFilterFor('contractType', value), [])
+  const onAfenOnlySelect = useCallback((value: string[] | string | null) => setFilterFor('afenOnly', value), [])
 
   const queryJobs = async (queryPagination: Pagination, queryFilters: Filters) => {
-    const { data } = await querySearchJobs({ variables: { filters: queryFilters, pagination: queryPagination } })
+    const { data } = await querySearchJobs({ variables: { clientKey, filters: queryFilters, pagination: queryPagination } })
     return { total: data.searchJobs.pagination.total, jobs: data.searchJobs.data as Job[] }
   }
 
@@ -129,7 +141,6 @@ const Page = () => {
   useEffect(() => {
     const updateIsMobile = () => setIsMobile(mediaWatcher.matches)
     mediaWatcher.addEventListener('change', updateIsMobile)
-    console.log(mediaWatcher.matches)
     return () => mediaWatcher.removeEventListener('change', updateIsMobile)
   }, [setIsMobile, mediaWatcher])
 
@@ -141,6 +152,7 @@ const Page = () => {
     remoteFilterRef.current?.reset()
     seniorityFilterRef.current?.reset()
     contractTypeFilterRef.current?.reset()
+    afenOnlyFilterRef.current?.reset()
     queryNewJobs({ reset: true })
   }
 
@@ -164,11 +176,12 @@ const Page = () => {
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
-        <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={verticals} onSelect={onVerticalSelect}/>
-        <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect}/>
-        <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect}/>
-        <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect}/>
-        <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect}/>
+        <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={customVerticals} onSelect={onVerticalSelect} multiple />
+        <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect} multiple />
+        <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
+        <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect} multiple />
+        <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect} multiple />
+        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect}/>}
       </div>
 
       {isMobile && <MainButton onClick={() => queryNewJobs()} loading={loadingJobs}>Search</MainButton>}

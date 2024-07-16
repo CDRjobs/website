@@ -1,27 +1,38 @@
 import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from 'react'
 
-type Keys = string[]
+type Keys = string[] | string | null
 type Props = {
   text: string
   valueMap: { [key: string]: string }
   onSelect: (keys: Keys) => void
+  multiple?: boolean
 }
 
 export interface FilterListboxRef {
   reset: () => void;
 }
 
-const FilterListbox = ({ text, valueMap, onSelect }: Props, ref: ForwardedRef<FilterListboxRef>) => {
-  const [selectedKeys, setSelectedKeys] = useState<Keys>([])
+const FilterListbox = ({ text, valueMap, onSelect, multiple = false }: Props, ref: ForwardedRef<FilterListboxRef>) => {
+  const [selectedKeys, setSelectedKeys] = useState<Keys>(multiple ? [] : null)
 
   useEffect(() => onSelect(selectedKeys), [selectedKeys, onSelect])
   const reset = () => setSelectedKeys([])
   useImperativeHandle(ref, () => ({ reset }))
 
-  const name = text + (selectedKeys.length ? ` (${selectedKeys.length})` : '')
+  const name = text + (multiple
+    ? (selectedKeys?.length ? ` (${selectedKeys.length})` : '')
+    : (selectedKeys ? ' (1)' : ''))
 
-  return <Listbox value={selectedKeys} onChange={setSelectedKeys} multiple>
+  const onChangeSelectedKeys = (value: Keys) => {
+    if (!multiple && value === selectedKeys) {
+      setSelectedKeys(null)
+    } else {
+      setSelectedKeys(value)
+    }
+  }
+
+  return <Listbox value={selectedKeys} onChange={onChangeSelectedKeys} multiple={multiple}>
     <ListboxButton>
       {({ open, hover }) => <div className={`flex py:1 px-2 justify-center items-center gap-0.5 rounded-sm ${ open || hover ? 'bg-[#132D59] text-white' : 'bg-[#DBE0F1]'} sm:py-1.5 transition-[width]`}>
           <p className='flex items-center text-base font-normal leading-[1.375] text-nowrap'>{name}</p>

@@ -44,16 +44,15 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
     setSelectedSug(suggestion)
     if (suggestion) {
       const { features } = await mapbox.retrieve(suggestion, { sessionToken })
-      console.log('features', features)
       let newSelectFeat = null
       if (suggestion.feature_type === 'country') {
         newSelectFeat = features.find(f => f.properties.feature_type === 'country')
       } else if (['place', 'region'].includes(suggestion.feature_type)) {
         newSelectFeat = features.find(f => f.properties.feature_type === 'place')
-      } else {
-        console.log('coulnd find', suggestion)
       }
       setSelectedFeat(newSelectFeat)
+    } else {
+      setSelectedFeat(null)
     }
   }
 

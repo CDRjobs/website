@@ -4,6 +4,7 @@ import pMap from 'p-map'
 import services from '..'
 import { knex } from '../../db/knex'
 import prisma from '../../db/prisma'
+import { ApplicationError } from '../../restApi/errors'
 
 type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
   companyAirTableId: string,
@@ -25,6 +26,7 @@ type Map = {
 }
 
 type SearchFilters = {
+  openSearchToCountries?: boolean,
   location?: {
     country?: CountryCode
     coordinates?: {
@@ -91,8 +93,25 @@ const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Pr
   return jobs
 }
 
-const searchJobs = async (filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
+const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
+  console.log('clientKey', clientKey)
+  console.log('filters.openSearchToCountries', filters.openSearchToCountries)
+  const client = await prisma.client.findUnique({
+    include: { companies: { select: { id: true } } },
+    where: { iFrameKey: clientKey },
+  })
+
+  if (!client) {
+    throw new ApplicationError('Client not found')
+  }
+
+  const companiesIdsToInclude = map('id', client.companies)
+  const countriesToIncludes = client.countries
+
   const query = knex('Job as job')
+    .leftJoin('Company as c', 'c.id', 'job.companyId')
+    .leftJoin('_JobToLocation as pivotL', 'pivotL.A', 'job.id')
+    .leftJoin('Location as l', 'l.id', 'pivotL.B')
 
   if (!isEmpty(filters.discipline)) {
     query.where('discipline', knex.raw('?::"Discipline"', [filters.discipline]))
@@ -110,43 +129,32 @@ const searchJobs = async (filters: SearchFilters = {}, { limit, countAfter, take
     query.whereIn('contractTime', filters.contractTime!.map(ct => knex.raw('?::"ContractTime"', [ct])))
   }
   if (!isEmpty(filters.cdrCategory) || !isEmpty(filters.companySize)) {
-    query.leftJoin('Company as j1', 'j1.id', 'job.companyId')
     if (!isEmpty(filters.cdrCategory)) {
-      query.whereIn('j1.cdrCategory', filters.cdrCategory!.map(cc => knex.raw('?::"CdrCategory"', [cc])))
+      query.whereIn('c.cdrCategory', filters.cdrCategory!.map(cc => knex.raw('?::"CdrCategory"', [cc])))
     }
     if (!isEmpty(filters.companySize)) {
-      query.whereIn('j1.companySize', filters.companySize!.map(cc => knex.raw('?::"CompanySize"', [cc])))
-    }
-  }
-  if (!isEmpty(filters.location)) {
-    if (filters.location.coordinates) {
-      const { lat, long } = filters.location.coordinates
-      query.whereIn(
-        'job.id',
-        knex('_JobToLocation as t1')
-          .select('t1.A')
-          .innerJoin('Location as j1', 'j1.id', 't1.B')
-          .whereNotNull('t1.A')
-          .andWhere(
-            knex.raw(
-              'ST_DWithin(j1.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)',
-              [`Point(${long} ${lat})`],
-            )
-          )
-      )
-    } else if (filters.location.country) {
-      query.whereIn(
-        'job.id',
-        knex('_JobToLocation as t1')
-          .select('t1.A')
-          .innerJoin('Location as j1', 'j1.id', 't1.B')
-          .whereNotNull('t1.A')
-          .andWhere('j1.country', knex.raw('?::"CountryCode"', [filters.location.country]))
-      )
+      query.whereIn('c.companySize', filters.companySize!.map(cc => knex.raw('?::"CompanySize"', [cc])))
     }
   }
 
-  const countQuery = query.clone()
+  query.where((builder) => {
+    builder.whereIn('c.id', companiesIdsToInclude)
+    if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
+      builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
+    }
+  })
+
+  if (!isEmpty(filters.location)) {
+    if (filters.location.coordinates) {
+      const { lat, long } = filters.location.coordinates
+      query.andWhere(knex.raw('ST_DWithin(l.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)', [`Point(${long} ${lat})`]))
+    } else if (filters.location.country) {
+      query.andWhere('l.country', knex.raw('?::"CountryCode"', [filters.location.country]))
+    }
+  }
+
+
+  const countQuery = query.clone().count(knex.raw('DISTINCT "job"."id"'))
 
   if (countAfter) {
     countQuery.where('publishedAt', '<=', new Date(countAfter))
@@ -156,14 +164,14 @@ const searchJobs = async (filters: SearchFilters = {}, { limit, countAfter, take
     query.where('publishedAt', '<', new Date(takeAfter))
   }
 
-  const jobsToFind = await query.select('job.id as id').execWithPrisma(prisma) as { id: string }[]
+  const jobsToFind = await query.select('job.id as id').distinct().execWithPrisma(prisma) as { id: string }[]
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
     where: { id: { in: map('id', jobsToFind) } },
     orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
     ...(limit ? { take: limit } : {}),
   })
-  const [{ count: bigIntTotal }] = await countQuery.count().execWithPrisma(prisma) as { count: number}[]
+  const [{ count: bigIntTotal }] = await countQuery.execWithPrisma(prisma) as { count: number}[]
   
   return { total: Number(bigIntTotal), jobs }
 }
