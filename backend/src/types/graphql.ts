@@ -18,12 +18,13 @@ export type Scalars = {
 
 export type Company = {
   __typename?: 'Company';
-  careerPAgeUrl?: Maybe<Scalars['String']['output']>;
+  careerPageUrl?: Maybe<Scalars['String']['output']>;
   cdrCategory: Scalars['String']['output'];
   companySize: Scalars['String']['output'];
   companyUrl: Scalars['String']['output'];
   hqLocation?: Maybe<Location>;
   id: Scalars['ID']['output'];
+  logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
 };
 
@@ -43,6 +44,12 @@ export type Job = {
   seniority?: Maybe<Scalars['String']['output']>;
   sourceUrl: Scalars['String']['output'];
   title: Scalars['String']['output'];
+};
+
+export type JobSearchResults = {
+  __typename?: 'JobSearchResults';
+  data: Array<Job>;
+  pagination: Pagination;
 };
 
 export type Location = {
@@ -87,14 +94,23 @@ export type MutationResetPasswordArgs = {
   userId: Scalars['String']['input'];
 };
 
+export type Pagination = {
+  __typename?: 'Pagination';
+  countAfter: Scalars['String']['output'];
+  limit: Scalars['Int']['output'];
+  takeAfter: Scalars['String']['output'];
+  total: Scalars['Int']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
   me: User;
-  searchJobs?: Maybe<Array<Job>>;
+  searchJobs?: Maybe<JobSearchResults>;
 };
 
 
 export type QuerySearchJobsArgs = {
+  clientKey: Scalars['String']['input'];
   filters?: InputMaybe<JobFiltersInput>;
   pagination?: InputMaybe<PaginationInput>;
 };
@@ -107,20 +123,32 @@ export type User = {
   lastname: Scalars['String']['output'];
 };
 
+export type CoordinatesInput = {
+  lat: Scalars['Float']['input'];
+  long: Scalars['Float']['input'];
+};
+
 export type JobFiltersInput = {
   cdrCategory?: InputMaybe<Array<Scalars['String']['input']>>;
   companySize?: InputMaybe<Array<Scalars['String']['input']>>;
   contractNature?: InputMaybe<Array<Scalars['String']['input']>>;
   contractTime?: InputMaybe<Array<Scalars['String']['input']>>;
-  country?: InputMaybe<Scalars['String']['input']>;
   discipline?: InputMaybe<Scalars['String']['input']>;
+  location?: InputMaybe<LocationInput>;
+  openSearchToCountries?: InputMaybe<Scalars['Boolean']['input']>;
   remote?: InputMaybe<Array<Scalars['String']['input']>>;
   seniority?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
+export type LocationInput = {
+  coordinates?: InputMaybe<CoordinatesInput>;
+  country?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type PaginationInput = {
-  lastId?: InputMaybe<Scalars['String']['input']>;
+  countAfter?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
+  takeAfter?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -196,15 +224,20 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
   Company: ResolverTypeWrapper<Company>;
+  Float: ResolverTypeWrapper<Scalars['Float']['output']>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Job: ResolverTypeWrapper<Job>;
+  JobSearchResults: ResolverTypeWrapper<JobSearchResults>;
   Location: ResolverTypeWrapper<Location>;
   Mutation: ResolverTypeWrapper<{}>;
+  Pagination: ResolverTypeWrapper<Pagination>;
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<User>;
+  coordinatesInput: CoordinatesInput;
   jobFiltersInput: JobFiltersInput;
+  locationInput: LocationInput;
   paginationInput: PaginationInput;
 };
 
@@ -212,25 +245,31 @@ export type ResolversTypes = {
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
   Company: Company;
+  Float: Scalars['Float']['output'];
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Job: Job;
+  JobSearchResults: JobSearchResults;
   Location: Location;
   Mutation: {};
+  Pagination: Pagination;
   Query: {};
   String: Scalars['String']['output'];
   User: User;
+  coordinatesInput: CoordinatesInput;
   jobFiltersInput: JobFiltersInput;
+  locationInput: LocationInput;
   paginationInput: PaginationInput;
 };
 
 export type CompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
-  careerPAgeUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  careerPageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cdrCategory?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   companySize?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   companyUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   hqLocation?: Resolver<Maybe<ResolversTypes['Location']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
+  logoUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -253,6 +292,12 @@ export type JobResolvers<ContextType = any, ParentType extends ResolversParentTy
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type JobSearchResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['JobSearchResults'] = ResolversParentTypes['JobSearchResults']> = {
+  data?: Resolver<Array<ResolversTypes['Job']>, ParentType, ContextType>;
+  pagination?: Resolver<ResolversTypes['Pagination'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type LocationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Location'] = ResolversParentTypes['Location']> = {
   city?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   country?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -268,9 +313,17 @@ export type MutationResolvers<ContextType = any, ParentType extends ResolversPar
   resetPassword?: Resolver<ResolversTypes['User'], ParentType, ContextType, RequireFields<MutationResetPasswordArgs, 'password' | 'token' | 'userId'>>;
 };
 
+export type PaginationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Pagination'] = ResolversParentTypes['Pagination']> = {
+  countAfter?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  limit?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  takeAfter?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  total?: Resolver<ResolversTypes['Int'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   me?: Resolver<ResolversTypes['User'], ParentType, ContextType>;
-  searchJobs?: Resolver<Maybe<Array<ResolversTypes['Job']>>, ParentType, ContextType, Partial<QuerySearchJobsArgs>>;
+  searchJobs?: Resolver<Maybe<ResolversTypes['JobSearchResults']>, ParentType, ContextType, RequireFields<QuerySearchJobsArgs, 'clientKey'>>;
 };
 
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
@@ -284,8 +337,10 @@ export type UserResolvers<ContextType = any, ParentType extends ResolversParentT
 export type Resolvers<ContextType = any> = {
   Company?: CompanyResolvers<ContextType>;
   Job?: JobResolvers<ContextType>;
+  JobSearchResults?: JobSearchResultsResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
+  Pagination?: PaginationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };

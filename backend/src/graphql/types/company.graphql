@@ -2,8 +2,9 @@ type Company {
   id: ID!
   name: String!
   companyUrl: String!
-  careerPAgeUrl: String
+  careerPageUrl: String
   hqLocation: Location
   companySize: String!
   cdrCategory: String!
+  logoUrl: String!
 }

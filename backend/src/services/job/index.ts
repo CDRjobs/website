@@ -1,8 +1,10 @@
 import { CdrCategory, CompanySize, ContractNature, ContractTime, CountryCode, Discipline, Job, Prisma, Remote, Seniority } from '@prisma/client'
+import { flatten, map, omit, isEmpty } from 'lodash/fp'
 import pMap from 'p-map'
 import services from '..'
-import { flatten, map, omit } from 'lodash/fp'
+import { knex } from '../../db/knex'
 import prisma from '../../db/prisma'
+import { ApplicationError } from '../../restApi/errors'
 
 type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
   companyAirTableId: string,
@@ -24,7 +26,14 @@ type Map = {
 }
 
 type SearchFilters = {
-  country?: CountryCode
+  openSearchToCountries?: boolean,
+  location?: {
+    country?: CountryCode
+    coordinates?: {
+      lat: number
+      long: number
+    }
+  }
   discipline?: Discipline
   cdrCategory?: CdrCategory[]
   seniority?: Seniority[]
@@ -35,6 +44,12 @@ type SearchFilters = {
 }
 
 type Pagination = {
+  limit?: number
+  countAfter?: string
+  takeAfter?: string
+}
+
+type CursorPagination = {
   limit?: number
   lastId?: string
 }
@@ -48,6 +63,14 @@ const getJobByIdWithLocations = async (id: string) => {
   return job
 }
 
+const getJobsByPublishedAt = async (publishedAt: string[]) => {
+  const jobs = await prisma.job.findMany({
+    where: { publishedAt: { in: publishedAt }}
+  })
+
+  return jobs
+}
+
 const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: boolean }) => {
   const companies = await prisma.job.findMany({
     ...(select ? { select } : {}),
@@ -59,7 +82,7 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
-const getAllJobs = async ({ limit, lastId }: Pagination = {}, include?: Prisma.JobInclude)  => {
+const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
   const jobs = await prisma.job.findMany({
     ...(include ? { include } : {}),
     orderBy: { id: 'asc' },
@@ -70,38 +93,85 @@ const getAllJobs = async ({ limit, lastId }: Pagination = {}, include?: Prisma.J
   return jobs
 }
 
-const searchJobs = async (filters: SearchFilters = {}, { limit, lastId }: Pagination) => {
-  const jobFilters = {
-    ...(filters.discipline ? { discipline: filters.discipline }: {}),
-    ...(filters.seniority ? { seniority: { in: filters.seniority } }: {}),
-    ...(filters.remote ? { remote: { in: filters.remote } }: {}),
-    ...(filters.contractNature ? { contractNature: { in: filters.contractNature } }: {}),
-    ...(filters.contractTime ? { contractTime: { in: filters.contractTime } }: {}),
+const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
+  const client = await prisma.client.findUnique({
+    include: { companies: { select: { id: true } } },
+    where: { iFrameKey: clientKey },
+  })
+
+  if (!client) {
+    throw new ApplicationError('Client not found')
   }
 
-  const companyFilters = {
-    ...(filters.cdrCategory ? { cdrCategory: { in: filters.cdrCategory } }: {}),
-    ...(filters.companySize ? { companySize: { in: filters.companySize } }: {}),
+  const companiesIdsToInclude = map('id', client.companies)
+  const countriesToIncludes = client.countries
+
+  const query = knex('Job as job')
+    .leftJoin('Company as c', 'c.id', 'job.companyId')
+    .leftJoin('_JobToLocation as pivotL', 'pivotL.A', 'job.id')
+    .leftJoin('Location as l', 'l.id', 'pivotL.B')
+
+  if (!isEmpty(filters.discipline)) {
+    query.where('discipline', knex.raw('?::"Discipline"', [filters.discipline]))
+  }
+  if (!isEmpty(filters.seniority)) {
+    query.whereIn('seniority', filters.seniority!.map(s => knex.raw('?::"Seniority"', [s])))
+  }
+  if (!isEmpty(filters.remote)) {
+    query.whereIn('remote', filters.remote!.map(r => knex.raw('?::"Remote"', [r])))
+  }
+  if (!isEmpty(filters.contractNature)) {
+    query.whereIn('contractNature', filters.contractNature!.map(cn => knex.raw('?::"ContractNature"', [cn])))
+  }
+  if (!isEmpty(filters.contractTime)) {
+    query.whereIn('contractTime', filters.contractTime!.map(ct => knex.raw('?::"ContractTime"', [ct])))
+  }
+  if (!isEmpty(filters.cdrCategory) || !isEmpty(filters.companySize)) {
+    if (!isEmpty(filters.cdrCategory)) {
+      query.whereIn('c.cdrCategory', filters.cdrCategory!.map(cc => knex.raw('?::"CdrCategory"', [cc])))
+    }
+    if (!isEmpty(filters.companySize)) {
+      query.whereIn('c.companySize', filters.companySize!.map(cc => knex.raw('?::"CompanySize"', [cc])))
+    }
   }
 
-  const locationFilters = {
-    ...(filters.country ? { country: filters.country }: {}),
+  query.where((builder) => {
+    builder.whereIn('c.id', companiesIdsToInclude)
+    if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
+      builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
+    }
+  })
+
+  if (!isEmpty(filters.location)) {
+    if (filters.location.coordinates) {
+      const { lat, long } = filters.location.coordinates
+      query.andWhere(knex.raw('ST_DWithin(l.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)', [`Point(${long} ${lat})`]))
+    } else if (filters.location.country) {
+      query.andWhere('l.country', knex.raw('?::"CountryCode"', [filters.location.country]))
+    }
   }
 
+
+  const countQuery = query.clone().count(knex.raw('DISTINCT "job"."id"'))
+
+  if (countAfter) {
+    countQuery.where('publishedAt', '<=', new Date(countAfter))
+  }
+
+  if (takeAfter) {
+    query.where('publishedAt', '<', new Date(takeAfter))
+  }
+
+  const jobsToFind = await query.select('job.id as id').distinct().execWithPrisma(prisma) as { id: string }[]
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
-    where: {
-      ...jobFilters,
-      company: companyFilters,
-      locations: {
-        some: locationFilters,
-      }
-    },
-    ...(lastId ? { where: { id: { gt: lastId }} } : {}),
+    where: { id: { in: map('id', jobsToFind) } },
+    orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
     ...(limit ? { take: limit } : {}),
   })
+  const [{ count: bigIntTotal }] = await countQuery.execWithPrisma(prisma) as { count: number}[]
   
-  return jobs
+  return { total: Number(bigIntTotal), jobs }
 }
 
 const createJobs = async (jobs: CreateJobInput[]) => {
@@ -157,6 +227,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 }
 
 export default {
+  getJobsByPublishedAt,
   getJobByIdWithLocations,
   getJobsByAirTableIds,
   getAllJobs,

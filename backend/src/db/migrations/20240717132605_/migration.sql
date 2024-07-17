@@ -14,10 +14,10 @@ CREATE TYPE "Seniority" AS ENUM ('entryLevel', 'earlyStage', 'midLevel', 'senior
 CREATE TYPE "Discipline" AS ENUM ('strategyAndConsulting', 'sustainability', 'operationsAndProjectManagement', 'researchAndDevelopment', 'businessDevelopmentAndSales', 'policy', 'engineering', 'marketingAndCommunications', 'administrativeAndSupport', 'financialAndLegal', 'softwareEngineering', 'humanResourcesAndPeopleManagement', 'maintenanceAndTechnicians');
 
 -- CreateEnum
-CREATE TYPE "CompanySize" AS ENUM ('xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl');
+CREATE TYPE "CompanySize" AS ENUM ('xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl', 'xxxl');
 
 -- CreateEnum
-CREATE TYPE "CdrCategory" AS ENUM ('biomass', 'ecosystemServices', 'soil', 'mineralization', 'directAirCapture', 'algae', 'utilization', 'mCdr', 'forest');
+CREATE TYPE "CdrCategory" AS ENUM ('biomass', 'ecosystemServices', 'soil', 'mineralization', 'directAirCapture', 'utilization', 'mCdr', 'forest');
 
 -- CreateEnum
 CREATE TYPE "ContractTime" AS ENUM ('fullTime', 'partTime');
@@ -80,7 +80,8 @@ CREATE TABLE "Job" (
     "minSalary" INTEGER,
     "maxSalary" INTEGER,
     "seniority" "Seniority",
-    "publishedAt" TIMESTAMP(3),
+    "publishedAt" TIMESTAMP(3) NOT NULL,
+    "realPublishedAt" TIMESTAMP(3),
     "foundAt" TIMESTAMP(3) NOT NULL,
     "lastCheckedAt" TIMESTAMP(3) NOT NULL,
     "companyId" TEXT NOT NULL,
@@ -100,12 +101,29 @@ CREATE TABLE "Company" (
     "hqLocationId" TEXT NOT NULL,
     "companySize" "CompanySize" NOT NULL,
     "cdrCategory" "CdrCategory" NOT NULL,
+    "logoUrl" TEXT NOT NULL,
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
+CREATE TABLE "Client" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "iFrameKey" TEXT NOT NULL,
+    "countries" "CountryCode"[],
+
+    CONSTRAINT "Client_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "_JobToLocation" (
+    "A" TEXT NOT NULL,
+    "B" TEXT NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "_ClientToCompany" (
     "A" TEXT NOT NULL,
     "B" TEXT NOT NULL
 );
@@ -123,13 +141,28 @@ CREATE UNIQUE INDEX "Location_countryCityKey_key" ON "Location"("countryCityKey"
 CREATE UNIQUE INDEX "Job_airTableId_key" ON "Job"("airTableId");
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Job_publishedAt_key" ON "Job"("publishedAt");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "Company_airTableId_key" ON "Company"("airTableId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Client_name_key" ON "Client"("name");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Client_iFrameKey_key" ON "Client"("iFrameKey");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "_JobToLocation_AB_unique" ON "_JobToLocation"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_JobToLocation_B_index" ON "_JobToLocation"("B");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "_ClientToCompany_AB_unique" ON "_ClientToCompany"("A", "B");
+
+-- CreateIndex
+CREATE INDEX "_ClientToCompany_B_index" ON "_ClientToCompany"("B");
 
 -- AddForeignKey
 ALTER TABLE "Job" ADD CONSTRAINT "Job_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -142,3 +175,9 @@ ALTER TABLE "_JobToLocation" ADD CONSTRAINT "_JobToLocation_A_fkey" FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE "_JobToLocation" ADD CONSTRAINT "_JobToLocation_B_fkey" FOREIGN KEY ("B") REFERENCES "Location"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ClientToCompany" ADD CONSTRAINT "_ClientToCompany_A_fkey" FOREIGN KEY ("A") REFERENCES "Client"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "_ClientToCompany" ADD CONSTRAINT "_ClientToCompany_B_fkey" FOREIGN KEY ("B") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;

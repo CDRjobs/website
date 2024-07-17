@@ -2,10 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-/* body {
-  background: #4DA1A9;
-  font-size: small;
-} */
+body {
+  font-familly: Manrope
+}
 
 /* :root {
   --foreground-rgb: 0, 0, 0;

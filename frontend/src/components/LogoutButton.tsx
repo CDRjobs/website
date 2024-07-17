@@ -1,6 +1,6 @@
 import { useMutation, gql } from '@apollo/client'
 import { useAuth } from '@/context/AuthContext'
-import Button from './atoms/Button'
+import MainButton from './atoms/MainButton'
 
 const LogoutMutation = gql`
   mutation Logout {
@@ -19,7 +19,7 @@ const LogoutButton = () => {
     }
   }
 
-  return <Button onClick={onClick} text='Logout' />
+  return <MainButton onClick={onClick}>Logout</MainButton>
 }
 
 export default LogoutButton

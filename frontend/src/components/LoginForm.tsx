@@ -1,7 +1,7 @@
 import { useMutation, gql } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/context/AuthContext'
-import Button from '@/components/atoms/Button'
+import MainButton from '@/components/atoms/MainButton'
 import TextInput from '@/components/atoms/TextInput'
 
 const LoginMutation = gql`
@@ -43,7 +43,7 @@ const LoginForm = () => {
         <div className='flex flex-col items-center w-64 gap-2 my-2'>
           <TextInput placeholder='email' type='email' {...register('email', { required: true })} />
           <TextInput placeholder='password' type='password' {...register('password', { required: true })} />
-          <Button onClick={handleSubmit(onSubmit)} text='Login' />
+          <MainButton onClick={handleSubmit(onSubmit)}>Login</MainButton>
           <a href='/app/auth/forgot-password'>forgotten password?</a>
         </div>
       </form>
