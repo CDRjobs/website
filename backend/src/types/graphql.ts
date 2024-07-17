@@ -123,17 +123,9 @@ export type User = {
   lastname: Scalars['String']['output'];
 };
 
-export type AfenClient = {
-  afenOnly?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 export type CoordinatesInput = {
   lat: Scalars['Float']['input'];
   long: Scalars['Float']['input'];
-};
-
-export type CustomClient = {
-  afen?: InputMaybe<AfenClient>;
 };
 
 export type JobFiltersInput = {
@@ -141,9 +133,9 @@ export type JobFiltersInput = {
   companySize?: InputMaybe<Array<Scalars['String']['input']>>;
   contractNature?: InputMaybe<Array<Scalars['String']['input']>>;
   contractTime?: InputMaybe<Array<Scalars['String']['input']>>;
-  customClient?: InputMaybe<CustomClient>;
   discipline?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<LocationInput>;
+  openSearchToCountries?: InputMaybe<Scalars['Boolean']['input']>;
   remote?: InputMaybe<Array<Scalars['String']['input']>>;
   seniority?: InputMaybe<Array<Scalars['String']['input']>>;
 };
@@ -243,9 +235,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   String: ResolverTypeWrapper<Scalars['String']['output']>;
   User: ResolverTypeWrapper<User>;
-  afenClient: AfenClient;
   coordinatesInput: CoordinatesInput;
-  customClient: CustomClient;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
   paginationInput: PaginationInput;
@@ -266,9 +256,7 @@ export type ResolversParentTypes = {
   Query: {};
   String: Scalars['String']['output'];
   User: User;
-  afenClient: AfenClient;
   coordinatesInput: CoordinatesInput;
-  customClient: CustomClient;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
   paginationInput: PaginationInput;

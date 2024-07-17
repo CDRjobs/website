@@ -20,7 +20,8 @@ const companySizes = {
   m: '201-500',
   l: '501-1000',
   xl: '1001-5000',
-  xxl: '5001+',
+  xxl: '5001-10000',
+  xxxl: '10001+',
 }
 
 const remote = {
