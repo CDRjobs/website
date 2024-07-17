@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { gql, useMutation } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import TextInput from './atoms/TextInput'
-import Button from './atoms/MainButton'
+import MainButton from './atoms/MainButton'
 
 const ForgotPasswordMutation = gql`
   mutation ForgotPassword ($email: String!) {
@@ -26,13 +26,12 @@ const ForgotPasswordForm = () => {
     }
   }
 
-
   return (
     <div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='flex flex-col items-center w-64 gap-2 my-2'>
           <TextInput placeholder='Email' type='email' {...register('email', { required: true })} />
-          <Button onClick={handleSubmit(onSubmit)} text='Send reset link' disabled={hasSubmitted} />
+          <MainButton onClick={handleSubmit(onSubmit)} disabled={hasSubmitted}>Send reset link</ MainButton>
           {hasSubmitted && <p>If you have an account, a reset link has been sent to your email address</p>}
         </div>
       </form>

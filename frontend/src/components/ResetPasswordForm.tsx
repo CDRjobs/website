@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useMutation, gql } from '@apollo/client'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { useAuth } from '@/context/AuthContext'
-import Button from '@/components/atoms/Button'
+import MainButton from '@/components/atoms/MainButton'
 import TextInput from '@/components/atoms/TextInput'
 
 const ResetPasswordMutation = gql`
@@ -54,7 +54,7 @@ const ResetPasswordForm = ({ userId, token }: Props) => {
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className='flex flex-col items-center w-64 gap-2 my-2'>
           <TextInput placeholder='New password' type='password' {...register('password', { required: true })} />
-          <Button onClick={handleSubmit(onSubmit)} text='Reset password' />
+          <MainButton onClick={handleSubmit(onSubmit)}>Reset password</MainButton>
           {isTokenInvalid && <p>The token has expired</p>}
         </div>
       </form>
