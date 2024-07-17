@@ -89,14 +89,12 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
           <path d="M10 13L6 7H14L10 13Z" fill="#777777"/>
         </svg>
       </div>
-      <ComboboxOptions anchor="bottom start" className={`flex py-5 px-4 [--anchor-gap:0.5rem] flex-col items-center gap-2 rounded-[0.625rem] min-w-[10rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)] ${suggestions?.length ? '' : 'hidden'}`}>
-        <div className='flex flex-col items-center gap-2.5 self-stretch'>
+      <ComboboxOptions anchor='bottom start' className={`flex w-[23.25rem] py-6 [--anchor-gap:0.5rem] flex-col items-center gap-3 rounded-[0.625rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)] ${suggestions?.length ? '' : 'hidden'}`}>
           {suggestions.map((sug) => (
-            <ComboboxOption key={sug.mapbox_id} value={sug} className='group cursor-pointer select-none flex h-8 py-1 px-0.5 items-center gap-1.5 self-stretch border-b border-solid border-[#CCC] data-[focus]:bg-[rgba(112,135,240,0.10)]'>
-                <div className='flex-[1_0_0] text- pr-2 font-medium leading-6'>{sug.name}{sug.place_formatted ? `, ${sug.place_formatted}` : ''}</div>
-            </ComboboxOption>
-          ))}
-        </div>
+          <ComboboxOption key={sug.mapbox_id} value={sug} className='group cursor-pointer select-none flex py-3.5 px-4 items-center gap-1.5 self-stretch border-b border-solid border-[#EEE] data-[focus]:bg-[rgba(112,135,240,0.10)]'>
+            <p className='flex-[1_0_0] text-base font-medium leading-5'>{sug.name}{sug.place_formatted ? `, ${sug.place_formatted}` : ''}</p>
+          </ComboboxOption>
+        ))}
       </ComboboxOptions>
     </div>
   </Combobox>
