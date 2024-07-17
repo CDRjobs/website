@@ -58,14 +58,14 @@ const CategoryListbox = ({ onSelect }: Props, ref: ForwardedRef<CategoryListboxR
         </svg>
       </ListboxButton>
     </div>
-    <ListboxOptions anchor="bottom start" className='border'>
-      {Object.entries(categories).map(([key, value]) => (
-        <ListboxOption key={key} value={key}>
-          {({ focus, selected }) => <div className={`${selected ? 'bg-[#DBE0F1]' : focus ? 'bg-[#EFEFF8]' : 'bg-white' } px-2 cursor-pointer transition-[width] min-w-[var(--button-width)]`}>
-            {value}
-            </div>}
-        </ListboxOption>
-      ))}
+    <ListboxOptions anchor="bottom start" className='flex py-5 px-4 [--anchor-gap:0.5rem] flex-col items-center gap-2 rounded-[0.625rem] min-w-[10rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)]'>
+      <div className='flex flex-col items-center gap-2.5 self-stretch'>
+        {Object.entries(categories).map(([key, value]) => (
+          <ListboxOption key={key} value={key} className='group cursor-pointer select-none flex h-8 py-1 px-0.5 items-center gap-1.5 self-stretch border-b border-solid border-[#CCC] data-[focus]:bg-[rgba(112,135,240,0.10)]'>
+              <p className='flex-[1_0_0] text- pr-2 font-medium leading-6'>{value}</p>
+          </ListboxOption>
+        ))}
+      </div>
     </ListboxOptions>
   </Listbox>
 }

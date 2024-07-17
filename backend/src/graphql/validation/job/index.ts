@@ -8,9 +8,7 @@ const getJobsSchema = z.object({
   clientKey: z
     .string()
     .refine(async (clientKey) => {
-      console.log('oh !')
       const client = await services.client.getClientByIFrameKey(clientKey)
-      console.log('cl !', client)
       return !!client
     }, { message: 'clientKey is incorrect, client not found.' }),
   pagination: paginationSchema.optional(),

@@ -94,8 +94,6 @@ const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Pr
 }
 
 const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
-  console.log('clientKey', clientKey)
-  console.log('filters.openSearchToCountries', filters.openSearchToCountries)
   const client = await prisma.client.findUnique({
     include: { companies: { select: { id: true } } },
     where: { iFrameKey: clientKey },
