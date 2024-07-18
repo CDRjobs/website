@@ -19,7 +19,7 @@ const FilterListbox = ({ text, valueMap, onSelect, multiple = false }: Props, re
   const listboxButtonRef = useRef<HTMLButtonElement>(null)
 
   useEffect(() => onSelect(selectedKeys), [selectedKeys, onSelect])
-  const reset = () => setSelectedKeys([])
+  const reset = () => setSelectedKeys(multiple ? [] : null)
   useImperativeHandle(ref, () => ({ reset }))
 
   const name = text + (multiple
