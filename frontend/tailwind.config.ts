@@ -9,7 +9,9 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-manrope)'],
+        sans: ['var(--font-manrope)', 'var(--font-inter)'],
+        manrope: ['var(--font-manrope)'],
+        inter: ['var(--font-inter)'],
       },
     },
   },
