@@ -4,10 +4,10 @@ import formatDistanceFromNow from '@/utils/formatDistanceFromNow'
 
 const verticals = {
   forest: 'Afforestation/Reforestation',
-  biomass: 'Biomass Carbon Removal and Storage (BiCRS)',
-  directAirCapture: 'Direct Air Carbon Capture and Storage (DACCS)',
+  biomass: 'Biomass Carbon Removal',
+  directAirCapture: 'Direct Air Capture ',
   ecosystemServices: 'Ecosystem Services',
-  mCdr: 'Marine Carbon Dioxide Removal (mCDR)',
+  mCdr: 'Marine Carbon Dioxide Removal',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',
   utilization: 'Utilisation',
@@ -146,7 +146,7 @@ const JobCard = ({ job }: Props) => {
       <div className='flex justify-between items-center gap-2 self-stretch'>
         <div className='flex py-1.5 px-2 flex-col justify-center items-center gap-2.5 rounded-sm bg-[#DBE0F1]'>
           <div className='flex items-center gap-2.5'>
-            <p className='text-xs font-normal leading-4 truncate'>{truncate({ length: 30 }, verticals[job.company.cdrCategory])}</p>
+            <p className='text-xs font-normal leading-4 truncate'>{verticals[job.company.cdrCategory]}</p>
           </div>
         </div>
         <button className='flex p-1.5 justify-center items-center gap-0.5 rounded-sm bg-[#132D59]' onClick={onClickOnViewJob}>
