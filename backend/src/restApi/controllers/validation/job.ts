@@ -25,7 +25,7 @@ const createJobSchema = z.object({
     }).strict()
   ),
   remote: z.nativeEnum(Remote),
-  currency: z.nativeEnum(CurrencyCode),
+  currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
@@ -73,7 +73,7 @@ const updateJobSchemaWithoutRefine = z.object({
     }).strict()
   ).optional(),
   remote: z.nativeEnum(Remote).optional(),
-  currency: z.nativeEnum(CurrencyCode).optional(),
+  currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
