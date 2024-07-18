@@ -166,7 +166,7 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
     where: { id: { in: map('id', jobsToFind) } },
-    orderBy: [{ publishedAt: 'desc' }, { id: 'asc' }],
+    orderBy: [{ publishedAt: 'desc' }],
     ...(limit ? { take: limit } : {}),
   })
   const [{ count: bigIntTotal }] = await countQuery.execWithPrisma(prisma) as { count: number}[]

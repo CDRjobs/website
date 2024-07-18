@@ -9,7 +9,7 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { first, intersection, last, omit } from 'lodash/fp'
+import { compact, first, intersection, isEmpty, last, map, omit, values } from 'lodash/fp'
 import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 
@@ -160,14 +160,16 @@ const Page = () => {
     return null
   }
 
-  const content = <div className='flex px-4 py-4 min-h-96 max-w-[86rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
+  const areFiltersUsed = map(isEmpty, values(filters)).some(isEmpty => !isEmpty)
+
+  const content = <div className='flex px-4 py-4 min-h-96 max-w-[89rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
         <div className='flex py-1 flex-col content-center items-start gap-1 max-sm:self-stretch sm:flex-[1_0_0]'>
-          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'>Find job</p>
+          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>Find job</a></p>
           <div className='flex items-center gap-1.5 self-stretch'>
-            <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'>Powered by <span className='font-bold'>CDR Jobs © 2024</span></p>
+            <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDR Jobs © 2024</span></a></p>
           </div>
         </div>
         <LocationCombobox ref={locationFilterRef} onSelect={onLocationSelect} />
@@ -194,14 +196,14 @@ const Page = () => {
 
     <div className='flex py-2 items-center gap-1.5 self-stretch'>
       <p className='flex-[1_0_0] text-sm sm:text-base font-medium leading-[1.125rem]'>{totalCount === 0 ? 'No results' : `${totalCount} job${totalCount > 1 ? 's' : ''}`}</p>
-      <button className='text-[#DBE0F1] text-right text-sm sm:text-base font-semibold leading-[1.125rem] underline' onClick={resetAll}>Reset filters</button>
+      <button className={`${areFiltersUsed ? 'text-[#7087F0]' : 'text-[#DBE0F1]' } text-right text-sm sm:text-base font-semibold leading-[1.125rem] underline`} onClick={resetAll}>Reset filters</button>
     </div>
 
     <div className='flex py-3 sm:p-3 justify-center items-center content-center gap-3 self-stretch flex-wrap'>
       {jobs.map((job) => <JobCard key={job.id} job={job} />)}
     </div>
 
-    {loadMore && <MainButton onClick={queryMoreJobs} loading={loadingJobs}>Load More Jobs</MainButton>}
+    {loadMore && <MainButton onClick={queryMoreJobs} loading={loadingJobs} fixedSize>Load More Jobs</MainButton>}
   </div>
 
   return isMobile

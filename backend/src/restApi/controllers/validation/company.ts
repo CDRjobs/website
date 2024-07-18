@@ -4,7 +4,7 @@ import { validateZodSchema } from '../../errors'
 import { map } from 'lodash/fp'
 import services from '../../../services'
 
-const base64ImageRegex = /^data:image\/(jpeg|png|jpg|webp|svg);base64,[A-Za-z0-9+/=]+$/
+const base64ImageRegex = /^data:image\/(jpeg|png|jpg|webp|svg|jfif);base64,[A-Za-z0-9+/=]+$/
 
 const createCompanySchema = z.object({
   airTableId: z.string(),
