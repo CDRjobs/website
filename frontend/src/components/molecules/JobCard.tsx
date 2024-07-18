@@ -93,7 +93,7 @@ const JobCard = ({ job }: Props) => {
     window.open(job.sourceUrl, '_blank')?.focus()
   }
   
-  return <div className='flex w-full sm:w-80 p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
+  return <div className='flex w-full sm:w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
     
     <div className='flex py-1 flex-col justify-center items-start gap-1.5 self-stretch'>
       <div className='h-14 flex items-center'>
