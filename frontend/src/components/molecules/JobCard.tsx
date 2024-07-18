@@ -96,7 +96,7 @@ const JobCard = ({ job }: Props) => {
   return <div className='flex w-full sm:w-80 p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
     
     <div className='flex py-1 flex-col justify-center items-start gap-1.5 self-stretch'>
-      <div className='w-14 h-14'>
+      <div className='h-14 flex items-center'>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={urlJoin(process.env.NEXT_PUBLIC_PUBLIC_SERVER_URL!, job.company.logoUrl)} alt={`Logo of the company ${job.company.name}`} className='w-14 shrink-0 rounded-[0.3125rem]' />
       </div>
