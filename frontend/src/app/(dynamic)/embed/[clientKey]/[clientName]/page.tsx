@@ -165,9 +165,9 @@ const Page = () => {
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
         <div className='flex py-1 flex-col content-center items-start gap-1 max-sm:self-stretch sm:flex-[1_0_0]'>
-          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'>Find job</p>
+          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>Find job</a></p>
           <div className='flex items-center gap-1.5 self-stretch'>
-            <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'>Powered by <span className='font-bold'>CDR Jobs © 2024</span></p>
+            <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDR Jobs © 2024</span></a></p>
           </div>
         </div>
         <LocationCombobox ref={locationFilterRef} onSelect={onLocationSelect} />
