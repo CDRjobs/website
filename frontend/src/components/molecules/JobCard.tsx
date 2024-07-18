@@ -100,7 +100,7 @@ const JobCard = ({ job }: Props) => {
         <img src={urlJoin(process.env.NEXT_PUBLIC_PUBLIC_SERVER_URL!, job.company.logoUrl)} alt={`Logo of the company ${job.company.name}`} className='w-14 shrink-0 rounded-[0.3125rem]' />
       </div>
       <div className='flex items-start gap-1.5 self-stretch text-[#777] font-inter'>
-        <p className='text-sm font-normal leading-[1.125rem] flex-[1_0_0]'>{job.company.name}</p>
+        <p className='text-sm font-normal leading-[1.125rem] flex-[1_0_0]'>{truncate({ length: 39 }, job.company.name)}</p>
         <p className='text-xs font-normal leading-4 text-right'>{formatDistanceFromNow(new Date(job.publishedAt))} ago</p>
       </div>
     </div>
