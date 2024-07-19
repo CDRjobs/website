@@ -57,6 +57,21 @@ const createJobSchema = z.object({
   })
 
 const updateJobSchemaWithoutRefine = z.object({
+  companyAirTableId: z
+    .string()
+    .optional()
+    .superRefine(async (companyAirTableId, ctx) => {
+      if (companyAirTableId) {
+        const [foundcompany] = await services.company.getCompaniesByAirTableIds([companyAirTableId], { airTableId: true })
+
+        if (!foundcompany) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `The company or airTableId ${companyAirTableId} doesn't exist. Create the companies first and check that the companyAirTableId values are correct.`,
+          })
+        }
+      }
+    }),
   title: z.string().min(5).optional(),
   sourceUrl: z.string().url().optional(),
   discipline: z.nativeEnum(Discipline).optional(),
