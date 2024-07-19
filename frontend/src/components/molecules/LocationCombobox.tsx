@@ -40,7 +40,7 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
       setSuggestions([])
     }
   }
-  const onSelectSug = async (suggestion: SearchBoxSuggestion) => {
+  const onSelectSug = async (suggestion: SearchBoxSuggestion | null) => {
     setSelectedSug(suggestion)
     if (suggestion) {
       const { features } = await mapbox.retrieve(suggestion, { sessionToken })
@@ -83,11 +83,14 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
           onChange={(event) => onTyping(event.target.value)}
           placeholder='City/Country'
           size={1}
-          className='flex-[1_0_0] text-sm font-normal leading-4 text-nowrap text-ellipsis sm:text-lg sm:leading-5 focus-visible:outline-none'
+          className='flex-[1_0_0] text-sm font-normal leading-4 text-nowrap text-ellipsis sm:text-lg sm:leading-6 focus-visible:outline-none'
         />
-        <svg className={`${suggestions?.length ? '' : 'hidden'}`} width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg'>
+        {!selectedSug && <svg width='20' height='20' viewBox='0 0 20 20' fill='none'>
           <path d='M10 13L6 7H14L10 13Z' fill='#777777'/>
-        </svg>
+        </svg>}
+        {selectedSug && <svg width='20' height='20' viewBox='0 0 20 20' fill='none' className='cursor-pointer' onClick={() => onSelectSug(null)}>
+          <path d='M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z' fill='black'/>
+        </svg>}
       </div>
       <ComboboxOptions anchor='bottom start' className={`flex w-[23.25rem] py-6 [--anchor-gap:0.5rem] flex-col items-center gap-3 rounded-[0.625rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)] ${suggestions?.length ? '' : 'hidden'}`}>
           {suggestions.map((sug) => (
