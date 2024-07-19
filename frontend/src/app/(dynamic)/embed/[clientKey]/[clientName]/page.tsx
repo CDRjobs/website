@@ -9,9 +9,11 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { compact, first, intersection, isEmpty, last, map, omit, values } from 'lodash/fp'
+import { first, intersection, isEmpty, last, map, omit, values } from 'lodash/fp'
 import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
+
+const LIMIT = 12
 
 const SearchJobQuery = gql`
   query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
@@ -47,6 +49,7 @@ const SearchJobQuery = gql`
 
 const Page = () => {
   let mediaWatcher = window.matchMedia('(max-width: 640px)')
+
   const { clientKey, clientName } = useParams() as { [key: string]: string }
 
   const [isClient, setIsClient] = useState(false)
@@ -61,7 +64,7 @@ const Page = () => {
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
   const [filters, setFilters] = useState<Filters>({})
-  const [pagination, setPagination] = useState<Pagination>({ limit: mediaWatcher.matches ? 10 : 12 })
+  const [pagination, setPagination] = useState<Pagination>({ limit: LIMIT })
   const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loadingJobs, setLoadingJobs] = useState(true)
@@ -103,41 +106,36 @@ const Page = () => {
   const onContractTypeSelect = useCallback((value: string[] | string | null) => setFilterFor('contractType', value), [])
   const onAfenOnlySelect = useCallback((value: string[] | string | null) => setFilterFor('afenOnly', value), [])
 
-  const queryJobs = async (queryPagination: Pagination, queryFilters: Filters) => {
-    const { data } = await querySearchJobs({ variables: { clientKey, filters: queryFilters, pagination: queryPagination } })
-    return { total: data.searchJobs.pagination.total, jobs: data.searchJobs.data as Job[] }
+  const queryNewJobs = useCallback(async ({ pagination, filters, append = false, jobs }: { pagination: Pagination, filters: Filters, append?: boolean, jobs?: Job[] }) => {
+    setLoadingJobs(true)
+
+    const { data } = await querySearchJobs({ variables: { clientKey, filters, pagination } })
+    const total = data.searchJobs.pagination.total
+    const moreJobs = data.searchJobs.data as Job[]
+    
+    setPagination({ ...pagination, takeAfter: last(moreJobs)?.publishedAt, countAfter: first(jobs)?.publishedAt })
+    setJobs((jobs) => append ? jobs.concat(moreJobs) : moreJobs)
+    setTotalCount(total)
+    setLoadMore((jobs?.length || 0) + moreJobs.length < total)
+    setLoadingJobs(false)
+  }, [clientKey, querySearchJobs])
+
+  const onClickSearch = () => {
+    queryNewJobs({ pagination: { limit: LIMIT }, filters })
   }
 
-  const queryMoreJobs = async () => {
-    setLoadingJobs(true)
-    const { total, jobs: moreJobs } = await queryJobs(pagination, filters)
-    const newJobs = jobs.concat(moreJobs)
-    setPagination({ ...pagination, takeAfter: last(newJobs)?.publishedAt, countAfter: first(newJobs)?.publishedAt })
-    setJobs(newJobs)
-    setTotalCount(total)
-    if (moreJobs.length < pagination.limit || newJobs.length >= total) {
-      setLoadMore(false)
-    }
-    setLoadingJobs(false)
-  }
-
-  const queryNewJobs = async ({ reset = false } = {}) => {
-    setLoadingJobs(true)
-    const { total, jobs: newJobs } = await queryJobs({ limit: pagination.limit }, reset ? {} : filters)
-    setPagination({ ...pagination, takeAfter: last(newJobs)?.publishedAt, countAfter: first(newJobs)?.publishedAt })
-    setJobs(newJobs)
-    setTotalCount(total)
-    setLoadMore(newJobs.length < total)
-    setLoadingJobs(false)
+  const onClickLoadMore = () => {
+    queryNewJobs({ pagination, filters, append: true, jobs })
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { queryNewJobs() }, [])
+  useEffect(() => { queryNewJobs({ pagination, filters: {}, jobs }) }, [])
+  useEffect(() => { setIsClient(true) }, [])
+  useEffect(() => { queryNewJobs({ pagination: { limit: LIMIT }, filters }) }, [queryNewJobs, filters])
   useEffect(() => {
     new Pym.Child().sendHeight()
     setTimeout(() => new Pym.Child().sendHeight(), 500)
   })
-  useEffect(() => { setIsClient(true) }, [])
   useEffect(() => {
     const updateIsMobile = () => setIsMobile(mediaWatcher.matches)
     mediaWatcher.addEventListener('change', updateIsMobile)
@@ -153,7 +151,6 @@ const Page = () => {
     seniorityFilterRef.current?.reset()
     contractTypeFilterRef.current?.reset()
     afenOnlyFilterRef.current?.reset()
-    queryNewJobs({ reset: true })
   }
 
   if (!isClient) {
@@ -174,7 +171,7 @@ const Page = () => {
         </div>
         <LocationCombobox ref={locationFilterRef} onSelect={onLocationSelect} />
         <CategoryListbox ref={categoryFilterRef} onSelect={onDisciplineSelect} />
-        {!isMobile && <MainButton onClick={() => queryNewJobs()} loading={loadingJobs}>Search</MainButton>}
+        {!isMobile && <MainButton onClick={onClickSearch} loading={loadingJobs}>Search</MainButton>}
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
@@ -186,7 +183,7 @@ const Page = () => {
         {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect}/>}
       </div>
 
-      {isMobile && <MainButton onClick={() => queryNewJobs()} loading={loadingJobs}>Search</MainButton>}
+      {isMobile && <MainButton onClick={onClickSearch} loading={loadingJobs}>Search</MainButton>}
 
     </div>
 
@@ -203,7 +200,7 @@ const Page = () => {
       {jobs.map((job) => <JobCard key={job.id} job={job} />)}
     </div>
 
-    {loadMore && <MainButton onClick={queryMoreJobs} loading={loadingJobs} fixedSize>Load More Jobs</MainButton>}
+    {loadMore && <MainButton onClick={onClickLoadMore} loading={loadingJobs} fixedSize>Load More Jobs</MainButton>}
   </div>
 
   return isMobile
