@@ -15,6 +15,7 @@ type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'
 }
 
 type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations'> & {
+  companyAirTableId?: string,
   locations?: {
     country: CountryCode
     city?: string | null
@@ -208,12 +209,18 @@ const createJobs = async (jobs: CreateJobInput[]) => {
 const updateJob = async (id: string, job: UpdateJobInput) => {
   let updatedJob: Job | undefined
   await prisma.$transaction(async (trx) => {
-    const jobData: Prisma.JobUpdateInput = omit('locations', job)
+    const jobData: Prisma.JobUpdateInput = omit(['locations', 'companyAirTableId'], job)
     if (job.locations) {
       const locations = await services.location.getOrCreateLocations(job.locations, trx)
       const locationMap = locations.reduce((map, l) => Object.assign(map, { [l.countryCityKey]: l.id }), {}) as Map
       jobData.locations = {
         set: job.locations.map(l => ({ id: locationMap[services.location.getCountryCityKey(l)] }))
+      }
+    }
+
+    if (job.companyAirTableId) {
+      jobData.company = {
+        connect: { airTableId: job.companyAirTableId },
       }
     }
   
