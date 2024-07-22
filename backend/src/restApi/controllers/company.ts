@@ -72,6 +72,7 @@ export const updateCompany = async (ctx: Context) => {
     if (companyWithLogoUrl?.logoUrl) {
       await services.company.deleteLogo(companyWithLogoUrl.logoUrl)
     }
+    throw e
   }
 
   ctx.body = {
