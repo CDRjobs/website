@@ -8,6 +8,7 @@ import concatUrlSegments from '../../utils/concatUrlSegments'
 import path from 'node:path'
 import prisma from '../../db/prisma'
 import services from '../../services'
+import fileExists from '../../utils/fileExists'
 
 type CompanyInput = {
   airTableId: string
@@ -121,7 +122,9 @@ const writeLogoFileAndGetUrl = async (base64File: string, companyName: string) =
 }
 
 const deleteLogo = async (logoUrl: string) => {
-  await fs.unlink(path.join(config.public.path, logoUrl))
+  if (await fileExists(logoUrl)) {
+    await fs.unlink(path.join(config.public.path, logoUrl))
+  }
 }
 
 export default {
