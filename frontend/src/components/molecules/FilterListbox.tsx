@@ -35,8 +35,8 @@ const FilterListbox = ({ text, valueMap, onSelect, multiple = false }: Props, re
   }
 
   return <Listbox value={selectedKeys} onChange={onChangeSelectedKeys} multiple={multiple}>
-    <ListboxButton ref={listboxButtonRef} className='group bg-[#DBE0F1] data-[open]:text-white data-[open]:bg-[#132D59] data-[hover]:bg-[#B5C2FF] data-[open]:data-[hover]:bg-[#132D59]'>
-      <div className='inline-flex py-1.5 px-2 items-center gap-0.5 rounded-sm sm:py-1.5 transition-[width]'>
+    <ListboxButton ref={listboxButtonRef} className='group bg-[#DBE0F1] data-[open]:text-white rounded-sm data-[open]:bg-[#132D59] data-[hover]:bg-[#B5C2FF] data-[open]:data-[hover]:bg-[#132D59]'>
+      <div className='inline-flex py-1.5 px-2 items-center gap-0.5 sm:py-1.5 transition-[width]'>
           <p className='flex items-center text-base font-normal leading-[1.375] text-nowrap'>{name}</p>
           <svg width='14' height='14' viewBox='0 0 14 14'>
             <path d='M6.99995 9.53333L4.19995 5.33333L9.79995 5.33333L6.99995 9.53333Z' className='fill-black group-data-[open]:fill-white' />

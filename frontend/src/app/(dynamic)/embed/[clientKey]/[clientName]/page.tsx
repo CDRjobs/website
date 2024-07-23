@@ -159,7 +159,7 @@ const Page = () => {
 
   const areFiltersUsed = map(isEmpty, values(filters)).some(isEmpty => !isEmpty)
 
-  const content = <div className='flex px-4 py-4 min-h-96 max-w-[89rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:gap-2.5'>
+  const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
