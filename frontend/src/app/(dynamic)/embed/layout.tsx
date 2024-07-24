@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Loading from '@/components/Loading'
+import matomoTagManager from '@/lib/matomo'
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
   const [isLoading, setIsLoading] = useState(true)
@@ -9,6 +10,7 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      matomoTagManager.injectMatomoScript()
       setIsLoading(false)
     }
   }, [])
