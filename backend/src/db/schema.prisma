@@ -79,6 +79,14 @@ enum ContractNature {
   paidFellowship
 }
 
+enum ContractType {
+  employee
+  volunteer
+  contractor
+  internship
+  paidFellowship
+}
+
 model User {
   id                  String  @id @default(cuid())
   email               String  @unique
@@ -130,6 +138,7 @@ model Job {
   companyId       String
   contractNature  ContractNature
   contractTime    ContractTime
+  contractType    ContractType?
 }
 
 model Company {
