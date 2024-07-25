@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react'
 import { ApolloProvider } from '@apollo/client'
 import createApolloClient from '@/lib/apolloClient'
-import Loading from '@/components/Loading'
 
 const client = createApolloClient()
 
@@ -16,15 +15,11 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     }
   }, [])
 
-  const content = isLoading
-    ? <Loading />
-    : <ApolloProvider client={client}>
-      {children}
-    </ApolloProvider>
-
   return (
     <div>
-      {content}
+      {!isLoading && <ApolloProvider client={client}>
+        {children}
+      </ApolloProvider>}
     </div>
   )
 }
