@@ -68,7 +68,7 @@ const Page = () => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loadingJobs, setLoadingJobs] = useState(true)
-  const [loadMore, setLoadMore] = useState(true)
+  const [loadMore, setLoadMore] = useState(false)
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
 
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'

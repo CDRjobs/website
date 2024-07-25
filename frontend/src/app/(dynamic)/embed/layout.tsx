@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Loading from '@/components/Loading'
 import matomoTagManager from '@/lib/matomo'
 
 const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
@@ -15,13 +14,9 @@ const Layout = ({ children }: Readonly<{ children: React.ReactNode }>) => {
     }
   }, [])
 
-  const content = isLoading
-  ? <Loading />
-  : children
-
   return (
     <div>
-      {content}
+      {!isLoading && children}
     </div>
   )
 }
