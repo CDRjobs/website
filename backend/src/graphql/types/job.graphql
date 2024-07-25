@@ -11,8 +11,7 @@ type Job {
   seniority: String
   publishedAt: String
   company: Company!
-  contractNature: String
-  contractTime: String
+  contractType: String
 }
 
 input coordinatesInput {
@@ -32,8 +31,7 @@ input jobFiltersInput {
   cdrCategory: [String!]
   seniority: [String!]
   remote: [String!]
-  contractNature: [String!]
-  contractTime: [String!]
+  contractType: [String!]
   companySize: [String!]
 }
 

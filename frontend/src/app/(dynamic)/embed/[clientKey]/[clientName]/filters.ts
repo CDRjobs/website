@@ -39,20 +39,11 @@ export const seniority = {
   verySenior: 'Very senior (20+ years)',
 }
 
-export const contractTimes = {
-  fullTime: 'Full-time',
-  partTime: 'Part-time',
-}
-
-export const contractNatures = {
-  employee: 'Employee',
+export const contractTypes = {
+  employeeFT: 'Full-time Employee',
+  employeePT: 'Part-time Employee',
   volunteer: 'Volunteer',
   contractor: 'Contractor',
   internship: 'Intern',
   paidFellowship: 'Paid Fellowship',
-}
-
-export const contractTypes = {
-  ...contractTimes,
-  ...contractNatures,
 }

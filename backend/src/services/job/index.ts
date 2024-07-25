@@ -1,4 +1,4 @@
-import { CdrCategory, CompanySize, ContractNature, ContractTime, CountryCode, Discipline, Job, Prisma, Remote, Seniority } from '@prisma/client'
+import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Job, Prisma, Remote, Seniority } from '@prisma/client'
 import { flatten, map, omit, isEmpty } from 'lodash/fp'
 import pMap from 'p-map'
 import services from '..'
@@ -39,8 +39,7 @@ type SearchFilters = {
   cdrCategory?: CdrCategory[]
   seniority?: Seniority[]
   remote?: Remote[]
-  contractNature?: ContractNature[]
-  contractTime?: ContractTime[]
+  contractType?: ContractType[]
   companySize?: CompanySize[]
 }
 
@@ -111,6 +110,7 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     .leftJoin('Company as c', 'c.id', 'job.companyId')
     .leftJoin('_JobToLocation as pivotL', 'pivotL.A', 'job.id')
     .leftJoin('Location as l', 'l.id', 'pivotL.B')
+    .where('job.status', '=', knex.raw('?::"JobStatus"', ['open']))
 
   if (!isEmpty(filters.discipline)) {
     query.where('discipline', knex.raw('?::"Discipline"', [filters.discipline]))
@@ -121,11 +121,8 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
   if (!isEmpty(filters.remote)) {
     query.whereIn('remote', filters.remote!.map(r => knex.raw('?::"Remote"', [r])))
   }
-  if (!isEmpty(filters.contractNature)) {
-    query.whereIn('contractNature', filters.contractNature!.map(cn => knex.raw('?::"ContractNature"', [cn])))
-  }
-  if (!isEmpty(filters.contractTime)) {
-    query.whereIn('contractTime', filters.contractTime!.map(ct => knex.raw('?::"ContractTime"', [ct])))
+  if (!isEmpty(filters.contractType)) {
+    query.whereIn('contractType', filters.contractType!.map(ct => knex.raw('?::"ContractType"', [ct])))
   }
   if (!isEmpty(filters.cdrCategory) || !isEmpty(filters.companySize)) {
     if (!isEmpty(filters.cdrCategory)) {
