@@ -80,7 +80,8 @@ enum ContractNature {
 }
 
 enum ContractType {
-  employee
+  employeeFT
+  employeePT
   volunteer
   contractor
   internship
