@@ -1,4 +1,4 @@
-import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractNature, ContractTime } from '@prisma/client'
+import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType } from '@prisma/client'
 import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
 import { difference, intersectionBy, map, uniq } from 'lodash/fp'
@@ -29,8 +29,7 @@ const createJobSchema = z.object({
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
-  contractNature: z.nativeEnum(ContractNature),
-  contractTime: z.nativeEnum(ContractTime),
+  contractType: z.nativeEnum(ContractType),
   publishedAt: z.string().datetime(),
   realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime(),
@@ -92,8 +91,7 @@ const updateJobSchemaWithoutRefine = z.object({
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
-  contractNature: z.nativeEnum(ContractNature).optional(),
-  contractTime: z.nativeEnum(ContractTime).optional(),
+  contractType: z.nativeEnum(ContractType).optional(),
   publishedAt: z.string().datetime().optional(),
   realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime().optional(),

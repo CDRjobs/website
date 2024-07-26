@@ -9,8 +9,8 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { first, intersection, isEmpty, last, map, omit, values } from 'lodash/fp'
-import { companySizes, contractNatures, contractTimes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
+import { first, isEmpty, last, map, omit, values } from 'lodash/fp'
+import { companySizes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 
 const LIMIT = 12
@@ -80,15 +80,6 @@ const Page = () => {
       setFilters(prev => ({
         ...prev,
         openSearchToCountries: value !== 'yes',
-      }))
-    } else if (filterName === 'contractType') {
-      const contractTime = intersection(Object.keys(contractTimes))(value as [])
-      const contractNature = intersection(Object.keys(contractNatures))(value as [])
-
-      setFilters(prev => ({
-        ...prev,
-        contractTime,
-        contractNature,
       }))
     } else {
       setFilters(prev => ({
