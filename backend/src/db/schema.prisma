@@ -110,6 +110,7 @@ model Job {
   title           String
   sourceUrl       String
   discipline      Discipline
+  disciplines     Discipline[]
   status          JobStatus
   description     String
   locations       Location[]
@@ -125,6 +126,7 @@ model Job {
   company         Company        @relation(fields: [companyId], references: [id])
   companyId       String
   contractType    ContractType
+  contractTypes   ContractType[]
 }
 
 model Company {
