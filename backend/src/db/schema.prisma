@@ -109,7 +109,6 @@ model Job {
   airTableId      String         @unique
   title           String
   sourceUrl       String
-  discipline      Discipline
   disciplines     Discipline[]
   status          JobStatus
   description     String
@@ -125,7 +124,6 @@ model Job {
   lastCheckedAt   DateTime
   company         Company        @relation(fields: [companyId], references: [id])
   companyId       String
-  contractType    ContractType
   contractTypes   ContractType[]
 }
 

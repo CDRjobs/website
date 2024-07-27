@@ -113,7 +113,7 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     .where('job.status', '=', knex.raw('?::"JobStatus"', ['open']))
 
   if (!isEmpty(filters.discipline)) {
-    query.where('discipline', knex.raw('?::"Discipline"', [filters.discipline]))
+    query.where(knex.raw('?::"Discipline" = ANY("disciplines")', [filters.discipline]))
   }
   if (!isEmpty(filters.seniority)) {
     query.whereIn('seniority', filters.seniority!.map(s => knex.raw('?::"Seniority"', [s])))
@@ -122,7 +122,9 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     query.whereIn('remote', filters.remote!.map(r => knex.raw('?::"Remote"', [r])))
   }
   if (!isEmpty(filters.contractType)) {
-    query.whereIn('contractType', filters.contractType!.map(ct => knex.raw('?::"ContractType"', [ct])))
+    query.where(builder => {
+      filters.contractType?.forEach(contractType => builder.orWhere(knex.raw('?::"ContractType" = ANY("contractTypes")', [contractType])))
+    })
   }
   if (!isEmpty(filters.cdrCategory) || !isEmpty(filters.companySize)) {
     if (!isEmpty(filters.cdrCategory)) {
