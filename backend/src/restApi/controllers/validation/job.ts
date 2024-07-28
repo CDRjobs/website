@@ -1,7 +1,7 @@
 import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType } from '@prisma/client'
 import { z } from 'zod'
 import { validateZodSchema } from '../../errors'
-import { difference, intersectionBy, map, uniq } from 'lodash/fp'
+import { difference, intersectionBy, isNil, map, uniq } from 'lodash/fp'
 import services from '../../../services'
 
 type JobWithLocations = Job & { locations: Location[] }
@@ -36,7 +36,7 @@ const createJobSchema = z.object({
   lastCheckedAt: z.string().datetime(),
 })
   .strict()
-  .refine(({ minSalary, maxSalary}) => {
+  .refine(({ minSalary, maxSalary }) => {
     if (minSalary && maxSalary) {
       return minSalary <= maxSalary
     }
@@ -44,6 +44,15 @@ const createJobSchema = z.object({
   }, {
     message: 'maxSalary has to be greater than minSalary',
     path: ['maxSalary'],
+  })
+  .refine(({ minSalary, maxSalary, currency }) => {
+    if (!isNil(minSalary) || !isNil(maxSalary)) {
+      return !!currency
+    }
+    return true
+  }, {
+    message: 'if min or max salary is defined, then currency also has to be defined',
+    path: ['currency'],
   })
   .refine(({ locations, remote }) => {
     if (remote === 'yes') {
@@ -111,6 +120,18 @@ const getUpdateJobBodySchema = (currentJob: JobWithLocations) => z.object({
       }, {
         message: 'maxSalary has to be greater than minSalary',
         path: ['maxSalary'],
+      })
+      .refine(({ minSalary, maxSalary, currency }) => {
+        const finalMinSalary = minSalary || currentJob.minSalary
+        const finalMaxSalary = maxSalary || currentJob.maxSalary
+        const finalCurrency = currency || currentJob.currency
+        if (!isNil(finalMinSalary) || !isNil(finalMaxSalary)) {
+          return !!finalCurrency
+        }
+        return true
+      }, {
+        message: 'if min or max salary is defined, then currency also has to be defined',
+        path: ['currency'],
       })
       .refine(({ locations, remote }) => {
         const finalRemote = remote || currentJob.remote

@@ -12,6 +12,7 @@ import { gql, useLazyQuery } from '@apollo/client'
 import { first, isEmpty, last, map, omit, values } from 'lodash/fp'
 import { companySizes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
+import { trackDidSearch } from '@/services/telemetry'
 
 const LIMIT = 12
 
@@ -46,6 +47,23 @@ const SearchJobQuery = gql`
     }
   }
 `
+
+const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJobs: number, fromLoadMore: boolean, totalJobsDisplayed: number) => {
+  return {
+    company: {
+      cdrCategory: filters.cdrCategory,
+      companySize: filters.companySize,
+    },
+    ...omit(['cdrCategory', 'companySize', 'openSearchToCountries'], filters),
+    contractTypesLength: filters.contractType?.length || 0,
+    remoteLength: filters.remote?.length || 0,
+    seniorityLength: filters.seniority?.length || 0,
+    isAfenOnly: isAfen ? !(filters.openSearchToCountries) : undefined,
+    totalJobs,
+    fromLoadMore,
+    totalJobsDisplayed,
+  }
+}
 
 const Page = () => {
   let mediaWatcher = window.matchMedia('(max-width: 640px)')
@@ -103,13 +121,15 @@ const Page = () => {
     const { data } = await querySearchJobs({ variables: { clientKey, filters, pagination } })
     const total = data.searchJobs.pagination.total
     const moreJobs = data.searchJobs.data as Job[]
+    const totalJobsDisplayed = (jobs?.length || 0) + moreJobs.length
     
     setPagination({ ...pagination, takeAfter: last(moreJobs)?.publishedAt, countAfter: first(jobs)?.publishedAt })
     setJobs((jobs) => append ? jobs.concat(moreJobs) : moreJobs)
     setTotalCount(total)
-    setLoadMore((jobs?.length || 0) + moreJobs.length < total)
+    setLoadMore(totalJobsDisplayed < total)
     setLoadingJobs(false)
-  }, [clientKey, querySearchJobs])
+    trackDidSearch(formatToTrackDidSearchInput(filters, isAfen, total, append, totalJobsDisplayed))
+  }, [clientKey, querySearchJobs, isAfen])
 
   const onClickSearch = () => {
     queryNewJobs({ pagination: { limit: LIMIT }, filters })

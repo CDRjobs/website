@@ -1,6 +1,8 @@
 import urlJoin from 'url-join'
-import { map, truncate, uniq } from 'lodash/fp'
+import { map, omit, truncate, uniq } from 'lodash/fp'
 import formatDistanceFromNow from '@/utils/formatDistanceFromNow'
+import { trackViewJobClicked } from '@/services/telemetry'
+import removeTypename from '@/utils/removeTypename'
 
 const verticals = {
   forest: 'Afforestation/Reforestation',
@@ -42,13 +44,15 @@ export type Job = {
   id: string
   title: string
   sourceUrl: string
+  discipline: string[],
   locations: { city?: string, country: string }[]
   remote: keyof typeof remote
-  currency: string
+  currency?: string
   minSalary?: number
   maxSalary?: number
   seniority?: keyof typeof seniority
   publishedAt: string
+  contractTypes: string[],
   company: {
     id: string
     name: string
@@ -66,6 +70,10 @@ const countryNames = new Intl.DisplayNames(['en'], { type: 'region', style: 'lon
 const currencyNames = new Intl.DisplayNames(['en'], { type: 'currency', style: 'short' })
 
 const JobCard = ({ job }: Props) => {
+
+  const onClickViewJobButton = () => {
+    trackViewJobClicked(removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>)
+  }
 
   let locationText = 'Worldwide'
   if (job.locations.length === 1) {
@@ -86,7 +94,7 @@ const JobCard = ({ job }: Props) => {
     } else {
       salaryText = `${Math.round((job.minSalary! || job.maxSalary!) / 1000)}K`
     }
-    salaryText +=  ` (${currencyNames.of(job.currency)})`
+    salaryText +=  ` (${currencyNames.of(job.currency!)})`
   }
 
   return <div className='flex w-full sm:w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
@@ -145,7 +153,7 @@ const JobCard = ({ job }: Props) => {
             <p className='text-xs font-normal leading-4 truncate'>{verticals[job.company.cdrCategory]}</p>
           </div>
         </div>
-        <a className='flex p-1.5 justify-center items-center gap-0.5 rounded-sm bg-[#132D59]' id={job.id} href={job.sourceUrl} target='_blank'>
+        <a className='flex p-1.5 justify-center items-center gap-0.5 rounded-sm bg-[#132D59]' id={job.id} href={job.sourceUrl} target='_blank' onClick={onClickViewJobButton}>
           <p className='text-white text-sm font-medium leading-4 font-manrope'>ViewJob</p>
           <svg className='inline' width='17' height='16' viewBox='0 0 17 16' fill='none'>
             <path d='M14.5011 8.92436V13.079C14.5011 13.3238 14.4038 13.5587 14.2307 13.7318C14.0575 13.905 13.8227 14.0022 13.5778 14.0022H3.42211C3.17725 14.0022 2.94242 13.905 2.76928 13.7318C2.59614 13.5587 2.49887 13.3238 2.49887 13.079V2.92325C2.49887 2.67839 2.59614 2.44356 2.76928 2.27041C2.94242 2.09727 3.17725 2 3.42211 2H7.57673M11.2697 2H14.5011M14.5011 2V5.23137M14.5011 2L8.49998 8.00112' stroke='white' strokeWidth='0.923249' strokeLinecap='round' strokeLinejoin='round' />

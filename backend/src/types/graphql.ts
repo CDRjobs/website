@@ -31,8 +31,7 @@ export type Company = {
 export type Job = {
   __typename?: 'Job';
   company: Company;
-  contractNature?: Maybe<Scalars['String']['output']>;
-  contractTime?: Maybe<Scalars['String']['output']>;
+  contractType?: Maybe<Scalars['String']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   discipline: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -131,8 +130,7 @@ export type CoordinatesInput = {
 export type JobFiltersInput = {
   cdrCategory?: InputMaybe<Array<Scalars['String']['input']>>;
   companySize?: InputMaybe<Array<Scalars['String']['input']>>;
-  contractNature?: InputMaybe<Array<Scalars['String']['input']>>;
-  contractTime?: InputMaybe<Array<Scalars['String']['input']>>;
+  contractType?: InputMaybe<Array<Scalars['String']['input']>>;
   discipline?: InputMaybe<Scalars['String']['input']>;
   location?: InputMaybe<LocationInput>;
   openSearchToCountries?: InputMaybe<Scalars['Boolean']['input']>;
@@ -276,8 +274,7 @@ export type CompanyResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type JobResolvers<ContextType = any, ParentType extends ResolversParentTypes['Job'] = ResolversParentTypes['Job']> = {
   company?: Resolver<ResolversTypes['Company'], ParentType, ContextType>;
-  contractNature?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  contractTime?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contractType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   discipline?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
