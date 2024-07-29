@@ -145,9 +145,15 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
   if (!isEmpty(filters.location)) {
     if (filters.location.coordinates) {
       const { lat, long } = filters.location.coordinates
-      query.andWhere(knex.raw('ST_DWithin(l.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)', [`Point(${long} ${lat})`]))
+      query.andWhere((builder) => {
+        builder.where(knex.raw('ST_DWithin(l.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)', [`Point(${long} ${lat})`]))
+        builder.orWhereNull('l.id')
+      })
     } else if (filters.location.country) {
-      query.andWhere('l.country', knex.raw('?::"CountryCode"', [filters.location.country]))
+      query.andWhere((builder) => {
+        builder.where('l.country', knex.raw('?::"CountryCode"', [filters.location!.country]))
+        builder.orWhereNull('l.id')
+      })
     }
   }
 

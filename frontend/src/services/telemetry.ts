@@ -24,7 +24,10 @@ type TrackViewJobClickedInput = {
 
 type TrackDidSearchInput = {
   isAfen?: boolean
-  location?: { coordinates: { long: number, lat: number } }
+  location?: {
+    country?: string
+    coordinates?: { long: number, lat: number }
+  }
   discipline?: string
   company?: {
     cdrCategory?: string[]

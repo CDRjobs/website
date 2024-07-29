@@ -6,7 +6,8 @@ export type Pagination = {
 
 export type Filters = {
   location?: {
-    coordinates: {
+    country?: string
+    coordinates?: {
       long: number
       lat: number
     }
