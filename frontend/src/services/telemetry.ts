@@ -19,6 +19,7 @@ type TrackViewJobClickedInput = {
     companySize: string
     cdrCategory: string
   }
+  pageLocation: string
 }
 
 type TrackDidSearchInput = {
@@ -38,6 +39,7 @@ type TrackDidSearchInput = {
   totalJobs: number
   totalJobsDisplayed: number
   fromLoadMore: boolean
+  pageLocation: string
 }
 
 export const trackViewJobClicked = (properties: TrackViewJobClickedInput) => {

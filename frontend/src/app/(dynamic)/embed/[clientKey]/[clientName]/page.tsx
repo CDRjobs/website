@@ -62,6 +62,7 @@ const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJob
     totalJobs,
     fromLoadMore,
     totalJobsDisplayed,
+    pageLocation: window.location.hostname + window.location.pathname,
   }
 }
 

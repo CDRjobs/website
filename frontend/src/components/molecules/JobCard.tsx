@@ -72,7 +72,10 @@ const currencyNames = new Intl.DisplayNames(['en'], { type: 'currency', style: '
 const JobCard = ({ job }: Props) => {
 
   const onClickViewJobButton = () => {
-    trackViewJobClicked(removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>)
+    trackViewJobClicked({
+      ...removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>,
+      pageLocation: window.location.hostname + window.location.pathname,
+    })
   }
 
   let locationText = 'Worldwide'
