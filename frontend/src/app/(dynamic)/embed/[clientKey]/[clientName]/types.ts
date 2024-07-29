@@ -5,11 +5,18 @@ export type Pagination = {
 }
 
 export type Filters = {
-  country?: string
+  location?: {
+    country?: string
+    coordinates?: {
+      long: number
+      lat: number
+    }
+  }
   discipline?: string
   cdrCategory?: string[]
   companySize?: string[]
   remote?: string[]
   seniority?: string[]
   contractType?: string[]
+  openSearchToCountries?: boolean
 }
