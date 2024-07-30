@@ -9,12 +9,10 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { first, isEmpty, last, map, omit, values } from 'lodash/fp'
+import { first, isArray, isEmpty, isNil, last, map, omit, values } from 'lodash/fp'
 import { companySizes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 import { trackDidSearch } from '@/services/telemetry'
-
-const LIMIT = 12
 
 const SearchJobQuery = gql`
   query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
@@ -70,6 +68,9 @@ const Page = () => {
   let mediaWatcher = window.matchMedia('(max-width: 640px)')
 
   const { clientKey, clientName } = useParams() as { [key: string]: string }
+  const isAfen = clientName.toLowerCase() === 'afen'
+
+  const limit = isAfen ? 24 : 12
 
   const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
@@ -82,8 +83,8 @@ const Page = () => {
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
-  const [filters, setFilters] = useState<Filters>({})
-  const [pagination, setPagination] = useState<Pagination>({ limit: LIMIT })
+  const [filters, setFilters] = useState<Filters>(isAfen ? { openSearchToCountries: false } : {})
+  const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
   const [loadingJobs, setLoadingJobs] = useState(true)
@@ -91,14 +92,13 @@ const Page = () => {
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
 
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
-  const isAfen = clientName.toLowerCase() === 'afen'
   const customVerticals = isDaccoalition ? omit(['forest', 'biomass', 'mCdr', 'soil'], verticals) : verticals
 
   const setFilterFor = (filterName: string, value: unknown) => {
     if (filterName === 'afenOnly') {
       setFilters(prev => ({
         ...prev,
-        openSearchToCountries: value !== 'yes',
+        openSearchToCountries: value ? value === 'no' : undefined,
       }))
     } else {
       setFilters(prev => ({
@@ -133,7 +133,7 @@ const Page = () => {
   }, [clientKey, querySearchJobs, isAfen])
 
   const onClickSearch = () => {
-    queryNewJobs({ pagination: { limit: LIMIT }, filters })
+    queryNewJobs({ pagination: { limit }, filters })
   }
 
   const onClickLoadMore = () => {
@@ -143,7 +143,7 @@ const Page = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { queryNewJobs({ pagination, filters: {}, jobs }) }, [])
   useEffect(() => { setIsClient(true) }, [])
-  useEffect(() => { queryNewJobs({ pagination: { limit: LIMIT }, filters }) }, [queryNewJobs, filters])
+  useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, filters, limit])
   useEffect(() => {
     new Pym.Child().sendHeight()
     setTimeout(() => new Pym.Child().sendHeight(), 500)
@@ -169,7 +169,8 @@ const Page = () => {
     return null
   }
 
-  const areFiltersUsed = map(isEmpty, values(filters)).some(isEmpty => !isEmpty)
+  const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
+  const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
@@ -192,7 +193,7 @@ const Page = () => {
         <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
         <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect} multiple />
         <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect} multiple />
-        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect}/>}
+        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect} initialValue='yes' />}
       </div>
 
       {isMobile && <MainButton onClick={onClickSearch} loading={loadingJobs}>Search</MainButton>}

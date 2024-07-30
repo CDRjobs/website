@@ -7,14 +7,15 @@ type Props = {
   valueMap: { [key: string]: string }
   onSelect: (keys: Keys) => void
   multiple?: boolean
+  initialValue?: Keys
 }
 
 export interface FilterListboxRef {
   reset: () => void;
 }
 
-const FilterListbox = ({ text, valueMap, onSelect, multiple = false }: Props, ref: ForwardedRef<FilterListboxRef>) => {
-  const [selectedKeys, setSelectedKeys] = useState<Keys>(multiple ? [] : null)
+const FilterListbox = ({ text, valueMap, onSelect, multiple = false, initialValue }: Props, ref: ForwardedRef<FilterListboxRef>) => {
+  const [selectedKeys, setSelectedKeys] = useState<Keys>(initialValue ? initialValue : multiple ? [] : null)
 
   const listboxButtonRef = useRef<HTMLButtonElement>(null)
 
