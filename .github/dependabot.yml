@@ -11,3 +11,4 @@ updates:
       - "/backend"
     schedule:
       interval: "weekly"
+    target-branch: "dev"
