@@ -15,8 +15,7 @@ export interface FilterListboxRef {
 }
 
 const FilterListbox = ({ text, valueMap, onSelect, multiple = false, initialValue }: Props, ref: ForwardedRef<FilterListboxRef>) => {
-  const defaultValue = initialValue ? initialValue : multiple ? [] : null
-  const [selectedKeys, setSelectedKeys] = useState<Keys>(defaultValue)
+  const [selectedKeys, setSelectedKeys] = useState<Keys>(initialValue ? initialValue : multiple ? [] : null)
 
   const listboxButtonRef = useRef<HTMLButtonElement>(null)
 

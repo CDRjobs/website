@@ -9,7 +9,7 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
-import { first, isEmpty, last, map, omit, values } from 'lodash/fp'
+import { first, isArray, isEmpty, isNil, last, map, omit, values } from 'lodash/fp'
 import { companySizes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 import { trackDidSearch } from '@/services/telemetry'
@@ -83,7 +83,7 @@ const Page = () => {
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
-  const [filters, setFilters] = useState<Filters>({})
+  const [filters, setFilters] = useState<Filters>(isAfen ? { openSearchToCountries: false } : {})
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState(0)
@@ -98,7 +98,7 @@ const Page = () => {
     if (filterName === 'afenOnly') {
       setFilters(prev => ({
         ...prev,
-        openSearchToCountries: value !== 'yes',
+        openSearchToCountries: value ? value === 'no' : undefined,
       }))
     } else {
       setFilters(prev => ({
@@ -169,7 +169,8 @@ const Page = () => {
     return null
   }
 
-  const areFiltersUsed = map(isEmpty, values(filters)).some(isEmpty => !isEmpty)
+  const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
+  const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
