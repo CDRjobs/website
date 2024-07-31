@@ -69,8 +69,11 @@ const Page = () => {
 
   const { clientKey, clientName } = useParams() as { [key: string]: string }
   const isAfen = clientName.toLowerCase() === 'afen'
+  const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
 
   const limit = isAfen ? 24 : 12
+  const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
+  const clientVerticals = isDaccoalition ? omit(['forest', 'biomass', 'mCdr', 'soil'], verticals) : verticals
 
   const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
@@ -83,7 +86,7 @@ const Page = () => {
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
-  const [filters, setFilters] = useState<Filters>(isAfen ? { openSearchToCountries: false } : {})
+  const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState<number | null>(null)
@@ -91,8 +94,6 @@ const Page = () => {
   const [loadMore, setLoadMore] = useState(false)
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
 
-  const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
-  const customVerticals = isDaccoalition ? omit(['forest', 'biomass', 'mCdr', 'soil'], verticals) : verticals
 
   const setFilterFor = (filterName: string, value: unknown) => {
     if (filterName === 'afenOnly') {
@@ -141,7 +142,7 @@ const Page = () => {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { queryNewJobs({ pagination, filters: isAfen ? { openSearchToCountries: false } : {}, jobs }) }, [])
+  useEffect(() => { queryNewJobs({ pagination, filters: defaultFilters, jobs }) }, [])
   useEffect(() => { setIsClient(true) }, [])
   useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, filters, limit])
   useEffect(() => {
@@ -195,7 +196,7 @@ const Page = () => {
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
-        <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={customVerticals} onSelect={onVerticalSelect} multiple />
+        <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={clientVerticals} onSelect={onVerticalSelect} multiple />
         <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect} multiple />
         <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
         <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect} multiple />
