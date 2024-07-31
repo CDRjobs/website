@@ -86,7 +86,7 @@ const Page = () => {
   const [filters, setFilters] = useState<Filters>(isAfen ? { openSearchToCountries: false } : {})
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
-  const [totalCount, setTotalCount] = useState(0)
+  const [totalCount, setTotalCount] = useState<number | null>(null)
   const [loadingJobs, setLoadingJobs] = useState(true)
   const [loadMore, setLoadMore] = useState(false)
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
@@ -141,7 +141,7 @@ const Page = () => {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { queryNewJobs({ pagination, filters: {}, jobs }) }, [])
+  useEffect(() => { queryNewJobs({ pagination, filters: isAfen ? { openSearchToCountries: false } : {}, jobs }) }, [])
   useEffect(() => { setIsClient(true) }, [])
   useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, filters, limit])
   useEffect(() => {
@@ -167,6 +167,13 @@ const Page = () => {
 
   if (!isClient) {
     return null
+  }
+
+  let jobResultText = ''
+  if (totalCount !== null) {
+    jobResultText = totalCount === 0
+      ? 'No results'
+      : `${totalCount} job${totalCount > 1 ? 's' : ''}`
   }
 
   const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
@@ -205,7 +212,7 @@ const Page = () => {
     </div>
 
     <div className='flex py-2 items-center gap-1.5 self-stretch'>
-      <p className='flex-[1_0_0] text-sm sm:text-base font-medium leading-[1.125rem]'>{totalCount === 0 ? 'No results' : `${totalCount} job${totalCount > 1 ? 's' : ''}`}</p>
+      <p className='flex-[1_0_0] text-sm sm:text-base font-medium leading-[1.125rem]'>{jobResultText}</p>
       <button className={`${areFiltersUsed ? 'text-[#7087F0]' : 'text-[#DBE0F1]' } text-right text-sm sm:text-base font-semibold leading-[1.125rem] underline`} onClick={resetAll}>Reset filters</button>
     </div>
 
