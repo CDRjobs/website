@@ -196,12 +196,12 @@ const Page = () => {
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
+        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect} initialValue='yes' />}
         <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={clientVerticals} onSelect={onVerticalSelect} multiple />
         <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect} multiple />
         <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
         <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect} multiple />
         <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect} multiple />
-        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect} initialValue='yes' />}
       </div>
 
       {isMobile && <MainButton onClick={onClickSearch} loading={loadingJobs}>Search</MainButton>}
