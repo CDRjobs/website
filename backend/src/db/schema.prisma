@@ -73,6 +73,21 @@ enum ContractType {
   contractor
   internship
   paidFellowship
+  phdProgram
+}
+
+enum EducationLevel {
+  highSchool
+  bachelor
+  master
+  doctorate
+}
+
+enum WorkStatus {
+  employed
+  unemployed
+  selfEmployedOrFreelance
+  student
 }
 
 model User {
@@ -102,6 +117,7 @@ model Location {
   countryCityKey String                                 @unique
   jobs           Job[]
   companies      Company[]
+  jobSeekers     JobSeeker[]
 }
 
 model Job {
@@ -125,6 +141,8 @@ model Job {
   company         Company        @relation(fields: [companyId], references: [id])
   companyId       String
   contractTypes   ContractType[]
+  createdAt       DateTime?
+  updatedAt       DateTime?
 }
 
 model Company {
@@ -143,11 +161,32 @@ model Company {
 }
 
 model Client {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  iFrameKey String    @unique @default(uuid())
+  id        String        @id @default(cuid())
+  name      String        @unique
+  iFrameKey String        @unique @default(uuid())
   companies Company[]
   countries CountryCode[] // countries to include in job search in addition to companies jobs
+}
+
+model JobSeeker {
+  id                            String         @id @default(cuid())
+  wixId                         String         @unique
+  firstname                     String?
+  lastname                      String?
+  email                         String         @unique
+  locations                     Location[]
+  educationLevel                EducationLevel
+  seniority                     Seniority
+  workStatus                    WorkStatus
+  sectors                       String[]
+  seekingContractTypes          ContractType[]
+  seekingRemotes                Remote[]
+  seekingDisciplines            Discipline[]
+  openToTalk                    Boolean
+  whatTypeOfInsightsYouWant     String?
+  createdAt                     DateTime
+  updatedAt                     DateTime
+  unsubscribedFromEmailMatching Boolean        @default(false)
 }
 
 enum CountryCode {

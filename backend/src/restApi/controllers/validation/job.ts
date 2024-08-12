@@ -1,7 +1,8 @@
-import { CountryCode, CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType } from '@prisma/client'
+import { CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType } from '@prisma/client'
 import { z } from 'zod'
-import { validateZodSchema } from '../../errors'
 import { difference, intersectionBy, isNil, map, uniq } from 'lodash/fp'
+import { locationsSchema } from './common'
+import { validateZodSchema } from '../../errors'
 import services from '../../../services'
 
 type JobWithLocations = Job & { locations: Location[] }
@@ -14,16 +15,7 @@ const createJobSchema = z.object({
   disciplines: z.array(z.nativeEnum(Discipline)).min(1),
   status: z.nativeEnum(JobStatus),
   description: z.string(),
-  locations: z.array(
-    z.object({
-      country: z.nativeEnum(CountryCode),
-      city: z
-        .string()
-        .min(1)
-        .nullish()
-        .refine(city => !city || !city.includes(';'), { message: "The city name cannot contains ';' character"}),
-    }).strict()
-  ),
+  locations: locationsSchema,
   remote: z.nativeEnum(Remote),
   currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),
@@ -85,16 +77,7 @@ const updateJobSchemaWithoutRefine = z.object({
   disciplines: z.array(z.nativeEnum(Discipline)).min(1).optional(),
   status: z.nativeEnum(JobStatus).optional(),
   description: z.string().optional(),
-  locations: z.array(
-    z.object({
-      country: z.nativeEnum(CountryCode),
-      city: z
-        .string()
-        .min(1)
-        .nullish()
-        .refine(city => !city || !city.includes(';'), { message: "The city name cannot contains ';' character"}),
-    }).strict()
-  ).optional(),
+  locations: locationsSchema.optional(),
   remote: z.nativeEnum(Remote).optional(),
   currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),

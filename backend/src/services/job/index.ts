@@ -6,7 +6,7 @@ import { knex } from '../../db/knex'
 import prisma from '../../db/prisma'
 import { ApplicationError } from '../../restApi/errors'
 
-type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
+type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations' | 'createdAt' | 'updatedAt'> & {
   companyAirTableId: string,
   locations: {
     country: CountryCode
@@ -14,7 +14,7 @@ type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'
   }[]
 }
 
-type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations'> & {
+type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations' | 'createdAt' | 'updatedAt'> & {
   companyAirTableId?: string,
   locations?: {
     country: CountryCode
@@ -196,16 +196,20 @@ const createJobs = async (jobs: CreateJobInput[]) => {
       },
     }))
   
-    const createJob = (jobData: (Prisma.Without<Prisma.JobUncheckedCreateInput, Prisma.JobCreateInput> & Prisma.JobCreateInput)) => {
+    const createdJob = (jobData: (Prisma.Without<Prisma.JobUncheckedCreateInput, Prisma.JobCreateInput> & Prisma.JobCreateInput)) => {
       return trx.job.create({
-       data: jobData,
+       data: {
+        ...jobData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
        select: {
          id: true
        }
      })
     }
   
-    createdJobs = await pMap(jobsData, createJob, { concurrency: 10 })
+    createdJobs = await pMap(jobsData, createdJob, { concurrency: 10 })
   })
 
   return map('id', createdJobs)
@@ -231,7 +235,10 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
   
     updatedJob = await trx.job.update({
       where: { id },
-      data: jobData,
+      data: {
+        ...jobData,
+        updatedAt: new Date(),
+      },
     })
   })
   
