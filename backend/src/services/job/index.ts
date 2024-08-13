@@ -63,6 +63,14 @@ const getJobByIdWithLocations = async (id: string) => {
   return job
 }
 
+const getJobsByIds = async (ids: string[]) => {
+  const jobs = await prisma.job.findMany({
+    where: { id: { in: ids } },
+  })
+
+  return jobs
+}
+
 const getJobsByPublishedAt = async (publishedAt: string[]) => {
   const jobs = await prisma.job.findMany({
     where: { publishedAt: { in: publishedAt }}
@@ -82,10 +90,11 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
-const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
+const getAllOpenJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
   const jobs = await prisma.job.findMany({
     ...(include ? { include } : {}),
     orderBy: { id: 'asc' },
+    where: { status: 'open' },
     ...(lastId ? { where: { id: { gt: lastId }} } : {}),
     ...(limit ? { take: limit } : {})
   })
@@ -246,10 +255,11 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 }
 
 export default {
+  getJobsByIds,
   getJobsByPublishedAt,
   getJobByIdWithLocations,
   getJobsByAirTableIds,
-  getAllJobs,
+  getAllOpenJobs,
   createJobs,
   updateJob,
   searchJobs,

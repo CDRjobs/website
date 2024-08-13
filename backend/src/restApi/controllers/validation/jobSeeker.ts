@@ -1,8 +1,19 @@
 import { Discipline, Remote, Seniority, ContractType, WorkStatus, EducationLevel } from '@prisma/client'
 import { z } from 'zod'
+import { uniq } from 'lodash/fp'
 import { validateZodSchema } from '../../errors'
 import services from '../../../services'
 import { locationsSchema } from './common'
+
+const sentJobsViaEmailSchema = z
+  .array(z.string())
+  .refine(async (jobsIds) => {
+    const uniqJobsIds = uniq(jobsIds)
+    const jobs = await services.job.getJobsByIds(uniqJobsIds)
+    return jobs.length === uniqJobsIds.length
+  }, {
+    message: "Some jobs don't exist",
+  })
 
 const createJobSeekerBodySchema = z.object({
   data: z.object({
@@ -24,6 +35,7 @@ const createJobSeekerBodySchema = z.object({
       unsubscribedFromEmailMatching: z.boolean(),
       createdAt: z.string().datetime(),
       updatedAt: z.string().datetime(),
+      sentJobsViaEmail: sentJobsViaEmailSchema,
     })
     .strict()
     .refine(async ({ wixId, email }) => {
@@ -51,13 +63,14 @@ const updateJobSeekerBodySchema = z.object({
       openToTalk: z.boolean().optional(),
       whatTypeOfInsightsYouWant: z.string().nullish(),
       unsubscribedFromEmailMatching: z.boolean().optional(),
+      sentJobsViaEmail: sentJobsViaEmailSchema.optional(),
     })
     .strict()
   }).strict()
 }).strict()
 
 export const validateCreateJobSeekerBody = validateZodSchema(createJobSeekerBodySchema, true)
-export const validateUpdateJobSeekerBody = validateZodSchema(updateJobSeekerBodySchema)
+export const validateUpdateJobSeekerBody = validateZodSchema(updateJobSeekerBodySchema, true)
 
 export type CreateJobSeekerBodyType = z.infer<typeof createJobSeekerBodySchema>
 export type UpdateJobSeekerBodyType = z.infer<typeof updateJobSeekerBodySchema>
