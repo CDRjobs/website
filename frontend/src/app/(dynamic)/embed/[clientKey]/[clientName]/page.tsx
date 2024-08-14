@@ -70,11 +70,17 @@ const Page = () => {
   const { clientKey, clientName } = useParams() as { [key: string]: string }
   const isAfen = clientName.toLowerCase() === 'afen'
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
+  const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
-  const clientVerticals = isDaccoalition ? omit(['forest', 'biomass', 'mCdr', 'soil'], verticals) : verticals
-
+  let clientVerticals: Partial<typeof verticals> = verticals
+  if (isDaccoalition) {
+    clientVerticals = omit(['forest', 'biomass', 'mCdr', 'soil'], verticals)
+  } else if (isUSBC) {
+    clientVerticals = omit(['forest', 'directAirCapture', 'mCdr', 'mineralization', 'soil'], verticals)
+  }
+  
   const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
   const categoryFilterRef = useRef<CategoryListboxRef>(null)
@@ -180,12 +186,14 @@ const Page = () => {
   const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
   const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
+  let titleText = isUSBC ? 'USBC Job Board' : 'Find job'
+
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
         <div className='flex py-1 flex-col content-center items-start gap-1 max-sm:self-stretch sm:flex-[1_0_0]'>
-          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>Find job</a></p>
+          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>{titleText}</a></p>
           <div className='flex items-center gap-1.5 self-stretch'>
             <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDRjobs © 2024</span></a></p>
           </div>
