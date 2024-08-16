@@ -1,4 +1,4 @@
-import { CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType } from '@prisma/client'
+import { CurrencyCode, Discipline, Job, JobStatus, Remote, Location, Seniority, ContractType, EducationLevel } from '@prisma/client'
 import { z } from 'zod'
 import { difference, intersectionBy, isNil, map, uniq } from 'lodash/fp'
 import { locationsSchema } from './common'
@@ -20,12 +20,14 @@ const createJobSchema = z.object({
   currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
+  minYearsOfExperience: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
   contractTypes: z.array(z.nativeEnum(ContractType)).min(1),
   publishedAt: z.string().datetime(),
   realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime(),
   lastCheckedAt: z.string().datetime(),
+  minEducationLevel: z.nativeEnum(EducationLevel).nullish(),
 })
   .strict()
   .refine(({ minSalary, maxSalary }) => {
@@ -82,12 +84,14 @@ const updateJobSchemaWithoutRefine = z.object({
   currency: z.nativeEnum(CurrencyCode).nullish(),
   minSalary: z.number().int().nonnegative().nullish(),
   maxSalary: z.number().int().nonnegative().nullish(),
+  minYearsOfExperience: z.number().int().nonnegative().nullish(),
   seniority: z.nativeEnum(Seniority).nullish(),
   contractTypes: z.array(z.nativeEnum(ContractType)).min(1).optional(),
   publishedAt: z.string().datetime().optional(),
   realPublishedAt: z.string().datetime().nullish(),
   foundAt: z.string().datetime().optional(),
   lastCheckedAt: z.string().datetime().optional(),
+  minEducationLevel: z.nativeEnum(EducationLevel).nullish(),
 }).strict()
 
 const getUpdateJobBodySchema = (currentJob: JobWithLocations) => z.object({

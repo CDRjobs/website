@@ -1,16 +1,19 @@
 import { Discipline, Remote, Seniority, ContractType, WorkStatus, EducationLevel } from '@prisma/client'
 import { z } from 'zod'
-import { uniq } from 'lodash/fp'
+import { uniq, map } from 'lodash/fp'
 import { validateZodSchema } from '../../errors'
 import services from '../../../services'
 import { locationsSchema } from './common'
 
 const sentJobsViaEmailSchema = z
-  .array(z.string())
-  .refine(async (jobsIds) => {
-    const uniqJobsIds = uniq(jobsIds)
-    const jobs = await services.job.getJobsByIds(uniqJobsIds)
-    return jobs.length === uniqJobsIds.length
+  .array(z.object({
+    id: z.string(),
+    sentAt: z.string().datetime(),
+  }))
+  .refine(async (jobs) => {
+    const uniqJobsIds = uniq(map('id', jobs))
+    const foundJobs = await services.job.getJobsByIds(uniqJobsIds)
+    return foundJobs.length === uniqJobsIds.length
   }, {
     message: "Some jobs don't exist",
   })
@@ -36,6 +39,7 @@ const createJobSeekerBodySchema = z.object({
       createdAt: z.string().datetime(),
       updatedAt: z.string().datetime(),
       sentJobsViaEmail: sentJobsViaEmailSchema,
+      sentFirstEmailMatching: z.boolean().optional(),
     })
     .strict()
     .refine(async ({ wixId, email }) => {
@@ -64,6 +68,7 @@ const updateJobSeekerBodySchema = z.object({
       whatTypeOfInsightsYouWant: z.string().nullish(),
       unsubscribedFromEmailMatching: z.boolean().optional(),
       sentJobsViaEmail: sentJobsViaEmailSchema.optional(),
+      sentFirstEmailMatching: z.boolean().optional(),
     })
     .strict()
   }).strict()

@@ -133,6 +133,8 @@ model Job {
   currency                 CurrencyCode?
   minSalary                Int?
   maxSalary                Int?
+  minYearsOfExperience     Int?
+  minEducationLevel        EducationLevel?
   seniority                Seniority?
   publishedAt              DateTime       @unique
   realPublishedAt          DateTime?
@@ -143,7 +145,7 @@ model Job {
   contractTypes            ContractType[]
   createdAt                DateTime?
   updatedAt                DateTime?
-  jobSeekersSentToViaEmail JobSeeker[]
+  jobSeekersSentToViaEmail SentJobViaEmailToJobSeeker[]
 }
 
 model Company {
@@ -188,7 +190,18 @@ model JobSeeker {
   createdAt                     DateTime
   updatedAt                     DateTime
   unsubscribedFromEmailMatching Boolean        @default(false)
-  sentJobsViaEmail              Job[]
+  sentFirstEmailMatching        Boolean        @default(false)
+  sentJobsViaEmail              SentJobViaEmailToJobSeeker[]
+}
+
+model SentJobViaEmailToJobSeeker {
+  job         Job       @relation(fields: [jobId], references: [id])
+  jobId       String
+  jobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id])
+  jobSeekerId String
+  sentAt DateTime
+
+  @@id([jobId, jobSeekerId])
 }
 
 enum CountryCode {

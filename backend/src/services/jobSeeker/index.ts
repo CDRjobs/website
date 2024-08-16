@@ -4,9 +4,12 @@ import prisma from '../../db/prisma'
 import { omit } from 'lodash/fp'
 
 type CreateJobSeekerInput = Omit<Prisma.JobSeekerCreateInput, 'id' | 'locations' | 'createdAt' | 'updatedAt' | 'sentJobsViaEmail'> & {
-  createdAt?: string,
-  updatedAt?: string,
-  sentJobsViaEmail: string[],
+  createdAt?: string
+  updatedAt?: string
+  sentJobsViaEmail: {
+    id: string
+    sentAt: string
+  }[]
   locations: {
     country: CountryCode
     city?: string | null
@@ -14,7 +17,10 @@ type CreateJobSeekerInput = Omit<Prisma.JobSeekerCreateInput, 'id' | 'locations'
 }
 
 type UpdateJobSeekerInput = Omit<Prisma.JobSeekerUpdateInput, 'id' | 'widId' | 'email' | 'locations' | 'createdAt' | 'updatedAt' | 'sentJobsViaEmail'> & {
-  sentJobsViaEmail?: string[],
+  sentJobsViaEmail?: {
+    id: string
+    sentAt: string
+  }[]
   locations?: {
     country: CountryCode
     city?: string | null
@@ -59,7 +65,7 @@ const createJobSeeker = async (jobSeeker: CreateJobSeekerInput) => {
         connect: locations.map(l => ({ id: l.id })),
       },
       sentJobsViaEmail: {
-        connect: jobSeeker.sentJobsViaEmail.map(jobId => ({ id: jobId })),
+        create: jobSeeker.sentJobsViaEmail.map(job => ({ jobId: job.id, sentAt: new Date(job.sentAt) })),
       }
     }
   })
@@ -79,7 +85,8 @@ const updateJobSeeker = async (id: string, jobSeeker: UpdateJobSeekerInput) => {
 
   if (jobSeeker.sentJobsViaEmail) {
     jobSeekerData.sentJobsViaEmail = {
-      set: jobSeeker.sentJobsViaEmail.map(jobId => ({ id: jobId })),
+      deleteMany: {},
+      create: jobSeeker.sentJobsViaEmail.map(job => ({ jobId: job.id, sentAt: new Date(job.sentAt) })),
     }
   }
 
