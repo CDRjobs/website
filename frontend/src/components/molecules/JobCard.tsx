@@ -81,12 +81,12 @@ const JobCard = ({ job }: Props) => {
   let locationText = 'Worldwide'
   if (job.locations.length === 1) {
     const loc = job.locations[0]
-    const countryName = countryNames.of(loc.country) || ''
+    const countryName = countryNames.of(loc.country.toUpperCase()) || ''
     locationText = loc.city ? `${loc.city}, ${countryName}` : countryName
   } else {
     const countries = uniq(map('country', job.locations))
     if (countries.length === 1) {
-      locationText = countryNames.of(countries[0]) || ''
+      locationText = countryNames.of(countries[0].toUpperCase()) || ''
     }
   }
 
@@ -97,7 +97,7 @@ const JobCard = ({ job }: Props) => {
     } else {
       salaryText = `${Math.round((job.minSalary! || job.maxSalary!) / 1000)}K`
     }
-    salaryText +=  ` (${currencyNames.of(job.currency!)})`
+    salaryText +=  ` (${currencyNames.of(job.currency!.toUpperCase())})`
   }
 
   return <div className='flex w-full sm:w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
