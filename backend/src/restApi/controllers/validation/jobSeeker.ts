@@ -67,7 +67,10 @@ const updateJobSeekerBodySchema = z.object({
       openToTalk: z.boolean().optional(),
       whatTypeOfInsightsYouWant: z.string().nullish(),
       unsubscribedFromEmailMatching: z.boolean().optional(),
-      sentJobsViaEmail: sentJobsViaEmailSchema.optional(),
+      sentJobsViaEmail: z.object({
+        set: sentJobsViaEmailSchema.optional(),
+        connect: sentJobsViaEmailSchema.optional(),
+      }).optional(),
       sentFirstEmailMatching: z.boolean().optional(),
     })
     .strict()

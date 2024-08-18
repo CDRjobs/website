@@ -6,7 +6,7 @@ import { getMatchingScore } from './matchingAlgorithm'
 const MAX_SCORE = 5
 const MAX_MATCHING_NUMBER = 25
 
-const getMatches = async ({ asCSVString = false }) => {
+const getMatches = async ({ asCSVString = false } = {}) => {
   const matches = []
 
   const openJobs = await prisma.job.findMany({
@@ -40,7 +40,7 @@ const getMatches = async ({ asCSVString = false }) => {
     const seekers = await prisma.jobSeeker.findMany({
       where: {
         unsubscribedFromEmailMatching: false,
-        ...(lastId ? { id: { gt: lastId } } : {})
+        ...(lastId ? { id: { gt: lastId } } : {}),
       },
       include: {
         locations: true,
@@ -84,8 +84,8 @@ const getMatches = async ({ asCSVString = false }) => {
         matches.push(matchToCSVRow({ jobSeeker: seeker, jobs: seekerjobsIds.map(id => openJobsMap[id]) }))
       } else {
         matches.push({
-          jobSeeker: seeker.id,
-          jobs: seekerjobsIds,
+          jobSeekerId: seeker.id,
+          jobsIds: seekerjobsIds,
         })
       }
     }

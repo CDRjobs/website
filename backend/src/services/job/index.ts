@@ -54,6 +54,11 @@ type CursorPagination = {
   lastId?: string
 }
 
+interface JobInclude {
+  locations?: boolean | Prisma.Job$locationsArgs
+  company?: boolean | Prisma.CompanyDefaultArgs
+}
+
 const getJobByIdWithLocations = async (id: string) => {
   const job = await prisma.job.findUnique({
     where: { id },
@@ -63,9 +68,11 @@ const getJobByIdWithLocations = async (id: string) => {
   return job
 }
 
-const getJobsByIds = async (ids: string[]) => {
+// Cannot have an optional include because of Prisma issue: https://github.com/prisma/prisma/issues/20816
+const getJobsByIds = async (ids: string[], { locations = false, company = false }: JobInclude = {}) => {
   const jobs = await prisma.job.findMany({
     where: { id: { in: ids } },
+    include: { locations, company }
   })
 
   return jobs

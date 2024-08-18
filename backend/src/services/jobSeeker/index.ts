@@ -18,9 +18,15 @@ type CreateJobSeekerInput = Omit<Prisma.JobSeekerCreateInput, 'id' | 'locations'
 
 type UpdateJobSeekerInput = Omit<Prisma.JobSeekerUpdateInput, 'id' | 'widId' | 'email' | 'locations' | 'createdAt' | 'updatedAt' | 'sentJobsViaEmail'> & {
   sentJobsViaEmail?: {
-    id: string
-    sentAt: string
-  }[]
+    set?: {
+      id: string
+      sentAt: string
+    }[]
+    connect?: {
+      id: string
+      sentAt: string
+    }[]
+  }
   locations?: {
     country: CountryCode
     city?: string | null
@@ -83,10 +89,19 @@ const updateJobSeeker = async (id: string, jobSeeker: UpdateJobSeekerInput) => {
     }
   }
 
-  if (jobSeeker.sentJobsViaEmail) {
+  if (jobSeeker.sentJobsViaEmail?.set) {
     jobSeekerData.sentJobsViaEmail = {
-      deleteMany: {},
-      create: jobSeeker.sentJobsViaEmail.map(job => ({ jobId: job.id, sentAt: new Date(job.sentAt) })),
+      deleteMany: { jobSeekerId: id },
+      create: jobSeeker.sentJobsViaEmail.set.map(job => ({ jobId: job.id, sentAt: new Date(job.sentAt) })),
+    }
+  } else if (jobSeeker.sentJobsViaEmail?.connect) {
+    const jobs = jobSeeker.sentJobsViaEmail.connect
+    jobSeekerData.sentJobsViaEmail = {
+      deleteMany: {
+        jobId: { in: jobs.map(job => job.id) },
+        jobSeekerId: id,
+      },
+      create: jobs.map(job => ({ jobId: job.id, sentAt: new Date(job.sentAt) }))
     }
   }
 
