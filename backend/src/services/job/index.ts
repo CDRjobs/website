@@ -6,7 +6,7 @@ import { knex } from '../../db/knex'
 import prisma from '../../db/prisma'
 import { ApplicationError } from '../../restApi/errors'
 
-type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'> & {
+type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations' | 'createdAt' | 'updatedAt'> & {
   companyAirTableId: string,
   locations: {
     country: CountryCode
@@ -14,7 +14,7 @@ type CreateJobInput = Omit<Prisma.JobCreateInput, 'id' | 'company' | 'locations'
   }[]
 }
 
-type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations'> & {
+type UpdateJobInput = Omit<Prisma.JobUpdateInput, 'id' | 'airTableId' | 'company' | 'locations' | 'createdAt' | 'updatedAt'> & {
   companyAirTableId?: string,
   locations?: {
     country: CountryCode
@@ -54,6 +54,11 @@ type CursorPagination = {
   lastId?: string
 }
 
+interface JobInclude {
+  locations?: boolean | Prisma.Job$locationsArgs
+  company?: boolean | Prisma.CompanyDefaultArgs
+}
+
 const getJobByIdWithLocations = async (id: string) => {
   const job = await prisma.job.findUnique({
     where: { id },
@@ -61,6 +66,16 @@ const getJobByIdWithLocations = async (id: string) => {
   })
 
   return job
+}
+
+// Cannot have an optional include because of Prisma issue: https://github.com/prisma/prisma/issues/20816
+const getJobsByIds = async (ids: string[], { locations = false, company = false }: JobInclude = {}) => {
+  const jobs = await prisma.job.findMany({
+    where: { id: { in: ids } },
+    include: { locations, company }
+  })
+
+  return jobs
 }
 
 const getJobsByPublishedAt = async (publishedAt: string[]) => {
@@ -82,10 +97,11 @@ const getJobsByAirTableIds = async (ids: string[], select: { [key: string]: bool
   return companies
 }
 
-const getAllJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
+const getAllOpenJobs = async ({ limit, lastId }: CursorPagination = {}, include?: Prisma.JobInclude)  => {
   const jobs = await prisma.job.findMany({
     ...(include ? { include } : {}),
     orderBy: { id: 'asc' },
+    where: { status: 'open' },
     ...(lastId ? { where: { id: { gt: lastId }} } : {}),
     ...(limit ? { take: limit } : {})
   })
@@ -196,16 +212,20 @@ const createJobs = async (jobs: CreateJobInput[]) => {
       },
     }))
   
-    const createJob = (jobData: (Prisma.Without<Prisma.JobUncheckedCreateInput, Prisma.JobCreateInput> & Prisma.JobCreateInput)) => {
+    const createdJob = (jobData: (Prisma.Without<Prisma.JobUncheckedCreateInput, Prisma.JobCreateInput> & Prisma.JobCreateInput)) => {
       return trx.job.create({
-       data: jobData,
+       data: {
+        ...jobData,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
        select: {
          id: true
        }
      })
     }
   
-    createdJobs = await pMap(jobsData, createJob, { concurrency: 10 })
+    createdJobs = await pMap(jobsData, createdJob, { concurrency: 10 })
   })
 
   return map('id', createdJobs)
@@ -231,7 +251,10 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
   
     updatedJob = await trx.job.update({
       where: { id },
-      data: jobData,
+      data: {
+        ...jobData,
+        updatedAt: new Date(),
+      },
     })
   })
   
@@ -239,10 +262,11 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
 }
 
 export default {
+  getJobsByIds,
   getJobsByPublishedAt,
   getJobByIdWithLocations,
   getJobsByAirTableIds,
-  getAllJobs,
+  getAllOpenJobs,
   createJobs,
   updateJob,
   searchJobs,
