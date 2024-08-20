@@ -2,9 +2,8 @@ import { map, last } from 'lodash/fp'
 import prisma from '../../db/prisma'
 import { matchToCSVRow } from './csvFormatting'
 import { getMatchingScore } from './matchingAlgorithm'
+import { MAX_SCORE, MAX_MATCHING_NUMBER } from './constants'
 
-const MAX_SCORE = 5
-const MAX_MATCHING_NUMBER = 25
 
 const getMatches = async ({ asCSVString = false } = {}) => {
   const matches = []
