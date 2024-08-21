@@ -48,31 +48,34 @@ export const sendViaEmail = async (ctx: Context) => {
     }
 
     if (process.env.NODE_ENV === 'production') {
-      await services.email.sendMatchingEmail({
-        from: config.email.fromAddress,
-        to: jobSeeker.email,
-        templateId,
-        templateModel: {
-          disciplines: jobSeeker.seekingDisciplines.map(toDisciplineText),
-          contractTypes: jobSeeker.seekingContractTypes.map(toContractTypeText),
-          jobs: jobs.map(job => {
-            const salaryText = salaryToText(pick(['minSalary', 'maxSalary', 'currency'], job))
-            return {
-              title: job.title,
-              companyName: job.company.name,
-              location: locationsToText(job.locations),
-              contractTypes: job.contractTypes.map(toContractTypeText).join(', '),
-              ...(salaryText ? { salary: salaryText } : {}),
-              remote: remoteToText(job.remote),
-              datePosted: format(job.publishedAt, 'yyyy-MM-dd'),
-            }
-          })
-        },
-      })
-      await services.jobSeeker.updateJobSeeker(jobSeeker.id, {
-        sentFirstEmailMatching: true,
-        sentJobsViaEmail: { connect: jobs.map(job => ({ id: job.id, sentAt: new Date().toISOString() })) }
-      })
+      if (jobs.length) {
+        await services.email.sendMatchingEmail({
+          from: config.email.fromAddress,
+          to: jobSeeker.email,
+          templateId,
+          templateModel: {
+            disciplines: jobSeeker.seekingDisciplines.map(toDisciplineText),
+            contractTypes: jobSeeker.seekingContractTypes.map(toContractTypeText),
+            jobs: jobs.map(job => {
+              const salaryText = salaryToText(pick(['minSalary', 'maxSalary', 'currency'], job))
+              return {
+                title: job.title,
+                companyName: job.company.name,
+                location: locationsToText(job.locations),
+                contractTypes: job.contractTypes.map(toContractTypeText).join(', '),
+                ...(salaryText ? { salary: salaryText } : {}),
+                remote: remoteToText(job.remote),
+                datePosted: format(job.publishedAt, 'yyyy-MM-dd'),
+                url: job.sourceUrl,
+              }
+            })
+          },
+        })
+        await services.jobSeeker.updateJobSeeker(jobSeeker.id, {
+          sentFirstEmailMatching: true,
+          sentJobsViaEmail: { connect: jobs.map(job => ({ id: job.id, sentAt: new Date().toISOString() })) }
+        })
+      }
     } else {
       console.log(`Sending to ${jobSeeker.email}`)
     }
