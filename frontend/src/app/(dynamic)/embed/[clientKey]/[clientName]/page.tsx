@@ -71,6 +71,7 @@ const Page = () => {
   const isAfen = clientName.toLowerCase() === 'afen'
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
   const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
+  const isNEP = clientName.toLowerCase() === 'negativeemissionsplatform'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
@@ -186,7 +187,12 @@ const Page = () => {
   const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
   const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
-  let titleText = isUSBC ? 'USBC Job Board' : 'Find job'
+  let titleText = 'Find job'
+  if (isUSBC) {
+    titleText = 'USBC Job Board'
+  } else if (isNEP) {
+    titleText = 'NEP'
+  }
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
