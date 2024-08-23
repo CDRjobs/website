@@ -72,6 +72,7 @@ const Page = () => {
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
   const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
   const isNEP = clientName.toLowerCase() === 'negativeemissionsplatform'
+  const isIBI = clientName.toLowerCase() === 'internationalbiocharinitiative'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
@@ -192,6 +193,8 @@ const Page = () => {
     titleText = 'USBC Job Board'
   } else if (isNEP) {
     titleText = 'NEP'
+  } else if (isIBI) {
+    titleText = '[DEMO] IBI Job Board'
   }
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
