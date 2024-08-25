@@ -73,6 +73,7 @@ const Page = () => {
   const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
   const isNEP = clientName.toLowerCase() === 'negativeemissionsplatform'
   const isIBI = clientName.toLowerCase() === 'internationalbiocharinitiative'
+  const isAirMiners = clientName.toLowerCase() === 'airminers'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
@@ -195,6 +196,8 @@ const Page = () => {
     titleText = 'NEP'
   } else if (isIBI) {
     titleText = '[DEMO] IBI Job Board'
+  } else if (isAirMiners) {
+    titleText = '[DEMO] AirMiners'
   }
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
