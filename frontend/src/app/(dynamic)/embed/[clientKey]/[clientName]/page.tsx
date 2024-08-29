@@ -10,9 +10,19 @@ import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterLi
 import JobCard, { Job } from '@/components/molecules/JobCard'
 import { gql, useLazyQuery } from '@apollo/client'
 import { first, isArray, isEmpty, isNil, last, map, omit, values } from 'lodash/fp'
-import { companySizes, contractTypes, remote, seniority, verticals, afenOnly } from './filters'
+import { companySizes, contractTypes, remote, requiredExperience, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
 import { trackDidSearch } from '@/services/telemetry'
+
+const toGraphqlRequiredExperienceInput = (value: keyof typeof requiredExperience) => {
+  const correspondingMap = {
+    min0to2years: { min: 0, max: 2 },
+    min3to5years: { min: 3, max: 5 },
+    min6to9years: { min: 6, max: 9 },
+    min10years: { min: 10, max: 100 },
+  }
+  return correspondingMap[value]
+}
 
 const SearchJobQuery = gql`
   query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
@@ -32,7 +42,8 @@ const SearchJobQuery = gql`
         currency
         minSalary
         maxSalary
-        seniority
+        minYearsOfExperience
+        guessedMinYearsOfExperience
         publishedAt
         company {
           id
@@ -55,7 +66,7 @@ const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJob
     ...omit(['cdrCategory', 'companySize', 'openSearchToCountries'], filters),
     contractTypesLength: filters.contractType?.length || 0,
     remoteLength: filters.remote?.length || 0,
-    seniorityLength: filters.seniority?.length || 0,
+    requiredExperienceLength: filters.requiredExperience?.length || 0,
     isAfenOnly: isAfen ? !(filters.openSearchToCountries) : undefined,
     totalJobs,
     fromLoadMore,
@@ -91,7 +102,7 @@ const Page = () => {
   const verticalFilterRef = useRef<FilterListboxRef>(null)
   const companySizeFilterRef = useRef<FilterListboxRef>(null)
   const remoteFilterRef = useRef<FilterListboxRef>(null)
-  const seniorityFilterRef = useRef<FilterListboxRef>(null)
+  const requiredExperienceFilterRef = useRef<FilterListboxRef>(null)
   const contractTypeFilterRef = useRef<FilterListboxRef>(null)
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
@@ -111,6 +122,11 @@ const Page = () => {
         ...prev,
         openSearchToCountries: value ? value === 'no' : undefined,
       }))
+    } else if (filterName === 'requiredExperience') {
+      setFilters(prev => ({
+        ...prev,
+        requiredExperience: isArray(value) ? value.map(exp => toGraphqlRequiredExperienceInput(exp)) : undefined,
+      }))
     } else {
       setFilters(prev => ({
         ...prev,
@@ -118,12 +134,13 @@ const Page = () => {
       }))
     }
   }
+
   const onLocationSelect = useCallback((value: unknown) => setFilterFor('location', value), [])
   const onDisciplineSelect = useCallback((value?: string | null) => setFilterFor('discipline', value), [])
   const onVerticalSelect = useCallback((value: string[] | string | null) => setFilterFor('cdrCategory', value), [])
   const onCompanySizeSelect = useCallback((value: string[] | string | null) => setFilterFor('companySize', value), [])
   const onRemoteSelect = useCallback((value: string[] | string | null) => setFilterFor('remote', value), [])
-  const onSenioritySelect = useCallback((value: string[] | string | null) => setFilterFor('seniority', value), [])
+  const onRequiredExperienceSelect = useCallback((value: string[] | string | null) => setFilterFor('requiredExperience', value), [])
   const onContractTypeSelect = useCallback((value: string[] | string | null) => setFilterFor('contractType', value), [])
   const onAfenOnlySelect = useCallback((value: string[] | string | null) => setFilterFor('afenOnly', value), [])
 
@@ -171,7 +188,7 @@ const Page = () => {
     verticalFilterRef.current?.reset()
     companySizeFilterRef.current?.reset()
     remoteFilterRef.current?.reset()
-    seniorityFilterRef.current?.reset()
+    requiredExperienceFilterRef.current?.reset()
     contractTypeFilterRef.current?.reset()
     afenOnlyFilterRef.current?.reset()
   }
@@ -223,7 +240,7 @@ const Page = () => {
         <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={clientVerticals} onSelect={onVerticalSelect} multiple />
         <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect} multiple />
         <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
-        <FilterListbox ref={seniorityFilterRef} text='Seniority' valueMap={seniority} onSelect={onSenioritySelect} multiple />
+        <FilterListbox ref={requiredExperienceFilterRef} text='Experience Required' valueMap={requiredExperience} onSelect={onRequiredExperienceSelect} multiple />
         <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect} multiple />
       </div>
 

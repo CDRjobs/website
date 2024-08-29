@@ -34,13 +34,14 @@ export type Job = {
   contractType?: Maybe<Scalars['String']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
   discipline: Scalars['String']['output'];
+  guessedMinYearsOfExperience?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   locations?: Maybe<Array<Location>>;
   maxSalary?: Maybe<Scalars['Int']['output']>;
   minSalary?: Maybe<Scalars['Int']['output']>;
+  minYearsOfExperience?: Maybe<Scalars['Int']['output']>;
   publishedAt?: Maybe<Scalars['String']['output']>;
   remote: Scalars['String']['output'];
-  seniority?: Maybe<Scalars['String']['output']>;
   sourceUrl: Scalars['String']['output'];
   title: Scalars['String']['output'];
 };
@@ -135,12 +136,17 @@ export type JobFiltersInput = {
   location?: InputMaybe<LocationInput>;
   openSearchToCountries?: InputMaybe<Scalars['Boolean']['input']>;
   remote?: InputMaybe<Array<Scalars['String']['input']>>;
-  seniority?: InputMaybe<Array<Scalars['String']['input']>>;
+  requiredExperience?: InputMaybe<Array<MinMaxYearsOfExperience>>;
 };
 
 export type LocationInput = {
   coordinates?: InputMaybe<CoordinatesInput>;
   country?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type MinMaxYearsOfExperience = {
+  max: Scalars['Int']['input'];
+  min: Scalars['Int']['input'];
 };
 
 export type PaginationInput = {
@@ -236,6 +242,7 @@ export type ResolversTypes = {
   coordinatesInput: CoordinatesInput;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
+  minMaxYearsOfExperience: MinMaxYearsOfExperience;
   paginationInput: PaginationInput;
 };
 
@@ -257,6 +264,7 @@ export type ResolversParentTypes = {
   coordinatesInput: CoordinatesInput;
   jobFiltersInput: JobFiltersInput;
   locationInput: LocationInput;
+  minMaxYearsOfExperience: MinMaxYearsOfExperience;
   paginationInput: PaginationInput;
 };
 
@@ -277,13 +285,14 @@ export type JobResolvers<ContextType = any, ParentType extends ResolversParentTy
   contractType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   discipline?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  guessedMinYearsOfExperience?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locations?: Resolver<Maybe<Array<ResolversTypes['Location']>>, ParentType, ContextType>;
   maxSalary?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   minSalary?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
+  minYearsOfExperience?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   publishedAt?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   remote?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
-  seniority?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   sourceUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   title?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
