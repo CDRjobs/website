@@ -134,6 +134,7 @@ model Job {
   minSalary                Int?
   maxSalary                Int?
   minYearsOfExperience     Int?
+  guessedMinYearsOfExperience Int?
   minEducationLevel        EducationLevel?
   seniority                Seniority?
   publishedAt              DateTime       @unique

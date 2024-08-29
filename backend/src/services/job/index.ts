@@ -1,4 +1,4 @@
-import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Job, Prisma, Remote, Seniority } from '@prisma/client'
+import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Job, Prisma, Remote } from '@prisma/client'
 import { flatten, map, omit, isEmpty } from 'lodash/fp'
 import pMap from 'p-map'
 import services from '..'
@@ -37,7 +37,10 @@ type SearchFilters = {
   }
   discipline?: Discipline
   cdrCategory?: CdrCategory[]
-  seniority?: Seniority[]
+  requiredExperience?: {
+    min: number,
+    max: number,
+  }[]
   remote?: Remote[]
   contractType?: ContractType[]
   companySize?: CompanySize[]
@@ -131,8 +134,19 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
   if (!isEmpty(filters.discipline)) {
     query.where(knex.raw('?::"Discipline" = ANY("disciplines")', [filters.discipline]))
   }
-  if (!isEmpty(filters.seniority)) {
-    query.whereIn('seniority', filters.seniority!.map(s => knex.raw('?::"Seniority"', [s])))
+  if (!isEmpty(filters.requiredExperience)) {
+    query.where(builder => {
+      filters.requiredExperience?.forEach(({ min, max }) => {
+        builder.orWhere(builder2 => {
+          builder2.where('minYearsOfExperience', '>=', min)
+          builder2.where('minYearsOfExperience', '<=', max)
+        })
+        builder.orWhere(builder2 => {
+          builder2.where('guessedMinYearsOfExperience', '>=', min)
+          builder2.where('guessedMinYearsOfExperience', '<=', max)
+        })
+      })
+    })
   }
   if (!isEmpty(filters.remote)) {
     query.whereIn('remote', filters.remote!.map(r => knex.raw('?::"Remote"', [r])))

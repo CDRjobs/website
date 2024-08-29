@@ -32,14 +32,6 @@ const remote = {
   no: 'On-site',
 }
 
-const seniority = {
-  entryLevel: 'Entry level',
-  earlyStage: 'Early stage',
-  midLevel: 'Mid-level',
-  senior: 'Senior',
-  verySenior: 'Very senior',
-}
-
 export type Job = {
   id: string
   title: string
@@ -50,7 +42,8 @@ export type Job = {
   currency?: string
   minSalary?: number
   maxSalary?: number
-  seniority?: keyof typeof seniority
+  minYearsOfExperience?: number
+  guessedMinYearsOfExperience?: number
   publishedAt: string
   contractTypes: string[],
   company: {
@@ -100,6 +93,25 @@ const JobCard = ({ job }: Props) => {
     salaryText +=  ` (${currencyNames.of(job.currency!.toUpperCase())})`
   }
 
+  let minYearsOrExperienceText = ''
+  if (Number.isInteger(job.minYearsOfExperience)) {
+    if (job.minYearsOfExperience === 0) {
+      minYearsOrExperienceText = 'Entry level'
+    } else if (job.minYearsOfExperience === 1) {
+      minYearsOrExperienceText = `≥ ${job.minYearsOfExperience} year`
+    } else {
+      minYearsOrExperienceText = `≥ ${job.minYearsOfExperience} years`
+    }
+  } else if (Number.isInteger(job.guessedMinYearsOfExperience)) {
+    if (job.guessedMinYearsOfExperience === 0) {
+      minYearsOrExperienceText = 'Entry level'
+    } else if (job.guessedMinYearsOfExperience === 1) {
+      minYearsOrExperienceText = `≥ approx. ${job.guessedMinYearsOfExperience} year`
+    } else {
+      minYearsOrExperienceText = `≥ approx. ${job.guessedMinYearsOfExperience} years`
+    }
+  }
+
   return <div className='flex w-full sm:w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
     <div className='flex flex-col items-start gap-1.5 self-stretch'>
       <div className='h-14 flex items-center'>
@@ -145,7 +157,7 @@ const JobCard = ({ job }: Props) => {
           </svg>
           <div className='flex items-center gap-1 flex-[1_0_0]'>
             <p className='text-xs font-normal leading-4 flex-[1_0_0]'>{salaryText}</p>
-            <p className='text-xs font-normal leading-4 text-[#777]'>{job.seniority && seniority[job.seniority]}</p>
+            <p className='text-xs font-normal leading-4 text-[#777]'>{minYearsOrExperienceText}</p>
             </div>
         </div>
       </div>

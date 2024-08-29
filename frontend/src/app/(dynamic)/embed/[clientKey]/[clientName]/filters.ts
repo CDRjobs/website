@@ -31,12 +31,11 @@ export const remote = {
   no: 'No',
 }
 
-export const seniority = {
-  entryLevel: 'Entry level (<2 years)',
-  earlyStage: 'Early stage (2-5 years)',
-  midLevel: 'Mid-level (5-10 years)',
-  senior: 'Senior (10-20 years)',
-  verySenior: 'Very senior (20+ years)',
+export const requiredExperience = {
+  min0to2years: 'Min. 0-2 years',
+  min3to5years: 'Min. 3-5 years',
+  min6to9years: 'Min. 6-9 years',
+  min10years: 'Min. 10+ years',
 }
 
 export const contractTypes = {

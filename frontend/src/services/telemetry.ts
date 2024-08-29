@@ -1,3 +1,4 @@
+import { requiredExperience } from '@/app/(dynamic)/embed/[clientKey]/[clientName]/filters'
 import * as amplitude from '@amplitude/analytics-browser'
 
 type TrackViewJobClickedInput = {
@@ -37,8 +38,11 @@ type TrackDidSearchInput = {
   contractTypesLength: number
   remote?: string[]
   remoteLength: number
-  seniority?: string[]
-  seniorityLength: number
+  requiredExperience?: {
+    min: number
+    max: number
+  }[]
+  requiredExperienceLength: number
   totalJobs: number
   totalJobsDisplayed: number
   fromLoadMore: boolean

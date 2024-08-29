@@ -1,6 +1,6 @@
 import z from 'zod'
 import { paginationSchema } from '../pagination'
-import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Remote, Seniority } from '@prisma/client'
+import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Remote } from '@prisma/client'
 import { validateZodSchema } from '../validate'
 import services from '../../../services'
 
@@ -29,7 +29,12 @@ const getJobsSchema = z.object({
       ),
     discipline: z.nativeEnum(Discipline).optional(),
     cdrCategory: z.array(z.nativeEnum(CdrCategory)).optional(),
-    seniority: z.array(z.nativeEnum(Seniority)).optional(),
+    requiredExperience: z.array(
+      z.object({
+        min: z.number().nonnegative(),
+        max: z.number().nonnegative(),
+      }).refine(({ min, max }) => max >= min, { message: 'max has to be equal or greater than min'})
+    ).optional(),
     remote: z.array(z.nativeEnum(Remote)).optional(),
     contractType: z.array(z.nativeEnum(ContractType)).optional(),
     companySize: z.array(z.nativeEnum(CompanySize)).optional(),
