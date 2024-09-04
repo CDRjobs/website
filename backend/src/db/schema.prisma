@@ -121,32 +121,32 @@ model Location {
 }
 
 model Job {
-  id                       String         @id @default(cuid())
-  airTableId               String         @unique
-  title                    String
-  sourceUrl                String
-  disciplines              Discipline[]
-  status                   JobStatus
-  description              String
-  locations                Location[]
-  remote                   Remote
-  currency                 CurrencyCode?
-  minSalary                Int?
-  maxSalary                Int?
-  minYearsOfExperience     Int?
+  id                          String                       @id @default(cuid())
+  airTableId                  String                       @unique
+  title                       String
+  sourceUrl                   String
+  disciplines                 Discipline[]
+  status                      JobStatus
+  description                 String
+  locations                   Location[]
+  remote                      Remote
+  currency                    CurrencyCode?
+  minSalary                   Int?
+  maxSalary                   Int?
+  minYearsOfExperience        Int?
   guessedMinYearsOfExperience Int?
-  minEducationLevel        EducationLevel?
-  seniority                Seniority?
-  publishedAt              DateTime       @unique
-  realPublishedAt          DateTime?
-  foundAt                  DateTime
-  lastCheckedAt            DateTime
-  company                  Company        @relation(fields: [companyId], references: [id])
-  companyId                String
-  contractTypes            ContractType[]
-  createdAt                DateTime?
-  updatedAt                DateTime?
-  jobSeekersSentToViaEmail SentJobViaEmailToJobSeeker[]
+  minEducationLevel           EducationLevel?
+  seniority                   Seniority?
+  publishedAt                 DateTime                     @unique
+  realPublishedAt             DateTime?
+  foundAt                     DateTime
+  lastCheckedAt               DateTime
+  company                     Company                      @relation(fields: [companyId], references: [id])
+  companyId                   String
+  contractTypes               ContractType[]
+  createdAt                   DateTime?
+  updatedAt                   DateTime?
+  jobSeekersSentToViaEmail    SentJobViaEmailToJobSeeker[]
 }
 
 model Company {
@@ -165,19 +165,20 @@ model Company {
 }
 
 model Client {
-  id        String        @id @default(cuid())
-  name      String        @unique
-  iFrameKey String        @unique @default(uuid())
-  companies Company[]
-  countries CountryCode[] // countries to include in job search in addition to companies jobs
+  id          String        @id @default(cuid())
+  name        String        @unique
+  iFrameKey   String        @unique @default(uuid())
+  companies   Company[]
+  countries   CountryCode[] // countries to include in job search in addition to companies jobs
+  showAllJobs Boolean       @default(false)
 }
 
 model JobSeeker {
-  id                            String         @id @default(cuid())
-  wixId                         String         @unique
+  id                            String                       @id @default(cuid())
+  wixId                         String                       @unique
   firstname                     String?
   lastname                      String?
-  email                         String         @unique
+  email                         String                       @unique
   locations                     Location[]
   educationLevel                EducationLevel
   seniority                     Seniority
@@ -190,8 +191,8 @@ model JobSeeker {
   whatTypeOfInsightsYouWant     String?
   createdAt                     DateTime
   updatedAt                     DateTime
-  unsubscribedFromEmailMatching Boolean        @default(false)
-  sentFirstEmailMatching        Boolean        @default(false)
+  unsubscribedFromEmailMatching Boolean                      @default(false)
+  sentFirstEmailMatching        Boolean                      @default(false)
   sentJobsViaEmail              SentJobViaEmailToJobSeeker[]
 }
 
@@ -200,7 +201,7 @@ model SentJobViaEmailToJobSeeker {
   jobId       String
   jobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id])
   jobSeekerId String
-  sentAt DateTime
+  sentAt      DateTime
 
   @@id([jobId, jobSeekerId])
 }
