@@ -5,12 +5,14 @@ type ClientInput = {
   name: string
   companies?: string[]
   countries?: CountryCode[]
+  showAllJobs?: boolean
 }
 
 type UpdateClientInput = {
   name?: string
   companies?: string[]
   countries?: CountryCode[]
+  showAllJobs?: boolean
 }
 
 const getClientByIFrameKey = async (iFrameKey: string) => {
@@ -42,7 +44,7 @@ const getClientByName = async (name: string) => {
   return client
 }
 
-const createClient = async ({ name, companies, countries }: ClientInput) => {
+const createClient = async ({ name, companies, countries, showAllJobs }: ClientInput) => {
   const companiesToAdd = companies
     ? { connect: companies.map(id => ({ id })) }
     : null
@@ -50,6 +52,7 @@ const createClient = async ({ name, companies, countries }: ClientInput) => {
   const createdClient = await prisma.client.create({
     data: {
       name,
+      showAllJobs,
       ...(companiesToAdd ? { companies: companiesToAdd } : {}),
       ...(countries ? { countries: countries } : {})
     },
@@ -59,7 +62,7 @@ const createClient = async ({ name, companies, countries }: ClientInput) => {
 }
 
 
-const updateClient = async (id: string, { name, companies, countries }: UpdateClientInput) => {
+const updateClient = async (id: string, { name, companies, countries, showAllJobs }: UpdateClientInput) => {
   const companiesToAdd = companies
     ? { set: companies.map(id => ({ id })) }
     : null
@@ -68,8 +71,9 @@ const updateClient = async (id: string, { name, companies, countries }: UpdateCl
     where: { id },
     data: {
       name,
+      showAllJobs,
       ...(companiesToAdd ? { companies: companiesToAdd } : {}),
-      ...(countries ? { countries: countries } : {})
+      ...(countries ? { countries: countries } : {}),
     }
   })
 

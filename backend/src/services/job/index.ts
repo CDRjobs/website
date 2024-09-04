@@ -165,12 +165,14 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     }
   }
 
-  query.where((builder) => {
-    builder.whereIn('c.id', companiesIdsToInclude)
-    if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
-      builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
-    }
-  })
+  if (!client.showAllJobs) {
+    query.where((builder) => {
+      builder.whereIn('c.id', companiesIdsToInclude)
+      if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
+        builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
+      }
+    })
+  }
 
   if (!isEmpty(filters.location)) {
     if (filters.location.coordinates) {
