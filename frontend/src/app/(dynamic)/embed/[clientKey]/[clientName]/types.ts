@@ -16,7 +16,10 @@ export type Filters = {
   cdrCategory?: string[]
   companySize?: string[]
   remote?: string[]
-  seniority?: string[]
+  requiredExperience?: {
+    min: number,
+    max: number,
+  }[]
   contractType?: string[]
   openSearchToCountries?: boolean
 }
