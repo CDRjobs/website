@@ -86,6 +86,7 @@ const Page = () => {
   const isIBI = clientName.toLowerCase() === 'internationalbiocharinitiative'
   const isAirMiners = clientName.toLowerCase() === 'airminers'
   const isCRIA = clientName.toLowerCase() === 'carbonremovalindiaalliance'
+  const isDVNE = clientName.toLowerCase() === 'deutscherverbandfurnegativeemissionen'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
@@ -218,6 +219,8 @@ const Page = () => {
     titleText = '[DEMO] AirMiners'
   } else if (isCRIA) {
     titleText = '[DEMO] CRIA Job Board'
+  } else if (isDVNE) {
+    titleText = '[DEMO] DVNE Job Board'
   }
 
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
