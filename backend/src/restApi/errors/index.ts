@@ -13,6 +13,15 @@ export class ApplicationError extends Error {
   }
 }
 
+export class ForbiddenError extends ApplicationError {
+  constructor(message: string = 'You are not allowed to access this route', details: unknown = {}) {
+    super()
+    this.name = 'ForbiddenError'
+    this.message = message
+    this.details = details
+  }
+}
+
 export class ValidationError extends ApplicationError {
   constructor(message: string = 'A validation error occured', details: unknown = {}) {
     super()
