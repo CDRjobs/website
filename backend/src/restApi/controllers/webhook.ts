@@ -13,7 +13,6 @@ export const wix = async (ctx: Context) => {
   }
   
   try {
-    console.log(body)
     const castedBody = validateWixWebhookBody(body)
 
     await services.email.sendReportEmail({
