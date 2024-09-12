@@ -9,13 +9,16 @@ const requiredEnvVars = [
   'SECOND_EMAIL_TEMPLATE_ID',
   'FIRST_EMAIL_NO_MATCH_TEMPLATE_ID',
   'SECOND_EMAIL_NO_MATCH_TEMPLATE_ID',
+  'REPORT_TEMPLATE_ID',
   'KOA_KEYS',
   'DATABASE_URL',
   'API_TOKEN',
   'MAPBOX_TOKEN',
   'PUBLIC_PATH',
+  'ATTACHMENTS_PATH',
   'IMAGE_FOLDER',
   'ALLOW_SENDING_MATCHING_EMAILS',
+  'WEBHOOK_TOKEN',
 ]
 
 for (const name of requiredEnvVars) {
@@ -40,10 +43,11 @@ export default {
     postmark: {
       key: process.env.POSTMARK_KEY!,
     },
-    firstEmailTemplateId: process.env.FIRST_EMAIL_TEMPLATE_ID,
-    secondEmailTemplateId: process.env.SECOND_EMAIL_TEMPLATE_ID,
-    firstEmailNoMatchTemplateId: process.env.FIRST_EMAIL_NO_MATCH_TEMPLATE_ID,
-    secondEmailNoMatchTemplateId: process.env.SECOND_EMAIL_NO_MATCH_TEMPLATE_ID,
+    firstEmailTemplateId: Number(process.env.FIRST_EMAIL_TEMPLATE_ID),
+    secondEmailTemplateId: Number(process.env.SECOND_EMAIL_TEMPLATE_ID),
+    firstEmailNoMatchTemplateId: Number(process.env.FIRST_EMAIL_NO_MATCH_TEMPLATE_ID),
+    secondEmailNoMatchTemplateId: Number(process.env.SECOND_EMAIL_NO_MATCH_TEMPLATE_ID),
+    reportTemplateId: Number(process.env.REPORT_TEMPLATE_ID),
   },
   jwt: {
     key: process.env.JWT_KEY!
@@ -58,4 +62,10 @@ export default {
     path: process.env.PUBLIC_PATH!,
     imageFolder: process.env.IMAGE_FOLDER!,
   },
+  attachments: {
+    path: process.env.ATTACHMENTS_PATH!
+  },
+  webhook: {
+    token: process.env.WEBHOOK_TOKEN!
+  }
 }

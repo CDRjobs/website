@@ -1,3 +1,5 @@
+import path from 'node:path'
+import fs from 'node:fs/promises'
 import { ForgotPasswordTemplateInput } from './templates/getForgotPasswordEmail'
 import getForgotPasswordEmail from './templates/getForgotPasswordEmail'
 import postmarkClient from '../../lib/postmark'
@@ -30,6 +32,10 @@ type SendMatchingEmailInput = {
   },
 }
 
+type SendReportEmailInput = {
+  to: string
+}
+
 const sendEmail = async ({ from, to, subject, html, text }: SendEmailInput) => {
   return postmarkClient.sendEmail({
     From: from,
@@ -55,6 +61,25 @@ const sendMatchingEmail = async ({ from, to, templateId, templateModel }: SendMa
   }
 }
 
+const sendReportEmail = async ({ to }: SendReportEmailInput) => {
+  const reportBuffer = await fs.readFile(path.join(config.attachments.path, 'report.pdf'))
+
+  await postmarkClient.sendEmailWithTemplate({
+    From: config.email.fromAddress,
+    To: to,
+    TemplateId: config.email.reportTemplateId,
+    TemplateModel: {},
+    Tag: '2024 report',
+    Attachments: [{
+      Name: 'report.pdf',
+      Content: reportBuffer.toString('base64'),
+      ContentType: 'application/pdf',
+      ContentID: null
+    }],
+  })
+}
+
+
 const sendForgotPasswordEmail = async (to: string, templateInput: ForgotPasswordTemplateInput) => {
   const { subject, html, text } = getForgotPasswordEmail(templateInput)
 
@@ -70,6 +95,7 @@ const getSuppressedEmailsFromPostmark = async () => {
 
 export default {
   sendMatchingEmail,
+  sendReportEmail,
   sendForgotPasswordEmail,
   getSuppressedEmailsFromPostmark,
 }

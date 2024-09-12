@@ -42,9 +42,9 @@ export const sendViaEmail = async (ctx: Context) => {
 
     let templateId
     if (jobs.length) {
-      templateId = jobSeeker.sentFirstEmailMatching ? Number(config.email.secondEmailTemplateId) : Number(config.email.firstEmailTemplateId)
+      templateId = jobSeeker.sentFirstEmailMatching ? config.email.secondEmailTemplateId : config.email.firstEmailTemplateId
     } else {
-      templateId = jobSeeker.sentFirstEmailMatching ? Number(config.email.secondEmailNoMatchTemplateId) : Number(config.email.firstEmailNoMatchTemplateId)
+      templateId = jobSeeker.sentFirstEmailMatching ? config.email.secondEmailNoMatchTemplateId : config.email.firstEmailNoMatchTemplateId
     }
 
     if (process.env.NODE_ENV === 'production') {
