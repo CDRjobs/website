@@ -5,8 +5,8 @@ const wixWebhookBodySchema = z.object({
   data: z.object({
     email: z.string().trim().email(),
     authToken: z.string(),
-    firstname: z.string(),
-    didRegisterToNL: z.enum(['TRUE', 'FALSE']),
+    firstname: z.string().trim(),
+    didRegisterToNL: z.string().trim(),
   })
 }).strict()
 
