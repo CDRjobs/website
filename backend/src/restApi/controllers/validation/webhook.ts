@@ -3,9 +3,9 @@ import { validateZodSchema } from '../../errors'
 
 const wixWebhookBodySchema = z.object({
   data: z.object({
-    email: z.string().email(),
+    email: z.string().trim().email(),
     authToken: z.string(),
-  }).strict()
+  })
 }).strict()
 
 

@@ -71,7 +71,7 @@ const sendReportEmail = async ({ to }: SendReportEmailInput) => {
     TemplateModel: {},
     Tag: '2024 report',
     Attachments: [{
-      Name: 'report.pdf',
+      Name: 'CDRjobs - 2024 CDR Salary Report.pdf',
       Content: reportBuffer.toString('base64'),
       ContentType: 'application/pdf',
       ContentID: null

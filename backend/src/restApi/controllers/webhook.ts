@@ -6,16 +6,20 @@ import { ForbiddenError } from '../errors'
 
 export const wix = async (ctx: Context) => {
   const body = ctx.request.body as WixWebhookBodyType
-
+  
   if (body?.data?.authToken !== config.webhook.token) {
+    console.log('forbidden')
     throw new ForbiddenError()
   }
+  
+  try {
+    const castedBody = validateWixWebhookBody(body)
 
-  validateWixWebhookBody(body)
- 
-  await services.email.sendReportEmail({ to: body.data.email.trim() })
-
-  console.log(`sent report to ${body.data.email}`)
+    await services.email.sendReportEmail({ to: castedBody.data.email.trim() })
+  } catch (e) {
+    console.error(e)
+    throw e
+  }
 
   ctx.status = 200
 }
