@@ -2,3 +2,5 @@
 /dist
 .env
 /public/images
+/attachments/*
+!/attachments/.gitkeep
