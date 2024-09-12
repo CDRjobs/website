@@ -15,7 +15,11 @@ export const wix = async (ctx: Context) => {
   try {
     const castedBody = validateWixWebhookBody(body)
 
-    await services.email.sendReportEmail({ to: castedBody.data.email.trim() })
+    await services.email.sendReportEmail({
+      to: castedBody.data.email,
+      firstname: castedBody.data.firstname,
+      didRegisterToNL: castedBody.data.didRegisterToNL,
+    })
   } catch (e) {
     console.error(e)
     throw e
