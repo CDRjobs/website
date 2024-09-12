@@ -9,7 +9,8 @@ const requiredEnvVars = [
   'SECOND_EMAIL_TEMPLATE_ID',
   'FIRST_EMAIL_NO_MATCH_TEMPLATE_ID',
   'SECOND_EMAIL_NO_MATCH_TEMPLATE_ID',
-  'REPORT_TEMPLATE_ID',
+  'REPORT_NO_NL_TEMPLATE_ID',
+  'REPORT_WITH_NL_TEMPLATE_ID',
   'KOA_KEYS',
   'DATABASE_URL',
   'API_TOKEN',
@@ -47,7 +48,8 @@ export default {
     secondEmailTemplateId: Number(process.env.SECOND_EMAIL_TEMPLATE_ID),
     firstEmailNoMatchTemplateId: Number(process.env.FIRST_EMAIL_NO_MATCH_TEMPLATE_ID),
     secondEmailNoMatchTemplateId: Number(process.env.SECOND_EMAIL_NO_MATCH_TEMPLATE_ID),
-    reportTemplateId: Number(process.env.REPORT_TEMPLATE_ID),
+    reportNoNLTemplateId: Number(process.env.REPORT_NO_NL_TEMPLATE_ID),
+    reportWithNLTemplateId: Number(process.env.REPORT_WITH_NL_TEMPLATE_ID),
   },
   jwt: {
     key: process.env.JWT_KEY!

@@ -33,7 +33,9 @@ type SendMatchingEmailInput = {
 }
 
 type SendReportEmailInput = {
-  to: string
+  firstname: string,
+  to: string,
+  didRegisterToNL: boolean,
 }
 
 const sendEmail = async ({ from, to, subject, html, text }: SendEmailInput) => {
@@ -61,14 +63,16 @@ const sendMatchingEmail = async ({ from, to, templateId, templateModel }: SendMa
   }
 }
 
-const sendReportEmail = async ({ to }: SendReportEmailInput) => {
+const sendReportEmail = async ({ to, firstname, didRegisterToNL }: SendReportEmailInput) => {
   const reportBuffer = await fs.readFile(path.join(config.attachments.path, 'report.pdf'))
 
   await postmarkClient.sendEmailWithTemplate({
     From: config.email.fromAddress,
     To: to,
-    TemplateId: config.email.reportTemplateId,
-    TemplateModel: {},
+    TemplateId: didRegisterToNL ? config.email.reportWithNLTemplateId : config.email.reportNoNLTemplateId,
+    TemplateModel: {
+      firstname,
+    },
     Tag: '2024 report',
     Attachments: [{
       Name: 'CDRjobs - 2024 CDR Salary Report.pdf',
