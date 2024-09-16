@@ -64,6 +64,7 @@ enum CdrCategory {
   utilization
   mCdr
   forest
+  enhancedWeathering
 }
 
 enum ContractType {

@@ -9,6 +9,7 @@ const verticals = {
   biomass: 'Biomass Carbon Removal',
   directAirCapture: 'Direct Air Capture ',
   ecosystemServices: 'Ecosystem Services',
+  enhancedWeathering: 'Enhanced Weathering',
   mCdr: 'Marine Carbon Dioxide Removal',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',

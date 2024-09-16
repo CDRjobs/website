@@ -92,7 +92,7 @@ const Page = () => {
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
   let clientVerticals: Partial<typeof verticals> = verticals
   if (isDaccoalition) {
-    clientVerticals = omit(['forest', 'biomass', 'mCdr', 'soil'], verticals)
+    clientVerticals = omit(['forest', 'biomass', 'mCdr', 'enhancedWeathering', 'soil'], verticals)
   } else if (isUSBC) {
     clientVerticals = omit(['forest', 'directAirCapture', 'mCdr', 'mineralization', 'soil'], verticals)
   }
