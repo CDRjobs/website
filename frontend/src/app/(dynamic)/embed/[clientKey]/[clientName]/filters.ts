@@ -3,6 +3,7 @@ export const verticals = {
   biomass: 'Biomass Carbon Removal and Storage (BiCRS)',
   directAirCapture: 'Direct Air Carbon Capture and Storage (DACCS)',
   ecosystemServices: 'Ecosystem Services',
+  enhancedWeathering: 'Enhanced Weathering',
   mCdr: 'Marine Carbon Dioxide Removal (mCDR)',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',
