@@ -10,7 +10,7 @@ type JobWithLocations = Job & { locations: Location[] }
 const createJobSchema = z.object({
   airTableId: z.string(),
   companyAirTableId: z.string(),
-  title: z.string().min(5),
+  title: z.string(),
   sourceUrl: z.string().url(),
   disciplines: z.array(z.nativeEnum(Discipline)).min(1),
   status: z.nativeEnum(JobStatus),
