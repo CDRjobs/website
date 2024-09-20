@@ -10,7 +10,7 @@ const verticals = {
   directAirCapture: 'Direct Air Capture ',
   ecosystemServices: 'Ecosystem Services',
   enhancedWeathering: 'Enhanced Weathering',
-  mCdr: 'Marine Carbon Dioxide Removal',
+  mCdr: 'Marine CDR',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',
   utilization: 'Utilisation',
