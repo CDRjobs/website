@@ -59,7 +59,7 @@
     "@graphql-codegen/typescript": "4.0.9",
     "@graphql-codegen/typescript-resolvers": "4.2.1",
     "@types/bcrypt": "5.0.2",
-    "@types/jest": "29.5.12",
+    "@types/jest": "29.5.13",
     "@types/koa": "2.15.0",
     "@types/koa-bodyparser": "4.3.12",
     "@types/koa-mount": "4.0.5",
