@@ -3,7 +3,7 @@ import { makeExecutableSchema } from '@graphql-tools/schema'
 import { rateLimitDirective } from 'graphql-rate-limit-directive'
 import { ApolloServer } from '@apollo/server'
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('@apollo/server-plugin-landing-page-graphql-playground')
 import { koaMiddleware } from '@as-integrations/koa'
 import Router from '@koa/router'
@@ -26,7 +26,13 @@ export const addGraphQLServer = async (httpServer: http.Server, router: Router, 
 
   const server = new ApolloServer({
     schema: rateLimitDirectiveTransformer(schema),
-    plugins
+    plugins,
+    formatError: (formattedError, error) => {
+      console.error('Graphql error:')
+      console.error(error)
+  
+      return formattedError
+    },
   })
 
   await server.start()
