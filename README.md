@@ -11,28 +11,20 @@ You need the following pieces of software and accounts to launch the backend:
 
 ### Installation
 
-1. Go inside the backend directory
 ```bash
+# Go inside the backend directory
 cd ./website/backend
-```
 
-2. Install the node modules and generate Prisma
-```bash
+# Install the node modules and generate Prisma
 yarn && yarn prisma:generate
-```
 
-3. Copy `.env.dist` to `.env`
-```bash
+# Copy `.env.dist` to `.env`
 cp .env.dist .env
-```
 
-4. Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
-```bash
-nano .env # or IDE
-```
+# Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
+nano .env # or any IDE
 
-5. Generate Prisma database
-```bash
+# Generate Prisma database
 yarn prisma:migrate
 ```
 
@@ -77,22 +69,19 @@ You need the following accounts to launch the backend:
 
 ### Installation
 
-1. Go inside the front directory
 ```bash
+# Go inside the front directory
 cd ./website/frontend
-```
 
-2. Install the node modules
-```bash
+# Install the node modules
 yarn
-```
 
-3. Copy `.env.local.dist` to `.env.local`
-```bash
+# Copy `.env.local.dist` to `.env.local`
 cp .env.local.dist .env.local
-```
 
-4. Fill `.env.local` with the correct values (see section [Frontend environment variables](#frontend-environment-variables))
+# Fill `.env.local` with the correct values (see section [Frontend environment variables](#frontend-environment-variables))
+nano .env # or any IDE
+````
 
 ### Launch
 
