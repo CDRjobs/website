@@ -1,6 +1,7 @@
 /node_modules
 /dist
 .env
+.env.test
 /public/images
 /attachments/*
 !/attachments/.gitkeep
