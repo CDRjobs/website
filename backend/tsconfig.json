@@ -9,6 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
   },
-  "include": ["./src/**/*"],
+  // "include": ["./src/**/*", "./api-tests/**/*"],
+  "include": ["./**/*"],
   "exclude": ["node_modules", "dist"]
 }
