@@ -26,7 +26,7 @@
     "@koa/router": "13.0.0",
     "@mapbox/search-js-core": "1.0.0-beta.22",
     "@prisma/client": "5.19.1",
-    "@types/jsonwebtoken": "9.0.6",
+    "@types/jsonwebtoken": "9.0.7",
     "@types/koa2-ratelimit": "0.9.6",
     "@types/papaparse": "5.3.14",
     "bcrypt": "5.1.1",
