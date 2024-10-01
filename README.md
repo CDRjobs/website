@@ -24,6 +24,13 @@ cp .env.dist .env
 # Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
 nano .env # or any IDE
 
+# Copy `.env.dist` to `.env`
+cp .env.test.dist .env.test
+
+# Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
+nano .env.test # or any IDE
+
+
 # Generate Prisma database
 yarn prisma:migrate
 ```
@@ -33,6 +40,17 @@ yarn prisma:migrate
 To launch the backend server, run:
 ```bash
 yarn dev
+```
+
+### Test
+
+To test the backend server, run:
+```bash
+# Unit tests
+yarn test:unit
+
+# Integration tests
+yarn test:api
 ```
 
 ### Backend environment variables 

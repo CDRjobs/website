@@ -9,12 +9,14 @@
   },
   "scripts": {
     "build": "rm -rf ./dist && yarn gen-graphql-types && yarn prisma:generate && npx tsc && yarn copy-files",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "dev": "yarn gen-graphql-types && nodemon src/index.ts",
-    "copy-files": "copyfiles -u 1 src/**/*.graphql dist/",
+    "copy-files": "copyfiles -u 1 src/**/*.graphql dist/src",
     "prisma:generate": "npx prisma generate",
     "prisma:migrate": "npx prisma migrate dev",
-    "test": "jest",
+    "prisma:reset": "npx prisma migrate reset --force",
+    "test:unit": "jest --config jest.unit.config.ts",
+    "test:api": "dotenv -e .env.test -- yarn prisma:reset && NODE_ENV=test jest --config jest.api.config.ts --detectOpenHandles",
     "gen-graphql-types": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
