@@ -214,7 +214,7 @@ const Page = () => {
   } else if (isNEP) {
     titleText = 'NEP'
   } else if (isIBI) {
-    titleText = '[DEMO] IBI Job Board'
+    titleText = 'IBI Job Board'
   } else if (isAirMiners) {
     titleText = '[DEMO] AirMiners'
   } else if (isCRIA) {
