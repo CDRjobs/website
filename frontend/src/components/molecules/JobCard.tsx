@@ -89,7 +89,8 @@ const JobCard = ({ job }: Props) => {
     if (job.minSalary && job.maxSalary && job.minSalary !== job.maxSalary) {
       salaryText = `${Math.floor(job.minSalary/1000)}K - ${Math.ceil(job.maxSalary/1000)}K`
     } else {
-      salaryText = `${Math.round((job.minSalary! || job.maxSalary!) / 1000)}K`
+      const minMaxSign = job.minSalary ? '≥' : '≤'
+      salaryText = `${minMaxSign} ${Math.round((job.minSalary! || job.maxSalary!) / 1000)}K`
     }
     salaryText +=  ` (${currencyNames.of(job.currency!.toUpperCase())})`
   }
