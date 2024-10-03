@@ -13,7 +13,7 @@ const categories = {
   policy: 'Policy',
   researchAndDevelopment: 'Research and Development',
   softwareEngineering: 'Sofware Engineering',
-  strategyAndConsulting: 'Stragegy and Consulting',
+  strategyAndConsulting: 'Strategy and Consulting',
   sustainability: 'Sustainability',
 }
 
