@@ -13,7 +13,7 @@ const verticals = {
   mCdr: 'Marine CDR',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',
-  utilization: 'Utilisation',
+  utilization: 'Utilization',
 }
 
 const companySizes = {

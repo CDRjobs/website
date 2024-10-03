@@ -7,7 +7,7 @@ export const verticals = {
   mCdr: 'Marine Carbon Dioxide Removal (mCDR)',
   mineralization: 'Mineralization',
   soil: 'Soil Carbon',
-  utilization: 'Utilisation',
+  utilization: 'Utilization',
 }
 
 export const companySizes = {
