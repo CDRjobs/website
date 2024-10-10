@@ -1,5 +1,6 @@
-import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
+import { Listbox, ListboxButton, ListboxOption, ListboxOptions } from '@headlessui/react'
+import isIOS from '@/hooks/isIOS'
 
 const categories = {
   administrativeAndSupport: 'Administrative and Support',
@@ -29,6 +30,7 @@ export interface CategoryListboxRef {
 
 const CategoryListbox = ({ onSelect }: Props, ref: ForwardedRef<CategoryListboxRef>) => {
   const [selectedCatKey, setSelectedCatKey] = useState<CategoriesKeys | null>(null)
+  const iOS = isIOS()
 
   const listboxButtonRef = useRef<HTMLButtonElement>(null)
 
@@ -45,7 +47,7 @@ const CategoryListbox = ({ onSelect }: Props, ref: ForwardedRef<CategoryListboxR
           </g>
           <defs>
             <clipPath id="clip0_5_78">
-              <rect width="14" height="14" fill="white"/>
+              <rect width="14" height="14" fill="white" />
             </clipPath>
           </defs>
         </svg>
@@ -62,7 +64,7 @@ const CategoryListbox = ({ onSelect }: Props, ref: ForwardedRef<CategoryListboxR
           <path d="M10 13L6 7H14L10 13Z" fill="#777777"/>
         </svg>}
       </ListboxButton>
-      <ListboxOptions anchor='bottom start' className='flex w-[23.25rem] py-6 [--anchor-gap:0.5rem] flex-col items-center gap-3 rounded-[0.625rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)]'>
+      <ListboxOptions modal={!iOS} anchor='bottom start' className='flex w-[23.25rem] py-6 [--anchor-gap:0.5rem] flex-col items-center gap-3 rounded-[0.625rem] bg-white shadow-[0_4px_4px_0_rgba(0,0,0,0.08),0_-4px_4px_0_rgba(0,0,0,0.08)]'>
         <div className='flex pr-4 justify-end items-center gap-1.5 self-stretch'>
           <svg width='24' height='24' viewBox='0 0 24 24' fill='none' className='cursor-pointer' onClick={() => listboxButtonRef.current?.click()}>
             <path d='M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z' fill='black'/>
