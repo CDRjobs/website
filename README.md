@@ -21,13 +21,13 @@ yarn && yarn prisma:generate
 # Copy `.env.dist` to `.env`
 cp .env.dist .env
 
-# Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
+# Fill `.env` with the correct values (see section Backend environment variables)
 nano .env # or any IDE
 
 # Copy `.env.dist` to `.env`
 cp .env.test.dist .env.test
 
-# Fill `.env` with the correct values (see section [Backend environment variables](#backend-environment-variables))
+# Fill `.env` with the correct values (see section Backend environment variables)
 nano .env.test # or any IDE
 
 
@@ -97,7 +97,7 @@ yarn
 # Copy `.env.local.dist` to `.env.local`
 cp .env.local.dist .env.local
 
-# Fill `.env.local` with the correct values (see section [Frontend environment variables](#frontend-environment-variables))
+# Fill `.env.local` with the correct values (see section Frontend environment variables)
 nano .env # or any IDE
 ````
 
