@@ -39,6 +39,8 @@ const SearchJobQuery = gql`
           city
         }
         remote
+        disciplines
+        contractTypes
         currency
         minSalary
         maxSalary
