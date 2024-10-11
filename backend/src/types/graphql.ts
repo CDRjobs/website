@@ -31,9 +31,9 @@ export type Company = {
 export type Job = {
   __typename?: 'Job';
   company: Company;
-  contractType?: Maybe<Scalars['String']['output']>;
+  contractTypes: Array<Scalars['String']['output']>;
   currency?: Maybe<Scalars['String']['output']>;
-  discipline: Scalars['String']['output'];
+  disciplines: Array<Scalars['String']['output']>;
   guessedMinYearsOfExperience?: Maybe<Scalars['Int']['output']>;
   id: Scalars['ID']['output'];
   locations?: Maybe<Array<Location>>;
@@ -282,9 +282,9 @@ export type CompanyResolvers<ContextType = any, ParentType extends ResolversPare
 
 export type JobResolvers<ContextType = any, ParentType extends ResolversParentTypes['Job'] = ResolversParentTypes['Job']> = {
   company?: Resolver<ResolversTypes['Company'], ParentType, ContextType>;
-  contractType?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  contractTypes?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   currency?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  discipline?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  disciplines?: Resolver<Array<ResolversTypes['String']>, ParentType, ContextType>;
   guessedMinYearsOfExperience?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType>;
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   locations?: Resolver<Maybe<Array<ResolversTypes['Location']>>, ParentType, ContextType>;

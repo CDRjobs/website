@@ -5,7 +5,7 @@ type TrackViewJobClickedInput = {
   id: string
   title: string
   sourceUrl: string
-  discipline: string[],
+  disciplines: string[],
   locations: { city?: string, country: string }[]
   remote: string
   currency?: string

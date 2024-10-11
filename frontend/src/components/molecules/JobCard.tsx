@@ -37,7 +37,7 @@ export type Job = {
   id: string
   title: string
   sourceUrl: string
-  discipline: string[],
+  disciplines: string[],
   locations: { city?: string, country: string }[]
   remote: keyof typeof remote
   currency?: string
@@ -57,7 +57,7 @@ export type Job = {
 }
 
 type Props = { 
-  job: Job
+  job: Job,
 }
 
 const countryNames = new Intl.DisplayNames(['en'], { type: 'region', style: 'long' })
