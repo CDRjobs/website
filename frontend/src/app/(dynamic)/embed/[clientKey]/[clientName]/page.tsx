@@ -39,6 +39,8 @@ const SearchJobQuery = gql`
           city
         }
         remote
+        disciplines
+        contractTypes
         currency
         minSalary
         maxSalary
@@ -76,7 +78,7 @@ const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJob
 }
 
 const Page = () => {
-  let mediaWatcher = window.matchMedia('(max-width: 640px)')
+  let mediaWatcher = window.matchMedia('(max-width: 720px)')
 
   const { clientKey, clientName } = useParams() as { [key: string]: string }
   const isAfen = clientName.toLowerCase() === 'afen'

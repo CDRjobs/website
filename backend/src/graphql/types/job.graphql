@@ -2,7 +2,7 @@ type Job {
   id: ID!
   title: String!
   sourceUrl: String!
-  discipline: String!
+  disciplines: [String!]!
   locations: [Location!]
   remote: String!
   currency: String
@@ -12,7 +12,7 @@ type Job {
   guessedMinYearsOfExperience: Int
   publishedAt: String
   company: Company!
-  contractType: String
+  contractTypes: [String!]!
 }
 
 input coordinatesInput {
