@@ -114,7 +114,7 @@ const JobCard = ({ job }: Props) => {
     }
   }
 
-  return <div className='flex w-full sm:w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
+  return <div className='flex w-full sm:w-[20.625rem] max-w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
     <div className='flex flex-col items-start gap-1.5 self-stretch'>
       <div className='h-14 flex items-center'>
         {/* eslint-disable-next-line @next/next/no-img-element */}

@@ -46,7 +46,7 @@ const SearchJobQuery = gql`
 const Page = () => {
   const { clientKey } = useParams() as { [key: string]: string }
   const [querySearchJobs] = useLazyQuery(SearchJobQuery)
-  const [totalCount, setTotalCount] = useState<number | null>(null)
+  const [totalCount, setTotalCount] = useState<number>(0)
   const [jobs, setJobs] = useState<Job[]>([])
 
   useEffect(() => {
@@ -69,11 +69,11 @@ const Page = () => {
         <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDRjobs © 2024</span></a></p>
       </div>
     </div>
-    <p className='text-black text-center font-normal leading-4'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available in CDR today</p>
+    <p className='text-black text-center font-normal leading-4 font-inter'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available in CDR today</p>
     <div className='mt-4 mb-2'>
-      <Carousel slides={jobcards} slideWidth={330} />
+      <Carousel slides={jobcards} slideWidth={330} slideHeight={276} />
     </div>
-    <p className='text-sm px-4'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
+    <p className='text-sm px-4 font-inter'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
   </div>
 }
 
