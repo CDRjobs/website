@@ -37,7 +37,7 @@ const Carousel = (props: CarouselProps) => {
       }}
       breakpoints={breakpoints}
       breakpointsBase='container'
-      speed={10000}
+      speed={6500}
       modules={[Autoplay]}
       onSwiper={(swiper) => { swiper.wrapperEl.style.transitionTimingFunction = 'linear'}}
     >
