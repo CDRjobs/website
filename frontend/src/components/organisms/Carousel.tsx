@@ -7,6 +7,7 @@ import { Autoplay } from 'swiper/modules'
 type CarouselProps = {
   slides: React.ReactNode[],
   slideWidth: number,
+  slideHeight: number,
 }
 
 const Carousel = (props: CarouselProps) => {
@@ -18,6 +19,10 @@ const Carousel = (props: CarouselProps) => {
       },
     })
   }, {})
+
+  if (props.slides.length === 0) {
+    return <div className='my-2.5' style={{ height: `${props.slideHeight + 20}px` }}></div>
+  }
 
   return (
     <Swiper
