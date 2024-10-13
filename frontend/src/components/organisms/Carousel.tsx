@@ -8,6 +8,7 @@ type CarouselProps = {
   slides: React.ReactNode[],
   slideWidth: number,
   slideHeight: number,
+  speed: number,
 }
 
 const Carousel = (props: CarouselProps) => {
@@ -28,16 +29,16 @@ const Carousel = (props: CarouselProps) => {
     <Swiper
       style={{ padding: '10px 0' }}
       spaceBetween={30}
-      slidesPerView={2}
+      slidesPerView={1}
       loop={true}
       autoplay={{
         delay: 0,
         disableOnInteraction: false,
-        pauseOnMouseEnter: false,
+        pauseOnMouseEnter: true,
       }}
       breakpoints={breakpoints}
       breakpointsBase='container'
-      speed={6500}
+      speed={props.speed}
       modules={[Autoplay]}
       onSwiper={(swiper) => { swiper.wrapperEl.style.transitionTimingFunction = 'linear'}}
     >
