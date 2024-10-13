@@ -50,7 +50,7 @@ const Page = () => {
   const [jobs, setJobs] = useState<Job[]>([])
 
   const speed = Number(searchParams.get('speed') || '6500')
-  const verticals = (searchParams.get('verticals') || '').split(',')
+  const verticals = searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []
 
   useEffect(() => {
     const fetchJobs = async () => {
