@@ -263,7 +263,7 @@ const Page = () => {
     </div>
 
     <div className='flex py-3 sm:p-3 justify-center items-center content-center gap-3 self-stretch flex-wrap'>
-      {jobs.map((job) => <JobCard key={job.id} job={job} />)}
+      {jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='shadow' />)}
     </div>
 
     {loadMore && <MainButton onClick={onClickLoadMore} loading={loadingJobs} fixedSize>Load More Jobs</MainButton>}

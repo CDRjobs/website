@@ -58,12 +58,13 @@ export type Job = {
 
 type Props = { 
   job: Job,
+  borderStyle: 'shadow' | 'left',
 }
 
 const countryNames = new Intl.DisplayNames(['en'], { type: 'region', style: 'long' })
 const currencyNames = new Intl.DisplayNames(['en'], { type: 'currency', style: 'short' })
 
-const JobCard = ({ job }: Props) => {
+const JobCard = ({ job, borderStyle }: Props) => {
 
   const onClickViewJobButton = () => {
     trackViewJobClicked({
@@ -114,7 +115,9 @@ const JobCard = ({ job }: Props) => {
     }
   }
 
-  return <div className='flex w-full sm:w-[20.625rem] max-w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]'>
+  const cardBorderStyle = borderStyle === 'shadow' ? 'shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]' : 'border-l border-[rgba(112,135,240,0.1)]'
+
+  return <div className={`flex w-full sm:w-[20.625rem] max-w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg ${cardBorderStyle}`}>
     <div className='flex flex-col items-start gap-1.5 self-stretch'>
       <div className='h-14 flex items-center'>
         {/* eslint-disable-next-line @next/next/no-img-element */}
