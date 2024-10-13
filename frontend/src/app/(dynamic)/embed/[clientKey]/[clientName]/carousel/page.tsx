@@ -5,6 +5,7 @@ import Carousel from '@/components/organisms/Carousel'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import Pym from 'pym.js'
 
 // TODO: to factorize with ../page.tsx
 const SearchJobQuery = gql`
@@ -64,6 +65,11 @@ const Page = () => {
     fetchJobs()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [clientKey, querySearchJobs])
+
+  useEffect(() => {
+    new Pym.Child().sendHeight()
+    setTimeout(() => new Pym.Child().sendHeight(), 500)
+  })
   
   const jobcards = jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='left' />)
   
