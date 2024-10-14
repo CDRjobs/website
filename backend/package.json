@@ -17,6 +17,7 @@
     "prisma:reset": "npx prisma migrate reset --force",
     "test:unit": "jest --config jest.unit.config.ts",
     "test:api": "dotenv -e .env.test -- yarn prisma:reset && NODE_ENV=test jest --config jest.api.config.ts --detectOpenHandles",
+    "ci:test:api": "yarn prisma:reset && jest --config jest.api.config.ts --detectOpenHandles",
     "gen-graphql-types": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
