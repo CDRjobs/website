@@ -19,10 +19,51 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
       - name: Install dependencies
         run: yarn
 
-      - name: Run Jest tests
+      - name: Run unit tests
         run: yarn test:unit
+  api_tests:
+    environment: API test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: yarn
+      
+      - name: Create .env
+        run: cp .env.dist .env
+
+      - name: Run api tests
+        env:
+          NODE_ENV: test
+          MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
+          POSTMARK_KEY: unused
+        run: yarn ci:test:api
+    services:
+      postgres:
+        image: postgis/postgis
+        env:
+          POSTGRES_USER: cdrjobs
+          POSTGRES_PASSWORD: cdrjobs
+          POSTGRES_DB: cdrjobs
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
