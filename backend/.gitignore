@@ -3,5 +3,6 @@
 .env
 .env.test
 /public/images
+/test-public
 /attachments/*
 !/attachments/.gitkeep
