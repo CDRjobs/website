@@ -4,7 +4,7 @@ import restRequest from './request'
 const companiesIds: string[] = []
 
 describe('Company', () => {
-  describe('Create company', () => {
+  describe('Create companies', () => {
     it('Successfully creates a company', async () => {
       const { status, body } = await restRequest({
         method: 'POST',
@@ -57,7 +57,7 @@ describe('Company', () => {
         details: [{
           code: 'custom',
           message: 'Some companies already exist, of airTableId: 1.',
-          path: [ 'data', 'companies']
+          path: ['data', 'companies']
         }]
       })
     })
@@ -100,7 +100,6 @@ describe('Company', () => {
     it('Successfully updates a company', async () => {
       const updateData = {
         name: 'CDRjobs updated',
-        // airTableId: '1',
         companyUrl: 'https://cdrjobs.earth/updated',
         careerPageUrl: 'https://cdrjobs.earth/updated',
         companySize: 's',
@@ -156,8 +155,36 @@ describe('Company', () => {
         details: [{
           code: 'unrecognized_keys',
           message: "Unrecognized key(s) in object: 'airTableId'",
-          path: [ 'data', 'company']
+          path: ['data', 'company']
         }]
+      })
+    })
+  })
+
+  describe('Get companies', () => {
+    it('Successfully get companies', async () => {
+      const { status, body } = await restRequest({
+        method: 'GET',
+        url: 'http://localhost:4000/api/v1/companies', // TODO: replace with an env var,
+      })
+
+      expect(status).toBe(200)
+      const company = body.data.find((company: { id: string }) => company.id === companiesIds[0])
+      expect(company).toMatchObject({
+        airTableId: '1',
+        careerPageUrl: 'https://cdrjobs.earth/updated',
+        cdrCategory: 'forest',
+        companySize: 's',
+        companyUrl: 'https://cdrjobs.earth/updated',
+        hqLocation: {
+          city: null,
+          country: 'fr',
+          countryCityKey: 'fr;',
+          id: expect.any(String),
+        },
+        id: expect.any(String),
+        logoUrl: expect.any(String),
+        name: 'CDRjobs updated'
       })
     })
   })
