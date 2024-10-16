@@ -267,6 +267,7 @@ const updateJob = async (id: string, job: UpdateJobInput) => {
   
     updatedJob = await trx.job.update({
       where: { id },
+      include: { locations: true },
       data: {
         ...jobData,
         updatedAt: new Date(),
