@@ -11,7 +11,7 @@ const verticalWording = {
   directAirCapture: 'Direct Air Capture',
   biomass: 'Biomass',
   mineralization: 'Mineralization',
-  mCDR: 'Ocean',
+  mCdr: 'Ocean',
   soil: 'Farming',
   forest: 'Forest',
   utilization: 'Utilization',
