@@ -132,7 +132,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
     <div className='flex flex-col items-start gap-3 self-stretch'>
       <div className='flex flex-col justify-center items-center gap-3 self-stretch'>
         <div className='flex content-center items-center gap-0.5 self-stretch'>
-          <p className='text-base font-medium leading-5 h-10'>{truncate({ length: 73 }, job.title)}</p>
+          <p className='text-base font-medium leading-5 h-10 overflow-hidden'>{truncate({ length: 73 }, job.title)}</p>
         </div>
       </div>
 
