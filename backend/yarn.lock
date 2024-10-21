@@ -2172,10 +2172,10 @@
     tslib "^2.6.2"
     webcrypto-core "^1.8.0"
 
-"@prisma/client@5.19.1":
-  version "5.19.1"
-  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.19.1.tgz#d73f2b17b08628b6450c1c2dd20924d7a993aadf"
-  integrity sha512-x30GFguInsgt+4z5I4WbkZP2CGpotJMUXy+Gl/aaUjHn2o1DnLYNTA+q9XdYmAQZM8fIIkvUiA2NpgosM3fneg==
+"@prisma/client@5.21.1":
+  version "5.21.1"
+  resolved "https://registry.yarnpkg.com/@prisma/client/-/client-5.21.1.tgz#ad51ef220eb80173f882e859960d81e626b73898"
+  integrity sha512-3n+GgbAZYjaS/k0M03yQsQfR1APbr411r74foknnsGpmhNKBG49VuUkxIU6jORgvJPChoD4WC4PqoHImN1FP0w==
 
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
