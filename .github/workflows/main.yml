@@ -52,6 +52,7 @@ jobs:
           NODE_ENV: test
           MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
           POSTMARK_KEY: unused
+          BREVO_KEY: unused
         run: yarn ci:test:api
     services:
       postgres:
