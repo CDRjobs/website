@@ -24,6 +24,7 @@
     "@apollo/server": "4.11.0",
     "@apollo/server-plugin-landing-page-graphql-playground": "4.0.1",
     "@as-integrations/koa": "1.1.1",
+    "@getbrevo/brevo": "^2.2.0",
     "@graphql-tools/load-files": "7.0.0",
     "@koa/cors": "5.0.0",
     "@koa/router": "13.1.0",
