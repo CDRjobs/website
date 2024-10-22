@@ -10,6 +10,7 @@ const requiredEnvVars = [
   'JWT_KEY',
   'FROM_EMAIL',
   'POSTMARK_KEY',
+  'BREVO_KEY',
   'FIRST_EMAIL_TEMPLATE_ID',
   'SECOND_EMAIL_TEMPLATE_ID',
   'FIRST_EMAIL_NO_MATCH_TEMPLATE_ID',
@@ -48,6 +49,9 @@ export default {
     fromAddress: process.env.FROM_EMAIL!, 
     postmark: {
       key: process.env.POSTMARK_KEY!,
+    },
+    brevo: {
+      key: process.env.BREVO_KEY!,
     },
     firstEmailTemplateId: Number(process.env.FIRST_EMAIL_TEMPLATE_ID),
     secondEmailTemplateId: Number(process.env.SECOND_EMAIL_TEMPLATE_ID),
