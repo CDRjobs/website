@@ -6,7 +6,6 @@ if (process.env.NODE_ENV === 'test') {
 dotenv.config({ path: '.env' })
 
 const requiredEnvVars = [
-  'RESET_PASSWORD_URL',
   'JWT_KEY',
   'FROM_EMAIL',
   'BREVO_KEY',
@@ -19,7 +18,6 @@ const requiredEnvVars = [
   'PUBLIC_PATH',
   'ATTACHMENTS_PATH',
   'IMAGE_FOLDER',
-  'ALLOW_SENDING_MATCHING_EMAILS',
   'WEBHOOK_TOKEN',
 ]
 
@@ -30,9 +28,6 @@ for (const name of requiredEnvVars) {
 }
 
 export default {
-  forgotPassword: {
-    resetUrl: process.env.RESET_PASSWORD_URL!,
-  },
   db: {
     url: process.env.DATABASE_URL!,
   },
@@ -40,7 +35,6 @@ export default {
     keys: process.env.KOA_KEYS!.split(','),
   },
   email: {
-    allowSendingMatchingEmail: process.env.ALLOW_SENDING_MATCHING_EMAILS === 'true',
     fromAddress: process.env.FROM_EMAIL!, 
     brevo: {
       key: process.env.BREVO_KEY!,
