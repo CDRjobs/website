@@ -1,8 +1,6 @@
 import Router from '@koa/router'
 import addCompanyRoutes from './routes/company'
 import addJobRoutes from './routes/job'
-import addJobSeekerRoutes from './routes/jobSeeker'
-import addMatchRoutes from './routes/match'
 import addClientRoutes from './routes/client'
 import addWebhookRoutes from './routes/webhook'
 import authMiddleware from './middlewares/auth'
@@ -25,9 +23,6 @@ export const addRestServer = (router: Router, path: string) => {
   addCompanyRoutes(restApiRouter)
   addJobRoutes(restApiRouter)
   addClientRoutes(restApiRouter)
-  addJobSeekerRoutes(restApiRouter)
-  addJobSeekerRoutes(restApiRouter)
-  addMatchRoutes(restApiRouter)
 
   router.use(restApiRouter.routes())
   router.use(restApiRouter.allowedMethods())
