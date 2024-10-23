@@ -6,7 +6,7 @@
 
 You need the following pieces of software and accounts to launch the backend:
 - Postgres >= v16
-- A [Postmark](https://postmarkapp.com/) account to send emails
+- A [Brevo](https://www.brevo.com/) account to send emails
 - A [Mapbox](https://www.mapbox.com/) account to get city coordinates 
 
 ### Installation
@@ -29,7 +29,6 @@ cp .env.test.dist .env.test
 
 # Fill `.env` with the correct values (see section Backend environment variables)
 nano .env.test # or any IDE
-
 
 # Generate Prisma database
 yarn prisma:migrate
@@ -58,21 +57,15 @@ yarn test:api
 | ---- | ---- | ----------- | ------- |
 | **DATABASE_URL** | string | A postgres connexion URL | `postgresql://cdrjobs:cdrjobs@127.0.0.1:5432/cdrjobs?schema=public` |
 | **KOA_KEYS** | string | Koa secrets keys to sign cookies |  `key1,key2,key3` |
-| **POSTMARK_KEY** | string | Postmark API key |  `a31445bc-67c5-b514-a684-26c2f780f341` |
+| **BREVO_KEY** | string | Brevo API key |  `a31445bc-67c5-b514-a684-26c2f780f341` |
 | **FROM_EMAIL** | string | Email address from which emails are sent | `CDRjobs <info@cdrjobs.earth>` |
-| **FIRST_EMAIL_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the first matching email people receive | `12345678` |
-| **SECOND_EMAIL_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the second and following matching emails people receive | `12345678` |
-| **FIRST_EMAIL_NO_MATCH_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the first matching emails people receive when they have no match | `12345678` |
-| **SECOND_EMAIL_NO_MATCH_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the second and following matching emails people receive when they have no match | `12345678` |
-| **REPORT_NO_NL_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the email sending the salary report when the user didn't register to the newsletter | `12345678` |
-| **REPORT_WITH_NL_TEMPLATE_ID** | number | Template ID from Postmark that corresponds to the email sending the salary report when the user already registered to the newsletter | `12345678` |
+| **REPORT_NO_NL_TEMPLATE_ID** | number | Template ID from Brevo that corresponds to the email sending the salary report when the user didn't register to the newsletter | `12345678` |
+| **REPORT_WITH_NL_TEMPLATE_ID** | number | Template ID from Brevo that corresponds to the email sending the salary report when the user already registered to the newsletter | `12345678` |
 | **JWT_KEY** | string | Secret key to hash the user passwords | `123456abc` |
-| **RESET_PASSWORD_URL** | string | URL used to create the reset password link | `http://localhost:3000/app/auth/reset-password/` |
 | **API_TOKEN** | string | Secret token used to access the REST API routes | `123456abc` |
 | **MAPBOX_TOKEN** | string | `Mapbox API key` |  `123456abc` |
 | **PUBLIC_PATH** | string | Relative path to the public folder to serve it | `./public` |
 | **IMAGE_FOLDER** | string | Folder name inside [PUBLIC_PATH] that serve the images | `images` |
-| **ALLOW_SENDING_MATCHING_EMAILS** | boolean | Enables the route that triggers the emails matching sending | `false` |
 | **ATTACHMENTS_PATH** | string | Relative path to the attachment folder that contains emails attachments such as the salary survey | `./attachments` |
 | **WEBHOOK_TOKEN** | string | Wix webhook token to authenticate requests from wix (used to send the salary report) | `123456abc` |
 
