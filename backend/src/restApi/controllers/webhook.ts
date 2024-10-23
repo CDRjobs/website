@@ -18,6 +18,7 @@ export const wix = async (ctx: Context) => {
     await services.email.sendReportEmail({
       to: castedBody.data.email,
       firstname: castedBody.data.firstname,
+      lastname: castedBody.data.lastname,
       didRegisterToNL: castedBody.data.didRegisterToNL === 'Checked',
     })
   } catch (e) {

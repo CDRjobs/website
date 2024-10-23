@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import { ForgotPasswordTemplateInput } from './templates/getForgotPasswordEmail'
 import getForgotPasswordEmail from './templates/getForgotPasswordEmail'
 import postmarkClient from '../../lib/postmark'
+import brevo from '../../lib/brevo'
 import config from '../../config'
 
 type SendEmailInput = {
@@ -33,19 +34,19 @@ type SendMatchingEmailInput = {
 }
 
 type SendReportEmailInput = {
-  firstname: string,
-  to: string,
-  didRegisterToNL: boolean,
+  to: string
+  firstname: string
+  lastname: string
+  didRegisterToNL: boolean
 }
 
 const sendEmail = async ({ from, to, subject, html, text }: SendEmailInput) => {
-  return postmarkClient.sendEmail({
-    From: from,
-    To: to,
-    Subject: subject,
-    HtmlBody: html,
-    TextBody: text,
-    MessageStream: 'outbound'
+  return brevo.sendTransacEmail({
+    sender: { email: from },
+    to: [{ email: to }],
+    subject,
+    htmlContent: html,
+    textContent: text,
   })
 }
 
@@ -63,26 +64,20 @@ const sendMatchingEmail = async ({ from, to, templateId, templateModel }: SendMa
   }
 }
 
-const sendReportEmail = async ({ to, firstname, didRegisterToNL }: SendReportEmailInput) => {
+const sendReportEmail = async ({ to, firstname, lastname, didRegisterToNL }: SendReportEmailInput) => {
   const reportBuffer = await fs.readFile(path.join(config.attachments.path, 'report.pdf'))
 
-  await postmarkClient.sendEmailWithTemplate({
-    From: config.email.fromAddress,
-    To: to,
-    TemplateId: didRegisterToNL ? config.email.reportWithNLTemplateId : config.email.reportNoNLTemplateId,
-    TemplateModel: {
-      firstname,
-    },
-    Tag: '2024 report',
-    Attachments: [{
-      Name: 'CDRjobs - 2024 CDR Salary Report.pdf',
-      Content: reportBuffer.toString('base64'),
-      ContentType: 'application/pdf',
-      ContentID: null
+  await brevo.sendTransacEmail({
+    to: [{ name: `${firstname} ${lastname}`, email: to }],
+    templateId: didRegisterToNL ? config.email.reportWithNLTemplateId : config.email.reportNoNLTemplateId,
+    params: { firstname },
+    tags: ['2024 report'],
+    attachment: [{
+      name: 'CDRjobs - 2024 CDR Salary Report.pdf',
+      content: reportBuffer.toString('base64'),
     }],
   })
 }
-
 
 const sendForgotPasswordEmail = async (to: string, templateInput: ForgotPasswordTemplateInput) => {
   const { subject, html, text } = getForgotPasswordEmail(templateInput)
