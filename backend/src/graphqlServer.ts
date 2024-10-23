@@ -7,7 +7,6 @@ import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHt
 const { ApolloServerPluginLandingPageGraphQLPlayground } = require('@apollo/server-plugin-landing-page-graphql-playground')
 import { koaMiddleware } from '@as-integrations/koa'
 import Router from '@koa/router'
-import services from './services'
 import { typeDefs, resolvers } from './graphql'
 
 export const addGraphQLServer = async (httpServer: http.Server, router: Router, path: string) => {
@@ -39,17 +38,6 @@ export const addGraphQLServer = async (httpServer: http.Server, router: Router, 
 
   router.all(
     path,
-    koaMiddleware(server, {
-      context: async ({ ctx }) => {
-        if (ctx.session?.userId) {
-          const exists = services.user.doesUserExist(ctx.session?.userId)
-          if (!exists) {
-            ctx.session = null
-          }
-        }
-  
-        return ctx
-      },
-    }),
+    koaMiddleware(server),
   )
 }

@@ -84,32 +84,6 @@ enum EducationLevel {
   doctorate
 }
 
-enum WorkStatus {
-  employed
-  unemployed
-  selfEmployedOrFreelance
-  student
-}
-
-model User {
-  id                  String  @id @default(cuid())
-  email               String  @unique
-  firstname           String
-  lastname            String
-  passwordHash        String
-  verifiedEmail       Boolean @default(false)
-  forgotPasswordToken String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Session {
-  id   String @id @default(cuid())
-  key  String @unique
-  data Json
-}
-
 model Location {
   id             String                                 @id @default(cuid())
   coordinates    Unsupported("geography(Point, 4326)")?
@@ -118,7 +92,6 @@ model Location {
   countryCityKey String                                 @unique
   jobs           Job[]
   companies      Company[]
-  jobSeekers     JobSeeker[]
 }
 
 model Job {
@@ -147,7 +120,6 @@ model Job {
   contractTypes               ContractType[]
   createdAt                   DateTime?
   updatedAt                   DateTime?
-  jobSeekersSentToViaEmail    SentJobViaEmailToJobSeeker[]
 }
 
 model Company {
@@ -172,39 +144,6 @@ model Client {
   companies   Company[]
   countries   CountryCode[] // countries to include in job search in addition to companies jobs
   showAllJobs Boolean       @default(false)
-}
-
-model JobSeeker {
-  id                            String                       @id @default(cuid())
-  wixId                         String                       @unique
-  firstname                     String?
-  lastname                      String?
-  email                         String                       @unique
-  locations                     Location[]
-  educationLevel                EducationLevel
-  seniority                     Seniority
-  workStatus                    WorkStatus
-  sectors                       String[]
-  seekingContractTypes          ContractType[]
-  seekingRemotes                Remote[]
-  seekingDisciplines            Discipline[]
-  openToTalk                    Boolean
-  whatTypeOfInsightsYouWant     String?
-  createdAt                     DateTime
-  updatedAt                     DateTime
-  unsubscribedFromEmailMatching Boolean                      @default(false)
-  sentFirstEmailMatching        Boolean                      @default(false)
-  sentJobsViaEmail              SentJobViaEmailToJobSeeker[]
-}
-
-model SentJobViaEmailToJobSeeker {
-  job         Job       @relation(fields: [jobId], references: [id])
-  jobId       String
-  jobSeeker   JobSeeker @relation(fields: [jobSeekerId], references: [id])
-  jobSeekerId String
-  sentAt      DateTime
-
-  @@id([jobId, jobSeekerId])
 }
 
 enum CountryCode {
