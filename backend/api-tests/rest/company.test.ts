@@ -1,5 +1,5 @@
 import { omit } from 'lodash/fp'
-import restRequest from './request'
+import restRequest from '../request'
 
 const companiesIds: string[] = []
 

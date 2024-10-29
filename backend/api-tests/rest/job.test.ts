@@ -1,4 +1,4 @@
-import restRequest from './request'
+import restRequest from '../request'
 
 const jobsIds: string[] = []
 let company: { airTableId: string }
