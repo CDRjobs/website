@@ -1,13 +1,13 @@
 import { QuerySearchJobsArgs } from '../../types/graphql'
 import { Job } from '@prisma/client'
 import services from '../../services'
-import { validateGetJobsParams } from '../validation/job'
+import { validateSearchJobsParams } from '../validation/job'
 
 const resolvers = {
   Query: {
     searchJobs: async (parent: object, params: Partial<QuerySearchJobsArgs>) => {
       // TODO: check client token or domain ? X-Frame-Options ?
-      const { clientKey, filters, pagination } = await validateGetJobsParams(params)
+      const { clientKey, filters, pagination } = await validateSearchJobsParams(params)
       const { total, jobs } = await services.job.searchJobs(clientKey, filters, pagination)
 
       return {
