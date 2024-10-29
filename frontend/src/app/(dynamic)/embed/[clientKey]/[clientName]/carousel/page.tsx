@@ -108,18 +108,18 @@ const Page = () => {
   
   const jobcards = jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='left' />)
 
-  let categoriesText = 'in Carbon Dioxide Removal'
+  let categoriesText = <>in <strong>Carbon Dioxide Removal</strong></>
   if (verticals.length === 1) {
-    categoriesText = `in ${verticalWording[verticals[0]]}`
+    categoriesText = <>in <strong>{verticalWording[verticals[0]]}</strong></>
   } else if (verticals.length > 1) {
-    categoriesText = `in ${verticals.slice(0, -1).map(v => verticalWording[v]).join(', ')} and ${verticalWording[verticals[verticals.length - 1]]}`
+    categoriesText = <>in {verticals.slice(0, -1).map((v, i) => <span key={`cat-${i}`}>{i !== 0 && ', '}<strong>{verticalWording[v]}</strong></span>)} and <strong>{verticalWording[verticals[verticals.length - 1]]}</strong></>
   }
 
-  let companiesText = ''
+  let companiesText
   if (companies.length === 1) {
-    companiesText = `at ${companies[0].name}`
+    companiesText = <>at <strong>{companies[0].name}</strong></>
   } else if (companies.length > 1) {
-    companiesText = `at ${companies.slice(0, -1).map(c => c.name).join(', ')} and ${companies[companies.length - 1].name}`
+    companiesText = <>at {companies.slice(0, -1).map((c, i) => <span key={`comp-${i}`}>{i !== 0 && ', '}<strong>{c.name}</strong></span>)} and <strong>{companies[companies.length - 1].name}</strong></>
   }
 
   const jobText = companies.length ? companiesText : categoriesText
@@ -132,7 +132,5 @@ const Page = () => {
     <p className='text-base px-4 font-inter'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
   </div>
 }
-
-
 
 export default Page
