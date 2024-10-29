@@ -21,8 +21,13 @@ const verticalWording = {
 
 type Verticals = Array<keyof typeof verticalWording>
 
+type Company = {
+  id: string
+  name: string
+}
+
 // TODO: to factorize with ../page.tsx
-const SearchJobQuery = gql`
+const SearchJobsQuery = gql`
   query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
     searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
       pagination {
@@ -57,20 +62,36 @@ const SearchJobQuery = gql`
   }
 `
 
+const SearchCompaniesQuery = gql`
+  query searchCompanies ($clientKey: String!, $ids: [String!]!) {
+    searchCompanies (clientKey: $clientKey, ids: $ids) {
+      data {
+        id
+        name
+      }
+    }
+  }
+`
+
 const Page = () => {
   const { clientKey } = useParams() as { [key: string]: string }
   const searchParams = useSearchParams()
-  const [querySearchJobs] = useLazyQuery(SearchJobQuery)
+  const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
+  const [querySearchCompanies] = useLazyQuery(SearchCompaniesQuery)
   const [totalCount, setTotalCount] = useState<number>(0)
   const [jobs, setJobs] = useState<Job[]>([])
+  const [companies, setCompanies] = useState<Company[]>([])
 
   const speed = Number(searchParams.get('speed') || '6500')
   const verticals = (searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []) as Verticals
+  const companiesIds = (searchParams.get('companies') ? searchParams.get('companies')!.split(',') : []) as string[]
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const pagination = { limit: 20 }
-      const filters = { cdrCategory: verticals }
+      const pagination = { limit: companiesIds ? 150 : 20 }
+      const filters = { cdrCategory: verticals, companies: companiesIds }
+      const { data: companiesData } = await querySearchCompanies({ variables: { clientKey, ids: companiesIds } })
+      setCompanies(companiesData.searchCompanies.data)
       const { data } = await querySearchJobs({ variables: { clientKey, filters, pagination } })
       setJobs(data.searchJobs.data)
       setTotalCount(data.searchJobs.pagination.total)
@@ -87,15 +108,24 @@ const Page = () => {
   
   const jobcards = jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='left' />)
 
-  let categoriesText = 'Carbon Dioxide Removal'
+  let categoriesText = 'in Carbon Dioxide Removal'
   if (verticals.length === 1) {
-    categoriesText = verticalWording[verticals[0]]
+    categoriesText = `in ${verticalWording[verticals[0]]}`
   } else if (verticals.length > 1) {
-    categoriesText = `${verticals.slice(0, -1).map(v => verticalWording[v]).join(', ')} and ${verticalWording[verticals[verticals.length - 1]]}`
+    categoriesText = `in ${verticals.slice(0, -1).map(v => verticalWording[v]).join(', ')} and ${verticalWording[verticals[verticals.length - 1]]}`
   }
+
+  let companiesText = ''
+  if (companies.length === 1) {
+    companiesText = `at ${companies[0].name}`
+  } else if (companies.length > 1) {
+    companiesText = `at ${companies.slice(0, -1).map(c => c.name).join(', ')} and ${companies[companies.length - 1].name}`
+  }
+
+  const jobText = companies.length ? companiesText : categoriesText
   
   return <div className='w-full py-4'>
-    <p className='text-black text-center text-lg font-normal leading-4 font-inter'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available in {categoriesText} today</p>
+    <p className='text-black text-center text-lg font-normal leading-4 font-inter'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available {jobText} today</p>
     <div className='mt-6 mb-4'>
       <Carousel slides={jobcards} slideWidth={330} slideHeight={276} speed={speed} />
     </div>

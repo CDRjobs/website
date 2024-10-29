@@ -44,6 +44,7 @@ type SearchFilters = {
   remote?: Remote[]
   contractType?: ContractType[]
   companySize?: CompanySize[]
+  companies?: string[]
 }
 
 type Pagination = {
@@ -131,9 +132,15 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     .leftJoin('Location as l', 'l.id', 'pivotL.B')
     .where('job.status', '=', knex.raw('?::"JobStatus"', ['open']))
 
+  if (!isEmpty(filters.companies)) {
+    // @ts-expect-error Knex typing doesn't work correctly
+    query.whereIn(['companyId'], filters.companies)
+  }
+
   if (!isEmpty(filters.discipline)) {
     query.where(knex.raw('?::"Discipline" = ANY("disciplines")', [filters.discipline]))
   }
+
   if (!isEmpty(filters.requiredExperience)) {
     query.where(builder => {
       filters.requiredExperience?.forEach(({ min, max }) => {
@@ -148,14 +155,17 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
       })
     })
   }
+
   if (!isEmpty(filters.remote)) {
     query.whereIn('remote', filters.remote!.map(r => knex.raw('?::"Remote"', [r])))
   }
+
   if (!isEmpty(filters.contractType)) {
     query.where(builder => {
       filters.contractType?.forEach(contractType => builder.orWhere(knex.raw('?::"ContractType" = ANY("contractTypes")', [contractType])))
     })
   }
+
   if (!isEmpty(filters.cdrCategory) || !isEmpty(filters.companySize)) {
     if (!isEmpty(filters.cdrCategory)) {
       query.whereIn('c.cdrCategory', filters.cdrCategory!.map(cc => knex.raw('?::"CdrCategory"', [cc])))
