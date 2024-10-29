@@ -3,8 +3,9 @@ import { paginationSchema } from '../pagination'
 import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Remote } from '@prisma/client'
 import { validateZodSchema } from '../validate'
 import services from '../../../services'
+import { difference, map, uniq } from 'lodash/fp'
 
-const getJobsSchema = z.object({
+const searchJobsSchema = z.object({
   clientKey: z
     .string()
     .refine(async (clientKey) => {
@@ -38,7 +39,21 @@ const getJobsSchema = z.object({
     remote: z.array(z.nativeEnum(Remote)).optional(),
     contractType: z.array(z.nativeEnum(ContractType)).optional(),
     companySize: z.array(z.nativeEnum(CompanySize)).optional(),
+    companies: z
+      .array(z.string())
+      .superRefine(async (companiesIds, ctx) => {
+        const uniqCompaniesIds = uniq(companiesIds)
+        const companies = await services.company.getCompaniesByIds(uniqCompaniesIds)
+
+        if (companies.length !== uniqCompaniesIds.length) {
+          const existingCompaniesIds = map('id', companies)
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: `Some companies don't exist, of id: ${difference(uniqCompaniesIds, existingCompaniesIds)}.`,
+          })
+        }
+      }).optional()
   }).optional()
 })
 
-export const validateGetJobsParams = validateZodSchema(getJobsSchema, true)
+export const validateSearchJobsParams = validateZodSchema(searchJobsSchema, true)

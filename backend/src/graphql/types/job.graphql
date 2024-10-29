@@ -39,6 +39,7 @@ input jobFiltersInput {
   remote: [String!]
   contractType: [String!]
   companySize: [String!]
+  companies: [String!]
 }
 
 input paginationInput {
@@ -54,11 +55,11 @@ type Pagination {
   total: Int!
 }
 
-type JobSearchResults {
+type searchJobsResults {
   pagination: Pagination!
   data: [Job!]!
 }
 
 type Query {
-  searchJobs(clientKey: String!, filters: jobFiltersInput, pagination: paginationInput): JobSearchResults
+  searchJobs(clientKey: String!, filters: jobFiltersInput, pagination: paginationInput): searchJobsResults
 }

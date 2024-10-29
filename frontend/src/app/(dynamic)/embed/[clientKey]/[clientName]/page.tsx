@@ -24,7 +24,7 @@ const toGraphqlRequiredExperienceInput = (value: keyof typeof requiredExperience
   return correspondingMap[value]
 }
 
-const SearchJobQuery = gql`
+const SearchJobsQuery = gql`
   query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
     searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
       pagination {
@@ -109,7 +109,7 @@ const Page = () => {
   const contractTypeFilterRef = useRef<FilterListboxRef>(null)
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
-  const [querySearchJobs] = useLazyQuery(SearchJobQuery)
+  const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
   const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])

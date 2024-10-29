@@ -8,3 +8,11 @@ type Company {
   cdrCategory: String!
   logoUrl: String!
 }
+
+type SearchCompaniesResults {
+  data: [Company!]!
+}
+
+type Query {
+  searchCompanies(clientKey: String!, ids: [String!]!): SearchCompaniesResults
+}

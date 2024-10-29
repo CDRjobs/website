@@ -1,5 +1,5 @@
 import { CompanySize, CdrCategory, CountryCode, Company, Prisma } from '@prisma/client'
-import { map, omit, kebabCase } from 'lodash/fp'
+import { map, omit, kebabCase, intersection } from 'lodash/fp'
 import { Buffer } from 'node:buffer'
 import { createId } from '@paralleldrive/cuid2'
 import fs from 'node:fs/promises'
@@ -9,6 +9,7 @@ import path from 'node:path'
 import prisma from '../../db/prisma'
 import services from '../../services'
 import fileExists from '../../utils/fileExists'
+import { ApplicationError } from '../../restApi/errors'
 
 type CompanyInput = {
   airTableId: string
@@ -64,6 +65,36 @@ const getCompaniesByIds = async (ids: string[]) => {
     where: {
       id: { in: ids }
     },
+  })
+
+  return companies
+}
+
+const searchCompanies = async (clientKey: string, ids: string[]) => {
+  const client = await prisma.client.findUnique({
+    include: { companies: { select: { id: true } } },
+    where: { iFrameKey: clientKey },
+  })
+
+  if (!client) {
+    throw new ApplicationError('Client not found')
+  }
+
+  let companiesToSearch = [] as string[]
+
+  if (client.showAllJobs) {
+    companiesToSearch = ids
+  } else {
+    const clientCompanies = map('id', client.companies)
+    companiesToSearch = intersection(clientCompanies, ids)
+  }
+  
+  const companies = await prisma.company.findMany({
+    where: {
+      id: {
+        in: companiesToSearch
+      }
+    }
   })
 
   return companies
@@ -136,4 +167,5 @@ export default {
   writeLogoFileAndGetUrl,
   deleteLogo,
   getCompaniesByIds,
+  searchCompanies,
 }
