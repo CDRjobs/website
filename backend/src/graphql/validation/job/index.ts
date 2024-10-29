@@ -52,7 +52,7 @@ const searchJobsSchema = z.object({
             message: `Some companies don't exist, of id: ${difference(uniqCompaniesIds, existingCompaniesIds)}.`,
           })
         }
-      })
+      }).optional()
   }).optional()
 })
 
