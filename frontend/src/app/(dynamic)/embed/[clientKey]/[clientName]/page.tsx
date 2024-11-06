@@ -211,6 +211,7 @@ const Page = () => {
   const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
   let titleText = 'Find job'
+  // TODO: change to make a request instead
   if (isUSBC) {
     titleText = 'USBC Job Board'
   } else if (isNEP) {
@@ -220,7 +221,7 @@ const Page = () => {
   } else if (isAirMiners) {
     titleText = '[DEMO] AirMiners'
   } else if (isCRIA) {
-    titleText = '[DEMO] CRIA Job Board'
+    titleText = 'CRIA Job Board'
   } else if (isDVNE) {
     titleText = '[DEMO] DVNE Job Board'
   }
