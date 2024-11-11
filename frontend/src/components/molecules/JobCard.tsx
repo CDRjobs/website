@@ -3,69 +3,16 @@ import { map, omit, truncate, uniq } from 'lodash/fp'
 import formatDistanceFromNow from '@/utils/formatDistanceFromNow'
 import { trackViewJobClicked } from '@/services/telemetry'
 import removeTypename from '@/utils/removeTypename'
-
-const verticals = {
-  forest: 'Afforestation/Reforestation',
-  biomass: 'Biomass Carbon Removal',
-  directAirCapture: 'Direct Air Capture ',
-  ecosystemServices: 'Ecosystem Services',
-  enhancedWeathering: 'Enhanced Weathering',
-  mCdr: 'Marine CDR',
-  mineralization: 'Mineralization',
-  soil: 'Soil Carbon',
-  utilization: 'Utilization',
-}
-
-const companySizes = {
-  xxs: '1-10',
-  xs: '11-50',
-  s: '51-200',
-  m: '201-500',
-  l: '501-1000',
-  xl: '1001-5000',
-  xxl: '5001-10000',
-  xxxl: '10001+',
-}
-
-const remote = {
-  yes: 'Remote',
-  hybrid: 'Hybrid',
-  no: 'On-site',
-}
-
-export type Job = {
-  id: string
-  title: string
-  sourceUrl: string
-  disciplines: string[],
-  locations: { city?: string, country: string }[]
-  remote: keyof typeof remote
-  currency?: string
-  minSalary?: number
-  maxSalary?: number
-  minYearsOfExperience?: number
-  guessedMinYearsOfExperience?: number
-  publishedAt: string
-  contractTypes: string[],
-  company: {
-    id: string
-    name: string
-    companySize: keyof typeof companySizes
-    logoUrl: string
-    cdrCategory: keyof typeof verticals
-  }
-}
+import { VERTICALS, COMPANY_SIZES, REMOTE } from '@/services/constants'
+import { getLocationText, getMinYearsOfExperienceText, getSalaryText, Job } from '@/services/job'
+import ViewJobButton from '@/components/atoms/ViewJobButton'
 
 type Props = { 
   job: Job,
   borderStyle: 'shadow' | 'left',
 }
 
-const countryNames = new Intl.DisplayNames(['en'], { type: 'region', style: 'long' })
-const currencyNames = new Intl.DisplayNames(['en'], { type: 'currency', style: 'short' })
-
 const JobCard = ({ job, borderStyle }: Props) => {
-
   const onClickViewJobButton = () => {
     trackViewJobClicked({
       ...removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>,
@@ -73,47 +20,9 @@ const JobCard = ({ job, borderStyle }: Props) => {
     })
   }
 
-  let locationText = 'Worldwide'
-  if (job.locations.length === 1) {
-    const loc = job.locations[0]
-    const countryName = countryNames.of(loc.country.toUpperCase()) || ''
-    locationText = loc.city ? `${loc.city}, ${countryName}` : countryName
-  } else {
-    const countries = uniq(map('country', job.locations))
-    if (countries.length === 1) {
-      locationText = countryNames.of(countries[0].toUpperCase()) || ''
-    }
-  }
-
-  let salaryText = 'Not Available'
-  if (job.minSalary || job.maxSalary) {
-    if (job.minSalary && job.maxSalary && job.minSalary !== job.maxSalary) {
-      salaryText = `${Math.floor(job.minSalary/1000)}K - ${Math.ceil(job.maxSalary/1000)}K`
-    } else {
-      const minMaxSign = job.minSalary ? '≥' : '≤'
-      salaryText = `${minMaxSign} ${Math.round((job.minSalary! || job.maxSalary!) / 1000)}K`
-    }
-    salaryText +=  ` (${currencyNames.of(job.currency!.toUpperCase())})`
-  }
-
-  let minYearsOrExperienceText = ''
-  if (Number.isInteger(job.minYearsOfExperience)) {
-    if (job.minYearsOfExperience === 0) {
-      minYearsOrExperienceText = 'Entry level'
-    } else if (job.minYearsOfExperience === 1) {
-      minYearsOrExperienceText = `≥ ${job.minYearsOfExperience} year`
-    } else {
-      minYearsOrExperienceText = `≥ ${job.minYearsOfExperience} years`
-    }
-  } else if (Number.isInteger(job.guessedMinYearsOfExperience)) {
-    if (job.guessedMinYearsOfExperience === 0) {
-      minYearsOrExperienceText = 'Entry level'
-    } else if (job.guessedMinYearsOfExperience === 1) {
-      minYearsOrExperienceText = `≥ approx. ${job.guessedMinYearsOfExperience} year`
-    } else {
-      minYearsOrExperienceText = `≥ approx. ${job.guessedMinYearsOfExperience} years`
-    }
-  }
+  let locationText = getLocationText(job)
+  let salaryText = getSalaryText(job)
+  let minYearsOfExperienceText = getMinYearsOfExperienceText(job)
 
   const cardBorderStyle = borderStyle === 'shadow' ? 'shadow-[0px_2px_4px_0px_rgba(0,0,0,0.12)]' : 'border-l border-[rgba(112,135,240,0.1)]'
 
@@ -142,7 +51,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
             <path d='M12 10H10.6667V11.3333H12M12 7.33333H10.6667V8.66667H12M13.3334 12.6667H8.00004V11.3333H9.33337V10H8.00004V8.66667H9.33337V7.33333H8.00004V6H13.3334M6.66671 4.66667H5.33337V3.33333H6.66671M6.66671 7.33333H5.33337V6H6.66671M6.66671 10H5.33337V8.66667H6.66671M6.66671 12.6667H5.33337V11.3333H6.66671M4.00004 4.66667H2.66671V3.33333H4.00004M4.00004 7.33333H2.66671V6H4.00004M4.00004 10H2.66671V8.66667H4.00004M4.00004 12.6667H2.66671V11.3333H4.00004M8.00004 4.66667V2H1.33337V14H14.6667V4.66667H8.00004Z' fill='#777777'/>
           </svg>
           <div className='flex items-center gap-1 flex-[1_0_0]'>
-            <p className='text-xs font-normal leading-4'>{companySizes[job.company.companySize]} employees</p>
+            <p className='text-xs font-normal leading-4'>{COMPANY_SIZES[job.company.companySize]} employees</p>
           </div>
         </div>
 
@@ -152,7 +61,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
             </svg>
             <div className='flex items-center gap-1 flex-[1_0_0]'>
               <p className='text-xs font-normal leading-4 flex-[1_0_0]'>{truncate({ length: 38 }, locationText)}</p>
-              <p className='text-xs font-normal leading-4 text-[#777]'>{remote[job.remote]}</p>
+              <p className='text-xs font-normal leading-4 text-[#777]'>{REMOTE[job.remote]}</p>
             </div>
         </div>
 
@@ -162,7 +71,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
           </svg>
           <div className='flex items-center gap-1 flex-[1_0_0]'>
             <p className='text-xs font-normal leading-4 flex-[1_0_0]'>{salaryText}</p>
-            <p className='text-xs font-normal leading-4 text-[#777]'>{minYearsOrExperienceText}</p>
+            <p className='text-xs font-normal leading-4 text-[#777]'>{minYearsOfExperienceText}</p>
             </div>
         </div>
       </div>
@@ -170,15 +79,10 @@ const JobCard = ({ job, borderStyle }: Props) => {
       <div className='flex justify-between items-center gap-2 self-stretch'>
         <div className='flex py-1.5 px-2 flex-col justify-center items-center gap-2.5 rounded-sm bg-[#DBE0F1]'>
           <div className='flex items-center gap-2.5'>
-            <p className='text-xs font-normal leading-4 truncate'>{verticals[job.company.cdrCategory]}</p>
+            <p className='text-xs font-normal leading-4 truncate'>{VERTICALS[job.company.cdrCategory]}</p>
           </div>
         </div>
-        <a className='flex p-1.5 justify-center items-center gap-0.5 rounded-sm bg-[#132D59]' id={job.id} href={job.sourceUrl} target='_blank' onClick={onClickViewJobButton}>
-          <p className='text-white text-sm font-medium leading-4 font-manrope'>ViewJob</p>
-          <svg className='inline' width='17' height='16' viewBox='0 0 17 16' fill='none'>
-            <path d='M14.5011 8.92436V13.079C14.5011 13.3238 14.4038 13.5587 14.2307 13.7318C14.0575 13.905 13.8227 14.0022 13.5778 14.0022H3.42211C3.17725 14.0022 2.94242 13.905 2.76928 13.7318C2.59614 13.5587 2.49887 13.3238 2.49887 13.079V2.92325C2.49887 2.67839 2.59614 2.44356 2.76928 2.27041C2.94242 2.09727 3.17725 2 3.42211 2H7.57673M11.2697 2H14.5011M14.5011 2V5.23137M14.5011 2L8.49998 8.00112' stroke='white' strokeWidth='0.923249' strokeLinecap='round' strokeLinejoin='round' />
-          </svg>
-        </a>
+        <ViewJobButton url={job.sourceUrl} onClick={onClickViewJobButton} />
       </div>
     </div>
     
