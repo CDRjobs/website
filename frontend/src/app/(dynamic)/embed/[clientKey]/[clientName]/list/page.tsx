@@ -66,6 +66,7 @@ const Page = () => {
   const [querySearchCompanies] = useLazyQuery(SearchCompaniesQuery)
   const [jobs, setJobs] = useState<Job[]>([])
   const [company, setCompany] = useState<Company>()
+  const [isLoading, setIsLoading] = useState(true)
 
   const companyId = searchParams.get('company')
   if (!companyId) {
@@ -79,6 +80,8 @@ const Page = () => {
 
       const { data } = await querySearchJobs({ variables: { clientKey, filters: { companies: [companyId] }, pagination: {} } })
       setJobs(data.searchJobs.data)
+
+      setIsLoading(false)
     }
 
     fetchJobs()
@@ -91,7 +94,7 @@ const Page = () => {
   })
   
   return <div className='w-full'>
-    <JobList jobs={jobs} title={`${company?.name}'s jobs`} />
+    {!isLoading && <JobList jobs={jobs} title={`${company?.name}'s jobs`} />}
   </div>
 }
 
