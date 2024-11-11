@@ -82,6 +82,7 @@ const Page = () => {
   const [totalCount, setTotalCount] = useState<number>(0)
   const [jobs, setJobs] = useState<Job[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const speed = Number(searchParams.get('speed') || '6500')
   const verticals = (searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []) as Verticals
@@ -96,6 +97,7 @@ const Page = () => {
       const { data } = await querySearchJobs({ variables: { clientKey, filters, pagination } })
       setJobs(data.searchJobs.data)
       setTotalCount(data.searchJobs.pagination.total)
+      setIsLoading(false)
     }
 
     fetchJobs()
@@ -126,11 +128,13 @@ const Page = () => {
   const jobText = companies.length ? companiesText : categoriesText
   
   return <div className='w-full py-4'>
-    <p className='text-black text-center text-lg font-normal leading-4 font-inter'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available {jobText} today</p>
-    <div className='mt-6 mb-4'>
-      <Carousel slides={jobcards} slideWidth={330} slideHeight={276} speed={speed} />
-    </div>
-    <p className='text-base px-4 font-inter'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
+    {!isLoading && <div>
+      <p className='text-black text-center text-lg font-normal leading-4 font-inter'>There are <span className='font-semibold text-[#7087F0]'>{totalCount}</span> jobs available {jobText} today</p>
+      <div className='mt-6 mb-4'>
+        <Carousel slides={jobcards} slideWidth={330} slideHeight={276} speed={speed} />
+      </div>
+      <p className='text-base px-4 font-inter'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
+    </div>}
   </div>
 }
 
