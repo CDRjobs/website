@@ -1,6 +1,7 @@
 'use client'
 
-import JobCard, { Job } from '@/components/molecules/JobCard'
+import JobCard from '@/components/molecules/JobCard'
+import { Job } from '@/services/job'
 import Carousel from '@/components/organisms/Carousel'
 import { gql, useLazyQuery } from '@apollo/client'
 import { useParams, useSearchParams } from 'next/navigation'
