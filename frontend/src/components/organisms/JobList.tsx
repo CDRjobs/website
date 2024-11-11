@@ -32,7 +32,7 @@ const JobList = (props: JobListProps) => {
       </div>}
 
       {props.jobs.length > 0 && <div className='mt-2 flex justify-end'>
-        <p className='text-sm font-inter'><span className='font-semibold text-[#7087F0]'>{props.jobs.length}</span> available job{props.jobs.length === 1 ? '' : 's'}</p>
+        <p className='text-sm font-inter px-2'><span className='font-semibold text-[#7087F0]'>{props.jobs.length}</span> available job{props.jobs.length === 1 ? '' : 's'}</p>
       </div>}
 
       <p className='text-xs mb-2 mt-8 font-inter'>Couldn&apos;t find what you are looking for? Check out all available opening on the <a className='underline text-[#7087F0]' href='https://www.cdrjobs.earth/job-board'>CDRjobs Board</a>.</p>
