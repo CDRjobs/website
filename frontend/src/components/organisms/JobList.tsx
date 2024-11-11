@@ -16,10 +16,10 @@ const JobList = (props: JobListProps) => {
         <p className='text-[#7087F0] text-xs font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDRjobs © 2024</span></a></p>
       </div>
 
-      {props.jobs.length > 0 && <div className='flex flex-col gap-1 max-h-[7.5rem] overflow-scroll'>
+      {props.jobs.length > 0 && <div className='flex flex-col gap-0.5 max-h-32 overflow-scroll'>
         {...props.jobs.map((job, i) => (
           <div key={`job-list-items-${i}`} className='w-full'>
-            <a href={job.sourceUrl} target='_blank' className='flex flew-row justify-between gap-3 px-2 hover:bg-[rgba(112,135,240,0.10)]'>
+            <a href={job.sourceUrl} target='_blank' className='flex flew-row justify-between items-center gap-3 px-2 py-0.5 hover:bg-[rgba(112,135,240,0.10)] hover:rounded-sm'>
               <p className='text-sm truncate font-medium leading-5 font-inter'>{job.title}</p>
               <div className='shrink-0 text-xs'>{getLocationText(job, true)}</div>
             </a>
