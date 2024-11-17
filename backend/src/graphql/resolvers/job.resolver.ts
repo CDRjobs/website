@@ -6,7 +6,6 @@ import { validateSearchJobsParams } from '../validation/job'
 const resolvers = {
   Query: {
     searchJobs: async (parent: object, params: Partial<QuerySearchJobsArgs>) => {
-      // TODO: check client token or domain ? X-Frame-Options ?
       const { clientKey, filters, pagination } = await validateSearchJobsParams(params)
       const { total, jobs } = await services.job.searchJobs(clientKey, filters, pagination)
 

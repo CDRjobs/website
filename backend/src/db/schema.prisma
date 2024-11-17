@@ -95,8 +95,8 @@ model Location {
 }
 
 model Job {
-  id                          String                       @id @default(cuid())
-  airTableId                  String                       @unique
+  id                          String          @id @default(cuid())
+  airTableId                  String          @unique
   title                       String
   sourceUrl                   String
   disciplines                 Discipline[]
@@ -111,11 +111,11 @@ model Job {
   guessedMinYearsOfExperience Int?
   minEducationLevel           EducationLevel?
   seniority                   Seniority?
-  publishedAt                 DateTime                     @unique
+  publishedAt                 DateTime        @unique
   realPublishedAt             DateTime?
   foundAt                     DateTime
   lastCheckedAt               DateTime
-  company                     Company                      @relation(fields: [companyId], references: [id])
+  company                     Company         @relation(fields: [companyId], references: [id])
   companyId                   String
   contractTypes               ContractType[]
   createdAt                   DateTime?
@@ -138,12 +138,13 @@ model Company {
 }
 
 model Client {
-  id          String        @id @default(cuid())
-  name        String        @unique
-  iFrameKey   String        @unique @default(uuid())
-  companies   Company[]
-  countries   CountryCode[] // countries to include in job search in addition to companies jobs
-  showAllJobs Boolean       @default(false)
+  id            String        @id @default(cuid())
+  name          String        @unique
+  iFrameKey     String        @unique @default(uuid())
+  companies     Company[]
+  countries     CountryCode[] // countries to include in job search in addition to companies jobs
+  showAllJobs   Boolean       @default(false)
+  jobBoardTitle String?
 }
 
 enum CountryCode {

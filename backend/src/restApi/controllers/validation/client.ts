@@ -33,6 +33,7 @@ const createClientSchema = z.object({
     .superRefine(checkCompaniesBySuperRefine),
   countries: z.array(z.nativeEnum(CountryCode)).optional(),
   showAllJobs: z.boolean().optional(),
+  jobBoardTitle: z.string().optional(),
 }).strict()
 
 const updateCompanySchema = z.object({
@@ -43,6 +44,7 @@ const updateCompanySchema = z.object({
     .superRefine(checkCompaniesBySuperRefine),
   countries: z.array(z.nativeEnum(CountryCode)).optional(),
   showAllJobs: z.boolean().optional(),
+  jobBoardTitle: z.string().optional(),
 }).strict()
 
 const createClientBodySchema = z.object({
