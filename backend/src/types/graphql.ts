@@ -16,6 +16,11 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export type Client = {
+  __typename?: 'Client';
+  jobBoardTitle?: Maybe<Scalars['String']['output']>;
+};
+
 export type Company = {
   __typename?: 'Company';
   careerPageUrl?: Maybe<Scalars['String']['output']>;
@@ -26,6 +31,11 @@ export type Company = {
   id: Scalars['ID']['output'];
   logoUrl: Scalars['String']['output'];
   name: Scalars['String']['output'];
+};
+
+export type GetClientResult = {
+  __typename?: 'GetClientResult';
+  data: Client;
 };
 
 export type Job = {
@@ -62,8 +72,14 @@ export type Pagination = {
 
 export type Query = {
   __typename?: 'Query';
+  getClient?: Maybe<GetClientResult>;
   searchCompanies?: Maybe<SearchCompaniesResults>;
   searchJobs?: Maybe<SearchJobsResults>;
+};
+
+
+export type QueryGetClientArgs = {
+  clientKey: Scalars['String']['input'];
 };
 
 
@@ -195,8 +211,10 @@ export type DirectiveResolverFn<TResult = {}, TParent = {}, TContext = {}, TArgs
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars['Boolean']['output']>;
+  Client: ResolverTypeWrapper<Client>;
   Company: ResolverTypeWrapper<Company>;
   Float: ResolverTypeWrapper<Scalars['Float']['output']>;
+  GetClientResult: ResolverTypeWrapper<GetClientResult>;
   ID: ResolverTypeWrapper<Scalars['ID']['output']>;
   Int: ResolverTypeWrapper<Scalars['Int']['output']>;
   Job: ResolverTypeWrapper<Job>;
@@ -216,8 +234,10 @@ export type ResolversTypes = {
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
   Boolean: Scalars['Boolean']['output'];
+  Client: Client;
   Company: Company;
   Float: Scalars['Float']['output'];
+  GetClientResult: GetClientResult;
   ID: Scalars['ID']['output'];
   Int: Scalars['Int']['output'];
   Job: Job;
@@ -234,6 +254,11 @@ export type ResolversParentTypes = {
   searchJobsResults: SearchJobsResults;
 };
 
+export type ClientResolvers<ContextType = any, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = {
+  jobBoardTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type CompanyResolvers<ContextType = any, ParentType extends ResolversParentTypes['Company'] = ResolversParentTypes['Company']> = {
   careerPageUrl?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
   cdrCategory?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
@@ -243,6 +268,11 @@ export type CompanyResolvers<ContextType = any, ParentType extends ResolversPare
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>;
   logoUrl?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type GetClientResultResolvers<ContextType = any, ParentType extends ResolversParentTypes['GetClientResult'] = ResolversParentTypes['GetClientResult']> = {
+  data?: Resolver<ResolversTypes['Client'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -279,6 +309,7 @@ export type PaginationResolvers<ContextType = any, ParentType extends ResolversP
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  getClient?: Resolver<Maybe<ResolversTypes['GetClientResult']>, ParentType, ContextType, RequireFields<QueryGetClientArgs, 'clientKey'>>;
   searchCompanies?: Resolver<Maybe<ResolversTypes['SearchCompaniesResults']>, ParentType, ContextType, RequireFields<QuerySearchCompaniesArgs, 'clientKey' | 'ids'>>;
   searchJobs?: Resolver<Maybe<ResolversTypes['searchJobsResults']>, ParentType, ContextType, RequireFields<QuerySearchJobsArgs, 'clientKey'>>;
 };
@@ -295,7 +326,9 @@ export type SearchJobsResultsResolvers<ContextType = any, ParentType extends Res
 };
 
 export type Resolvers<ContextType = any> = {
+  Client?: ClientResolvers<ContextType>;
   Company?: CompanyResolvers<ContextType>;
+  GetClientResult?: GetClientResultResolvers<ContextType>;
   Job?: JobResolvers<ContextType>;
   Location?: LocationResolvers<ContextType>;
   Pagination?: PaginationResolvers<ContextType>;

@@ -6,6 +6,7 @@ type ClientInput = {
   companies?: string[]
   countries?: CountryCode[]
   showAllJobs?: boolean
+  jobBoardTitle?: string
 }
 
 type UpdateClientInput = {
@@ -13,6 +14,7 @@ type UpdateClientInput = {
   companies?: string[]
   countries?: CountryCode[]
   showAllJobs?: boolean
+  jobBoardTitle?: string
 }
 
 const getClientByIFrameKey = async (iFrameKey: string) => {
@@ -44,7 +46,7 @@ const getClientByName = async (name: string) => {
   return client
 }
 
-const createClient = async ({ name, companies, countries, showAllJobs }: ClientInput) => {
+const createClient = async ({ name, companies, countries, showAllJobs, jobBoardTitle }: ClientInput) => {
   const companiesToAdd = companies
     ? { connect: companies.map(id => ({ id })) }
     : null
@@ -53,6 +55,7 @@ const createClient = async ({ name, companies, countries, showAllJobs }: ClientI
     data: {
       name,
       showAllJobs,
+      jobBoardTitle,
       ...(companiesToAdd ? { companies: companiesToAdd } : {}),
       ...(countries ? { countries: countries } : {})
     },
@@ -62,7 +65,7 @@ const createClient = async ({ name, companies, countries, showAllJobs }: ClientI
 }
 
 
-const updateClient = async (id: string, { name, companies, countries, showAllJobs }: UpdateClientInput) => {
+const updateClient = async (id: string, { name, companies, countries, showAllJobs, jobBoardTitle }: UpdateClientInput) => {
   const companiesToAdd = companies
     ? { set: companies.map(id => ({ id })) }
     : null
@@ -72,6 +75,7 @@ const updateClient = async (id: string, { name, companies, countries, showAllJob
     data: {
       name,
       showAllJobs,
+      jobBoardTitle,
       ...(companiesToAdd ? { companies: companiesToAdd } : {}),
       ...(countries ? { countries: countries } : {}),
     }
