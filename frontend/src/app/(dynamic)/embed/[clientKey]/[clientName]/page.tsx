@@ -15,7 +15,9 @@ import { Filters, Pagination } from './types'
 import { VerticalsMap, RequiredExperience } from '@/types/globals'
 import { trackDidSearch } from '@/services/telemetry'
 import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
+import GetClientQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/getClient'
 import { VERTICAL_LONG_WORDING, REQUIRED_EXPERIENCE_WORDING, YES_NO_WORDING, COMPANY_SIZE_WORDING , REMOTE_SHORT_WORDING, CONTRACT_TYPES_WORDING } from '@/constants/wording'
+import { Client } from '@/services/client'
 
 const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
   const correspondingMap = {
@@ -52,11 +54,6 @@ const Page = () => {
   const isAfen = clientName.toLowerCase() === 'afen'
   const isDaccoalition = clientName.toLowerCase() === 'daccoalition'
   const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
-  const isNEP = clientName.toLowerCase() === 'negativeemissionsplatform'
-  const isIBI = clientName.toLowerCase() === 'internationalbiocharinitiative'
-  const isAirMiners = clientName.toLowerCase() === 'airminers'
-  const isCRIA = clientName.toLowerCase() === 'carbonremovalindiaalliance'
-  const isDVNE = clientName.toLowerCase() === 'deutscherverbandfurnegativeemissionen'
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
@@ -67,7 +64,6 @@ const Page = () => {
     clientVerticals = omit(['forest', 'directAirCapture', 'mCdr', 'mineralization', 'soil'], VERTICAL_LONG_WORDING)
   }
   
-  const [isClient, setIsClient] = useState(false)
   const locationFilterRef = useRef<LocationComboboxRef>(null)
   const categoryFilterRef = useRef<CategoryListboxRef>(null)
   const verticalFilterRef = useRef<FilterListboxRef>(null)
@@ -77,7 +73,9 @@ const Page = () => {
   const contractTypeFilterRef = useRef<FilterListboxRef>(null)
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
+  const [client, setClient] = useState<Client | null>(null)
   const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
+  const [queryClient] = useLazyQuery(GetClientQuery)
   const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
@@ -85,7 +83,6 @@ const Page = () => {
   const [loadingJobs, setLoadingJobs] = useState(true)
   const [loadMore, setLoadMore] = useState(false)
   const [isMobile, setIsMobile] = useState(mediaWatcher.matches)
-
 
   const setFilterFor = (filterName: string, value: unknown) => {
     if (filterName === 'afenOnly') {
@@ -141,7 +138,14 @@ const Page = () => {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { queryNewJobs({ pagination, filters: defaultFilters, jobs }) }, [])
-  useEffect(() => { setIsClient(true) }, [])
+  useEffect(() => {
+    const getClient = async () => {
+    const { data } = await queryClient({ variables: { clientKey }})
+      setClient(data?.getClient?.data)
+    }
+
+    getClient()
+  }, [clientKey, queryClient])
   useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, filters, limit])
   useEffect(() => {
     new Pym.Child().sendHeight()
@@ -164,10 +168,6 @@ const Page = () => {
     afenOnlyFilterRef.current?.reset()
   }
 
-  if (!isClient) {
-    return null
-  }
-
   let jobResultText = ''
   if (totalCount !== null) {
     jobResultText = totalCount === 0
@@ -178,28 +178,12 @@ const Page = () => {
   const isFilterUsed = (value: unknown) => isArray(value) ? !isEmpty(value) : !isNil(value)
   const areFiltersUsed = map(isFilterUsed, values(filters)).some(isEmpty => isEmpty)
 
-  let titleText = 'Find job'
-  // TODO: change to make a request instead
-  if (isUSBC) {
-    titleText = 'USBC Job Board'
-  } else if (isNEP) {
-    titleText = 'NEP'
-  } else if (isIBI) {
-    titleText = 'IBI Job Board'
-  } else if (isAirMiners) {
-    titleText = '[DEMO] AirMiners'
-  } else if (isCRIA) {
-    titleText = 'CRIA Job Board'
-  } else if (isDVNE) {
-    titleText = '[DEMO] DVNE Job Board'
-  }
-
   const content = <div className='flex px-4 py-4 min-h-96 max-w-[90rem] flex-col items-center gap-3 rounded-[1.25rem] bg-white sm:py-6 sm:px-6 sm:gap-2.5'>
     <div className='flex py-3 flex-col justify-center items-start gap-3 self-stretch sm:gap-6 sm:pt-0'>
 
       <div className='flex flex-col items-center sm:content-center gap-3 self-stretch flex-wrap sm:flex-row sm:gap-6'>
         <div className='flex py-1 flex-col content-center items-start gap-1 max-sm:self-stretch sm:flex-[1_0_0]'>
-          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>{titleText}</a></p>
+          <p className='text-lg font-medium leading-[1.375rem] sm:text-[1.6875rem] sm:leading-7'><a href="https://cdrjobs.earth" target='_blank'>{client?.jobBoardTitle || 'Find job'}</a></p>
           <div className='flex items-center gap-1.5 self-stretch'>
             <p className='text-[#7087F0] text-sm font-medium leading-4 text-nowrap'><a href="https://cdrjobs.earth" target='_blank'>Powered by <span className='font-bold'>CDRjobs © 2024</span></a></p>
           </div>
@@ -241,7 +225,7 @@ const Page = () => {
   return isMobile
     ? content
     : <div className='flex justify-center'>
-      {content}
+      {!!client && content}
     </div>
 }
 

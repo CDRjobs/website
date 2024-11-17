@@ -1,0 +1,11 @@
+type Client {
+  jobBoardTitle: String
+}
+
+type GetClientResult {
+  data: Client!
+}
+
+type Query {
+  getClient(clientKey: String!): GetClientResult
+}
