@@ -1,9 +1,9 @@
 import urlJoin from 'url-join'
-import { map, omit, truncate, uniq } from 'lodash/fp'
+import { omit, truncate } from 'lodash/fp'
 import formatDistanceFromNow from '@/utils/formatDistanceFromNow'
 import { trackViewJobClicked } from '@/services/telemetry'
 import removeTypename from '@/utils/removeTypename'
-import { VERTICALS, COMPANY_SIZES, REMOTE } from '@/services/constants'
+import { VERTICAL_MEDIUM_WORDING, COMPANY_SIZE_WORDING, REMOTE_LONG_WORDING } from '@/constants/wording'
 import { getLocationText, getMinYearsOfExperienceText, getSalaryText, Job } from '@/services/job'
 import ViewJobButton from '@/components/atoms/ViewJobButton'
 
@@ -51,7 +51,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
             <path d='M12 10H10.6667V11.3333H12M12 7.33333H10.6667V8.66667H12M13.3334 12.6667H8.00004V11.3333H9.33337V10H8.00004V8.66667H9.33337V7.33333H8.00004V6H13.3334M6.66671 4.66667H5.33337V3.33333H6.66671M6.66671 7.33333H5.33337V6H6.66671M6.66671 10H5.33337V8.66667H6.66671M6.66671 12.6667H5.33337V11.3333H6.66671M4.00004 4.66667H2.66671V3.33333H4.00004M4.00004 7.33333H2.66671V6H4.00004M4.00004 10H2.66671V8.66667H4.00004M4.00004 12.6667H2.66671V11.3333H4.00004M8.00004 4.66667V2H1.33337V14H14.6667V4.66667H8.00004Z' fill='#777777'/>
           </svg>
           <div className='flex items-center gap-1 flex-[1_0_0]'>
-            <p className='text-xs font-normal leading-4'>{COMPANY_SIZES[job.company.companySize]} employees</p>
+            <p className='text-xs font-normal leading-4'>{COMPANY_SIZE_WORDING[job.company.companySize]} employees</p>
           </div>
         </div>
 
@@ -61,7 +61,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
             </svg>
             <div className='flex items-center gap-1 flex-[1_0_0]'>
               <p className='text-xs font-normal leading-4 flex-[1_0_0]'>{truncate({ length: 38 }, locationText)}</p>
-              <p className='text-xs font-normal leading-4 text-[#777]'>{REMOTE[job.remote]}</p>
+              <p className='text-xs font-normal leading-4 text-[#777]'>{REMOTE_LONG_WORDING[job.remote]}</p>
             </div>
         </div>
 
@@ -79,7 +79,7 @@ const JobCard = ({ job, borderStyle }: Props) => {
       <div className='flex justify-between items-center gap-2 self-stretch'>
         <div className='flex py-1.5 px-2 flex-col justify-center items-center gap-2.5 rounded-sm bg-[#DBE0F1]'>
           <div className='flex items-center gap-2.5'>
-            <p className='text-xs font-normal leading-4 truncate'>{VERTICALS[job.company.cdrCategory]}</p>
+            <p className='text-xs font-normal leading-4 truncate'>{VERTICAL_MEDIUM_WORDING[job.company.cdrCategory]}</p>
           </div>
         </div>
         <ViewJobButton url={job.sourceUrl} onClick={onClickViewJobButton} />
