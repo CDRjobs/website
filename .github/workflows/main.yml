@@ -52,6 +52,7 @@ jobs:
           NODE_ENV: test
           MAPBOX_TOKEN: ${{ secrets.MAPBOX_TOKEN }}
           BREVO_KEY: unused
+          SERVER_ENDPOINT: http://localhost:4000
         run: yarn ci:test:api
     services:
       postgres:
