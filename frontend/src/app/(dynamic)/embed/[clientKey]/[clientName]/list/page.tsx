@@ -2,62 +2,17 @@
 
 import { Job } from '@/services/job'
 import JobList from '@/components/organisms/JobList'
-import { gql, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Pym from 'pym.js'
+import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
+import SearchCompaniesQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchCompanies'
 
 type Company = {
   id: string
   name: string
 }
-
-// TODO: to factorize with ../page.tsx
-const SearchJobsQuery = gql`
-  query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
-    searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
-      pagination {
-        total
-      }
-      data {
-        id
-        title
-        sourceUrl
-        locations {
-          country
-          city
-        }
-        remote
-        disciplines
-        contractTypes
-        currency
-        minSalary
-        maxSalary
-        minYearsOfExperience
-        guessedMinYearsOfExperience
-        publishedAt
-        company {
-          id
-          name
-          companySize
-          logoUrl
-          cdrCategory
-        }
-      }
-    }
-  }
-`
-
-const SearchCompaniesQuery = gql`
-  query searchCompanies ($clientKey: String!, $ids: [String!]!) {
-    searchCompanies (clientKey: $clientKey, ids: $ids) {
-      data {
-        id
-        name
-      }
-    }
-  }
-`
 
 const Page = () => {
   const { clientKey } = useParams() as { [key: string]: string }

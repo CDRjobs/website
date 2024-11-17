@@ -17,8 +17,8 @@ export type Filters = {
   companySize?: string[]
   remote?: string[]
   requiredExperience?: {
-    min: number,
-    max: number,
+    min: number
+    max: number
   }[]
   contractType?: string[]
   openSearchToCountries?: boolean

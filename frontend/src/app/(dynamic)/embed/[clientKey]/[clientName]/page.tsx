@@ -9,13 +9,15 @@ import CategoryListbox, { CategoryListboxRef } from '@/components/molecules/Cate
 import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterListbox'
 import JobCard from '@/components/molecules/JobCard'
 import { Job } from '@/services/job'
-import { gql, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { first, isArray, isEmpty, isNil, last, map, omit, values } from 'lodash/fp'
-import { companySizes, contractTypes, remote, requiredExperience, verticals, afenOnly } from './filters'
 import { Filters, Pagination } from './types'
+import { VerticalsMap, RequiredExperience } from '@/types/globals'
 import { trackDidSearch } from '@/services/telemetry'
+import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
+import { VERTICAL_LONG_WORDING, REQUIRED_EXPERIENCE_WORDING, YES_NO_WORDING, COMPANY_SIZE_WORDING , REMOTE_SHORT_WORDING, CONTRACT_TYPES_WORDING } from '@/constants/wording'
 
-const toGraphqlRequiredExperienceInput = (value: keyof typeof requiredExperience) => {
+const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
   const correspondingMap = {
     min0to2years: { min: 0, max: 2 },
     min3to5years: { min: 3, max: 5 },
@@ -24,41 +26,6 @@ const toGraphqlRequiredExperienceInput = (value: keyof typeof requiredExperience
   }
   return correspondingMap[value]
 }
-
-const SearchJobsQuery = gql`
-  query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
-    searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
-      pagination {
-        total
-      }
-      data {
-        id
-        title
-        sourceUrl
-        locations {
-          country
-          city
-        }
-        remote
-        disciplines
-        contractTypes
-        currency
-        minSalary
-        maxSalary
-        minYearsOfExperience
-        guessedMinYearsOfExperience
-        publishedAt
-        company {
-          id
-          name
-          companySize
-          logoUrl
-          cdrCategory
-        }
-      }
-    }
-  }
-`
 
 const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJobs: number, fromLoadMore: boolean, totalJobsDisplayed: number) => {
   return {
@@ -93,11 +60,11 @@ const Page = () => {
 
   const limit = isAfen ? 24 : 12
   const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
-  let clientVerticals: Partial<typeof verticals> = verticals
+  let clientVerticals: Partial<VerticalsMap<string>> = VERTICAL_LONG_WORDING
   if (isDaccoalition) {
-    clientVerticals = omit(['forest', 'biomass', 'mCdr', 'enhancedWeathering', 'soil'], verticals)
+    clientVerticals = omit(['forest', 'biomass', 'mCdr', 'enhancedWeathering', 'soil'], VERTICAL_LONG_WORDING)
   } else if (isUSBC) {
-    clientVerticals = omit(['forest', 'directAirCapture', 'mCdr', 'mineralization', 'soil'], verticals)
+    clientVerticals = omit(['forest', 'directAirCapture', 'mCdr', 'mineralization', 'soil'], VERTICAL_LONG_WORDING)
   }
   
   const [isClient, setIsClient] = useState(false)
@@ -243,12 +210,12 @@ const Page = () => {
       </div>
       
       <div className='flex sm:h-10 py-2 items-center gap-3 self-stretch max-sm:overflow-scroll'>
-        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={afenOnly} onSelect={onAfenOnlySelect} initialValue='yes' />}
+        {isAfen && <FilterListbox ref={afenOnlyFilterRef} text='AFEN only' valueMap={YES_NO_WORDING} onSelect={onAfenOnlySelect} initialValue='yes' />}
         <FilterListbox ref={verticalFilterRef} text='Vertical' valueMap={clientVerticals} onSelect={onVerticalSelect} multiple />
-        <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={companySizes} onSelect={onCompanySizeSelect} multiple />
-        <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={remote} onSelect={onRemoteSelect} multiple />
-        <FilterListbox ref={requiredExperienceFilterRef} text='Experience Required' valueMap={requiredExperience} onSelect={onRequiredExperienceSelect} multiple />
-        <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={contractTypes} onSelect={onContractTypeSelect} multiple />
+        <FilterListbox ref={companySizeFilterRef} text='Company Size' valueMap={COMPANY_SIZE_WORDING} onSelect={onCompanySizeSelect} multiple />
+        <FilterListbox ref={remoteFilterRef} text='Remote' valueMap={REMOTE_SHORT_WORDING} onSelect={onRemoteSelect} multiple />
+        <FilterListbox ref={requiredExperienceFilterRef} text='Experience Required' valueMap={REQUIRED_EXPERIENCE_WORDING} onSelect={onRequiredExperienceSelect} multiple />
+        <FilterListbox ref={contractTypeFilterRef} text='Contract Type' valueMap={CONTRACT_TYPES_WORDING} onSelect={onContractTypeSelect} multiple />
       </div>
 
       {isMobile && <MainButton onClick={onClickSearch} loading={loadingJobs}>Search</MainButton>}
