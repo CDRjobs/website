@@ -3,76 +3,19 @@
 import JobCard from '@/components/molecules/JobCard'
 import { Job } from '@/services/job'
 import Carousel from '@/components/organisms/Carousel'
-import { gql, useLazyQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Pym from 'pym.js'
-
-const verticalWording = {
-  directAirCapture: 'Direct Air Capture',
-  biomass: 'Biomass',
-  mineralization: 'Mineralization',
-  mCdr: 'Ocean',
-  soil: 'Farming',
-  forest: 'Forest',
-  utilization: 'Utilization',
-  enhancedWeathering: 'Enhanced Weathering',
-  ecosystemServices: 'Ecosystem Services',
-}
-
-type Verticals = Array<keyof typeof verticalWording>
+import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
+import SearchCompaniesQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchCompanies'
+import { VERTICAL_SHORT_WORDING } from '@/constants/wording'
+import { Verticals } from '@/types/globals'
 
 type Company = {
   id: string
   name: string
 }
-
-// TODO: to factorize with ../page.tsx
-const SearchJobsQuery = gql`
-  query searchJobs ($clientKey: String!, $filters: jobFiltersInput!, $pagination: paginationInput!) {
-    searchJobs (clientKey: $clientKey, filters: $filters, pagination: $pagination) {
-      pagination {
-        total
-      }
-      data {
-        id
-        title
-        sourceUrl
-        locations {
-          country
-          city
-        }
-        remote
-        disciplines
-        contractTypes
-        currency
-        minSalary
-        maxSalary
-        minYearsOfExperience
-        guessedMinYearsOfExperience
-        publishedAt
-        company {
-          id
-          name
-          companySize
-          logoUrl
-          cdrCategory
-        }
-      }
-    }
-  }
-`
-
-const SearchCompaniesQuery = gql`
-  query searchCompanies ($clientKey: String!, $ids: [String!]!) {
-    searchCompanies (clientKey: $clientKey, ids: $ids) {
-      data {
-        id
-        name
-      }
-    }
-  }
-`
 
 const Page = () => {
   const { clientKey } = useParams() as { [key: string]: string }
@@ -85,7 +28,7 @@ const Page = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const speed = Number(searchParams.get('speed') || '6500')
-  const verticals = (searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []) as Verticals
+  const verticals = (searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []) as Verticals[]
   const companiesIds = (searchParams.get('companies') ? searchParams.get('companies')!.split(',') : []) as string[]
 
   useEffect(() => {
@@ -113,9 +56,9 @@ const Page = () => {
 
   let categoriesText = <>in <strong>Carbon Dioxide Removal</strong></>
   if (verticals.length === 1) {
-    categoriesText = <>in <strong>{verticalWording[verticals[0]]}</strong></>
+    categoriesText = <>in <strong>{VERTICAL_SHORT_WORDING[verticals[0]]}</strong></>
   } else if (verticals.length > 1) {
-    categoriesText = <>in {verticals.slice(0, -1).map((v, i) => <span key={`cat-${i}`}>{i !== 0 && ', '}<strong>{verticalWording[v]}</strong></span>)} and <strong>{verticalWording[verticals[verticals.length - 1]]}</strong></>
+    categoriesText = <>in {verticals.slice(0, -1).map((v, i) => <span key={`cat-${i}`}>{i !== 0 && ', '}<strong>{VERTICAL_SHORT_WORDING[v]}</strong></span>)} and <strong>{VERTICAL_SHORT_WORDING[verticals[verticals.length - 1]]}</strong></>
   }
 
   let companiesText

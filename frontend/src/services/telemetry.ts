@@ -1,4 +1,3 @@
-import { requiredExperience } from '@/app/(dynamic)/embed/[clientKey]/[clientName]/filters'
 import * as amplitude from '@amplitude/analytics-browser'
 
 type TrackViewJobClickedInput = {

@@ -1,4 +1,4 @@
-import { VERTICALS, COMPANY_SIZES, REMOTE } from '@/services/constants'
+import { Remote, CompanySizes, Verticals } from '@/types/globals'
 import { map, uniq } from 'lodash/fp'
 
 export type Job = {
@@ -7,7 +7,7 @@ export type Job = {
   sourceUrl: string
   disciplines: string[],
   locations: { city?: string, country: string }[]
-  remote: keyof typeof REMOTE
+  remote: Remote
   currency?: string
   minSalary?: number
   maxSalary?: number
@@ -18,12 +18,11 @@ export type Job = {
   company: {
     id: string
     name: string
-    companySize: keyof typeof COMPANY_SIZES
+    companySize: CompanySizes
     logoUrl: string
-    cdrCategory: keyof typeof VERTICALS
+    cdrCategory: Verticals
   }
 }
-
 
 export const getLocationText = (job: Job, short: boolean = false) => {
   const countryNames = new Intl.DisplayNames(['en'], { type: 'region', style: short ? 'short' : 'long' })
