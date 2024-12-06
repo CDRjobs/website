@@ -1,4 +1,6 @@
 type Client {
+  name: String
+  key: String
   jobBoardTitle: String
 }
 

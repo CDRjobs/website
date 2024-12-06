@@ -1,5 +1,6 @@
 import { getLocationText, Job } from '@/services/job'
 import React from 'react'
+import useAddUtmParams from '@/hooks/useAddUtmParams'
 
 type JobListProps = {
   title: string
@@ -7,6 +8,8 @@ type JobListProps = {
 }
 
 const JobList = (props: JobListProps) => {
+  const addUtmParams = useAddUtmParams('list')
+
   return (
     <div className='p-4 bg-white'>
       <div className='flex mb-8 flex-col content-center items-center gap-1'>
@@ -19,7 +22,7 @@ const JobList = (props: JobListProps) => {
       {props.jobs.length > 0 && <div className='flex flex-col gap-0.5 max-h-32 overflow-scroll'>
         {...props.jobs.map((job, i) => (
           <div key={`job-list-items-${i}`} className='w-full'>
-            <a href={job.sourceUrl} target='_blank' className='flex flew-row justify-between items-center gap-3 px-2 py-0.5 hover:bg-[rgba(112,135,240,0.10)] hover:rounded-sm'>
+            <a href={addUtmParams(job.sourceUrl)} target='_blank' className='flex flew-row justify-between items-center gap-3 px-2 py-0.5 hover:bg-[rgba(112,135,240,0.10)] hover:rounded-sm'>
               <p className='text-sm truncate font-medium leading-5 font-inter'>{job.title}</p>
               <div className='shrink-0 text-xs'>{getLocationText(job, true)}</div>
             </a>

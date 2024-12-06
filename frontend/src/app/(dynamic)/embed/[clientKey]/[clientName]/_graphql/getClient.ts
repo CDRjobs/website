@@ -4,6 +4,8 @@ const GetClientQuery = gql`
   query getClient ($clientKey: String!) {
     getClient(clientKey: $clientKey) {
       data {
+        name
+        key
         jobBoardTitle
       }
     }
