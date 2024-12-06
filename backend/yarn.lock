@@ -50,10 +50,10 @@
   dependencies:
     "@apollographql/graphql-playground-html" "1.6.29"
 
-"@apollo/server@4.11.0":
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.11.0.tgz#21c0f10ad805192a5485e58ed5c5b3dbe2243174"
-  integrity sha512-SWDvbbs0wl2zYhKG6aGLxwTJ72xpqp0awb2lotNpfezd9VcAvzaUizzKQqocephin2uMoaA8MguoyBmgtPzNWw==
+"@apollo/server@4.11.2":
+  version "4.11.2"
+  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.11.2.tgz#7e4a5c76456aded36f45f2d87cddd3d8d7960c27"
+  integrity sha512-WUTHY7DDek8xAMn4Woa9Bl8duQUDzRYQkosX/d1DtCsBWESZyApR7ndnI5d6+W4KSTtqBHhJFkusEI7CWuIJXg==
   dependencies:
     "@apollo/cache-control-types" "^1.0.3"
     "@apollo/server-gateway-interface" "^1.1.1"
@@ -71,7 +71,7 @@
     "@types/node-fetch" "^2.6.1"
     async-retry "^1.2.1"
     cors "^2.8.5"
-    express "^4.17.1"
+    express "^4.21.1"
     loglevel "^1.6.8"
     lru-cache "^7.10.1"
     negotiator "^0.6.3"
@@ -1295,6 +1295,11 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.12.0.tgz#69ca3ca9fab9a808ec6d67b8f6edb156cbac91e1"
   integrity sha512-eohesHH8WFRUprDNyEREgqP6beG6htMeUYeCpkEgBCieCMme5r9zFWjzAJp//9S+Kub4rqE+jXe9Cp1a7IYIIA==
 
+"@eslint/js@9.16.0":
+  version "9.16.0"
+  resolved "https://registry.yarnpkg.com/@eslint/js/-/js-9.16.0.tgz#3df2b2dd3b9163056616886c86e4082f45dbf3f4"
+  integrity sha512-tw2HxzQkrbeuvyj1tG2Yqq+0H9wGoI2IMk4EOsQeX+vmd75FtJAzf+gTA69WF+baUKRYQ3x2kbLE08js5OsTVg==
+
 "@eslint/object-schema@^2.1.4":
   version "2.1.4"
   resolved "https://registry.yarnpkg.com/@eslint/object-schema/-/object-schema-2.1.4.tgz#9e69f8bb4031e11df79e03db09f9dbbae1740843"
@@ -1414,10 +1419,10 @@
     "@graphql-codegen/visitor-plugin-common" "^5.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/plugin-helpers@^5.0.3", "@graphql-codegen/plugin-helpers@^5.0.4":
-  version "5.0.4"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-5.0.4.tgz#5f4c987c3f308ef1c8809ee0c43af0369867e0f6"
-  integrity sha512-MOIuHFNWUnFnqVmiXtrI+4UziMTYrcquljaI5f/T/Bc7oO7sXcfkAvgkNWEEi9xWreYwvuer3VHCuPI/lAFWbw==
+"@graphql-codegen/plugin-helpers@^5.0.3", "@graphql-codegen/plugin-helpers@^5.0.4", "@graphql-codegen/plugin-helpers@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/plugin-helpers/-/plugin-helpers-5.1.0.tgz#5c4ace748b9761d082ec1a0c19a82047bacce553"
+  integrity sha512-Y7cwEAkprbTKzVIe436TIw4w03jorsMruvCvu0HJkavaKMQbWY+lQ1RIuROgszDbxAyM35twB5/sUvYG5oW+yg==
   dependencies:
     "@graphql-tools/utils" "^10.0.0"
     change-case-all "1.0.15"
@@ -1457,44 +1462,33 @@
     auto-bind "~4.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/typescript-resolvers@4.2.1":
-  version "4.2.1"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-4.2.1.tgz#ae6bf5a5bda2b24ac2b90ff767d6eed55e2aec7d"
-  integrity sha512-q/ggqNSKNGG9bn49DdZrw2KokagDZmzl1EpxIfzmpHrPa3XaCLfxQuNNEUhqEXtJzQZtLfuYvGy1y+MrTU8WnA==
+"@graphql-codegen/typescript-resolvers@4.4.1":
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript-resolvers/-/typescript-resolvers-4.4.1.tgz#71dada476d1b24d58f621ea67b9a03491c722529"
+  integrity sha512-xN/co3NofnHxpOzu5qi2Lc55C0hQZi6jJeV5mn+EnESKZBedGK0yPlaIpsUvieC6DGzGdLFA74wuSgWYULb3LA==
   dependencies:
-    "@graphql-codegen/plugin-helpers" "^5.0.4"
-    "@graphql-codegen/typescript" "^4.0.9"
-    "@graphql-codegen/visitor-plugin-common" "5.3.1"
+    "@graphql-codegen/plugin-helpers" "^5.1.0"
+    "@graphql-codegen/typescript" "^4.1.2"
+    "@graphql-codegen/visitor-plugin-common" "5.6.0"
     "@graphql-tools/utils" "^10.0.0"
     auto-bind "~4.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/typescript@4.0.9", "@graphql-codegen/typescript@^4.0.9":
-  version "4.0.9"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-4.0.9.tgz#25b7999b665d86a6459f90dd22c7ddec12495fdd"
-  integrity sha512-0O35DMR4d/ctuHL1Zo6mRUUzp0BoszKfeWsa6sCm/g70+S98+hEfTwZNDkQHylLxapiyjssF9uw/F+sXqejqLw==
+"@graphql-codegen/typescript@4.1.2", "@graphql-codegen/typescript@^4.1.0", "@graphql-codegen/typescript@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-4.1.2.tgz#c57d7e8f87b689deec516bd8021a347a98f4e4db"
+  integrity sha512-GhPgfxgWEkBrvKR2y77OThus3K8B6U3ESo68l7+sHH1XiL2WapK5DdClViblJWKQerJRjfJu8tcaxQ8Wpk6Ogw==
   dependencies:
-    "@graphql-codegen/plugin-helpers" "^5.0.4"
+    "@graphql-codegen/plugin-helpers" "^5.1.0"
     "@graphql-codegen/schema-ast" "^4.0.2"
-    "@graphql-codegen/visitor-plugin-common" "5.3.1"
+    "@graphql-codegen/visitor-plugin-common" "5.6.0"
     auto-bind "~4.0.0"
     tslib "~2.6.0"
 
-"@graphql-codegen/typescript@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/typescript/-/typescript-4.1.0.tgz#db6157b8df8bc5c6777ba519c24fce66536f5fcd"
-  integrity sha512-/fS53Nh6U6c58GTOxqfyKTLQfQv36P8II/vPw/fg0cdcWbALhRPls69P8vXUWjrElmLKzCrdusBWPp/r+AKUBQ==
-  dependencies:
-    "@graphql-codegen/plugin-helpers" "^5.0.4"
-    "@graphql-codegen/schema-ast" "^4.0.2"
-    "@graphql-codegen/visitor-plugin-common" "5.4.0"
-    auto-bind "~4.0.0"
-    tslib "~2.6.0"
-
-"@graphql-codegen/visitor-plugin-common@5.3.1", "@graphql-codegen/visitor-plugin-common@^5.0.0":
-  version "5.3.1"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-5.3.1.tgz#d3fb5f6336cbef58e2960471422da3f3caff7f17"
-  integrity sha512-MktoBdNZhSmugiDjmFl1z6rEUUaqyxtFJYWnDilE7onkPgyw//O0M+TuPBJPBWdyV6J2ond0Hdqtq+rkghgSIQ==
+"@graphql-codegen/visitor-plugin-common@5.4.0":
+  version "5.4.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-5.4.0.tgz#157846e433224b55f9a755e59d02508783977e27"
+  integrity sha512-tL7hOrO+4MiNfDiHewhRQCiH9GTAh0M9Y/BZxYGGEdnrfGgqK5pCxtjq7EY/L19VGIyU7hhzYTQ0r1HzEbB4Jw==
   dependencies:
     "@graphql-codegen/plugin-helpers" "^5.0.4"
     "@graphql-tools/optimize" "^2.0.0"
@@ -1507,12 +1501,12 @@
     parse-filepath "^1.0.2"
     tslib "~2.6.0"
 
-"@graphql-codegen/visitor-plugin-common@5.4.0", "@graphql-codegen/visitor-plugin-common@^5.4.0":
-  version "5.4.0"
-  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-5.4.0.tgz#157846e433224b55f9a755e59d02508783977e27"
-  integrity sha512-tL7hOrO+4MiNfDiHewhRQCiH9GTAh0M9Y/BZxYGGEdnrfGgqK5pCxtjq7EY/L19VGIyU7hhzYTQ0r1HzEbB4Jw==
+"@graphql-codegen/visitor-plugin-common@5.6.0", "@graphql-codegen/visitor-plugin-common@^5.0.0", "@graphql-codegen/visitor-plugin-common@^5.4.0":
+  version "5.6.0"
+  resolved "https://registry.yarnpkg.com/@graphql-codegen/visitor-plugin-common/-/visitor-plugin-common-5.6.0.tgz#755395422761ad84192b7e6d98688ee9e9a57598"
+  integrity sha512-PowcVPJbUqMC9xTJ/ZRX1p/fsdMZREc+69CM1YY+AlFng2lL0zsdBskFJSRoviQk2Ch9IPhKGyHxlJCy9X22tg==
   dependencies:
-    "@graphql-codegen/plugin-helpers" "^5.0.4"
+    "@graphql-codegen/plugin-helpers" "^5.1.0"
     "@graphql-tools/optimize" "^2.0.0"
     "@graphql-tools/relay-operation-optimizer" "^7.0.0"
     "@graphql-tools/utils" "^10.0.0"
@@ -2972,10 +2966,10 @@
   dependencies:
     "@types/koa" "*"
 
-"@types/lodash@*", "@types/lodash@4.17.12":
-  version "4.17.12"
-  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.12.tgz#25d71312bf66512105d71e55d42e22c36bcfc689"
-  integrity sha512-sviUmCE8AYdaF/KIHLDJBQgeYzPBI0vf/17NaYehBJfYD1j6/L95Slh07NlyK2iNyBNaEkb3En2jRt+a8y3xZQ==
+"@types/lodash@*", "@types/lodash@4.17.13":
+  version "4.17.13"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.17.13.tgz#786e2d67cfd95e32862143abe7463a7f90c300eb"
+  integrity sha512-lfx+dftrEZcdBPczf9d0Qv0x+j/rfNCMuC6OcfXmO8gkfeNAY88PgKUbvG56whcN23gc27yenwF6oJZXGFpYxg==
 
 "@types/long@^4.0.0":
   version "4.0.2"
@@ -3994,10 +3988,10 @@ cookie-signature@1.0.6:
   resolved "https://registry.yarnpkg.com/cookie-signature/-/cookie-signature-1.0.6.tgz#e303a882b342cc3ee8ca513a79999734dab3ae2c"
   integrity sha512-QADzlaHc8icV8I7vbaJXJwod9HWYp8uCqf1xa4OfNu1T7JVxQIrUgOWtHdNDtPiywmFbiS12VjotIXLrKM3orQ==
 
-cookie@0.6.0:
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.6.0.tgz#2798b04b071b0ecbff0dbb62a505a8efa4e19051"
-  integrity sha512-U71cyTamuh1CRNCfpGY6to28lxvNwPG4Guz/EVjgf3Jmzv0vlDp1atT9eS5dDjMYHucpHbWns6Lwf3BKz6svdw==
+cookie@0.7.1:
+  version "0.7.1"
+  resolved "https://registry.yarnpkg.com/cookie/-/cookie-0.7.1.tgz#2f73c42142d5d5cf71310a74fc4ae61670e5dbc9"
+  integrity sha512-6DnInpx7SJ2AK3+CTUE/ZM0vWTUboZCegxhC2xiIydHR9jNuTAASBrfEpHhiGOZw/nX51bHt6YQl8jsGo4y/0w==
 
 cookies@~0.9.0:
   version "0.9.1"
@@ -4582,17 +4576,17 @@ expect@^29.0.0, expect@^29.7.0:
     jest-message-util "^29.7.0"
     jest-util "^29.7.0"
 
-express@^4.17.1:
-  version "4.21.0"
-  resolved "https://registry.yarnpkg.com/express/-/express-4.21.0.tgz#d57cb706d49623d4ac27833f1cbc466b668eb915"
-  integrity sha512-VqcNGcj/Id5ZT1LZ/cfihi3ttTn+NJmkli2eZADigjq29qTlWi/hAQ43t/VLPq8+UX06FCEx3ByOYet6ZFblng==
+express@^4.21.1:
+  version "4.21.1"
+  resolved "https://registry.yarnpkg.com/express/-/express-4.21.1.tgz#9dae5dda832f16b4eec941a4e44aa89ec481b281"
+  integrity sha512-YSFlK1Ee0/GC8QaO91tHcDxJiE/X4FbpAyQWkxAvG6AXCuR65YzK8ua6D9hvi/TzUfZMpc+BwuM1IPw8fmQBiQ==
   dependencies:
     accepts "~1.3.8"
     array-flatten "1.1.1"
     body-parser "1.20.3"
     content-disposition "0.5.4"
     content-type "~1.0.4"
-    cookie "0.6.0"
+    cookie "0.7.1"
     cookie-signature "1.0.6"
     debug "2.6.9"
     depd "2.0.0"
@@ -6537,9 +6531,9 @@ mongodb@4.17.2:
     "@mongodb-js/saslprep" "^1.1.0"
 
 mongoose@^6.3.0:
-  version "6.13.0"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-6.13.0.tgz#465522876237e4112a895fbd1cb4a87c580bc613"
-  integrity sha512-mieZBTtRIqA2xCGgl9Hlcr6fXU+AKNSOdeKfMYrb/IgdL3M/bDO4kYftsItIy86XyAoT5xV28alfCbMocFG8oA==
+  version "6.13.5"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-6.13.5.tgz#33e628d259787221e8c6ecc740189896f35c7edc"
+  integrity sha512-podJEaIF/5N2mQymkyyUzN2NeL/68MOyYjf3O0zsgCU2B2Omnhg6NhGHVavt9ZH/VxOrwKE9XphbuHDFK+T06g==
   dependencies:
     bson "^4.7.2"
     kareem "2.5.1"

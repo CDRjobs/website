@@ -4,13 +4,15 @@ import JobCard from '@/components/molecules/JobCard'
 import { Job } from '@/services/job'
 import Carousel from '@/components/organisms/Carousel'
 import { useLazyQuery } from '@apollo/client'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Pym from 'pym.js'
 import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
 import SearchCompaniesQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchCompanies'
 import { VERTICAL_SHORT_WORDING } from '@/constants/wording'
 import { Verticals } from '@/types/globals'
+import { useClient } from '@/context/ClientContext'
+import useAddUtmParams from '@/hooks/useAddUtmParams'
 
 type Company = {
   id: string
@@ -18,7 +20,6 @@ type Company = {
 }
 
 const Page = () => {
-  const { clientKey } = useParams() as { [key: string]: string }
   const searchParams = useSearchParams()
   const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
   const [querySearchCompanies] = useLazyQuery(SearchCompaniesQuery)
@@ -26,6 +27,8 @@ const Page = () => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const { client } = useClient()
+  const addUtmParams = useAddUtmParams('carousel')
 
   const speed = Number(searchParams.get('speed') || '6500')
   const verticals = (searchParams.get('verticals') ? searchParams.get('verticals')!.split(',') : []) as Verticals[]
@@ -35,17 +38,18 @@ const Page = () => {
     const fetchJobs = async () => {
       const pagination = { limit: companiesIds ? 150 : 20 }
       const filters = { cdrCategory: verticals, companies: companiesIds }
-      const { data: companiesData } = await querySearchCompanies({ variables: { clientKey, ids: companiesIds } })
+      const { data: companiesData } = await querySearchCompanies({ variables: { clientKey: client.key, ids: companiesIds } })
       setCompanies(companiesData.searchCompanies.data)
-      const { data } = await querySearchJobs({ variables: { clientKey, filters, pagination } })
-      setJobs(data.searchJobs.data)
+      const { data } = await querySearchJobs({ variables: { clientKey: client.key, filters, pagination } })
+      const jobs = data.searchJobs.data.map((job: Job) => ({ ...job, sourceUrl: addUtmParams(job.sourceUrl)}))
+      setJobs(jobs)
       setTotalCount(data.searchJobs.pagination.total)
       setIsLoading(false)
     }
 
     fetchJobs()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientKey, querySearchJobs])
+  }, [client.key, querySearchJobs])
 
   useEffect(() => {
     new Pym.Child().sendHeight()

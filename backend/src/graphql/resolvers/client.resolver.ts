@@ -1,6 +1,7 @@
 import { QueryGetClientArgs } from '../../types/graphql'
 import services from '../../services'
 import { validateGetClientParams } from '../validation/client'
+import { Client } from '@prisma/client'
 
 const resolvers = {
   Query: {
@@ -14,6 +15,9 @@ const resolvers = {
       }
     },
   },
+  Client: {
+    key: (client: Client) => client.iFrameKey,
+  }
 }
 
 export default resolvers
