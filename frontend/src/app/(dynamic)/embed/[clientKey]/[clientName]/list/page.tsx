@@ -3,11 +3,12 @@
 import { Job } from '@/services/job'
 import JobList from '@/components/organisms/JobList'
 import { useLazyQuery } from '@apollo/client'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import Pym from 'pym.js'
 import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
 import SearchCompaniesQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchCompanies'
+import { useClient } from '@/context/ClientContext'
 
 type Company = {
   id: string
@@ -15,13 +16,13 @@ type Company = {
 }
 
 const Page = () => {
-  const { clientKey } = useParams() as { [key: string]: string }
   const searchParams = useSearchParams()
   const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
   const [querySearchCompanies] = useLazyQuery(SearchCompaniesQuery)
   const [jobs, setJobs] = useState<Job[]>([])
   const [company, setCompany] = useState<Company>()
   const [isLoading, setIsLoading] = useState(true)
+  const { client } = useClient()
 
   const companyId = searchParams.get('company')
   if (!companyId) {
@@ -30,10 +31,10 @@ const Page = () => {
 
   useEffect(() => {
     const fetchJobs = async () => {
-      const { data: companiesData } = await querySearchCompanies({ variables: { clientKey, ids: [companyId] } })
+      const { data: companiesData } = await querySearchCompanies({ variables: { clientKey: client.key, ids: [companyId] } })
       setCompany(companiesData.searchCompanies.data[0])
 
-      const { data } = await querySearchJobs({ variables: { clientKey, filters: { companies: [companyId] }, pagination: {} } })
+      const { data } = await querySearchJobs({ variables: { clientKey: client.key, filters: { companies: [companyId] }, pagination: {} } })
       setJobs(data.searchJobs.data)
 
       setIsLoading(false)
@@ -41,7 +42,7 @@ const Page = () => {
 
     fetchJobs()
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [clientKey, querySearchJobs])
+  }, [client.key, querySearchJobs])
 
   useEffect(() => {
     new Pym.Child().sendHeight()
