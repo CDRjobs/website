@@ -10,10 +10,10 @@ import FilterListbox, { FilterListboxRef } from '@/components/molecules/FilterLi
 import JobCard from '@/components/molecules/JobCard'
 import { Job } from '@/services/job'
 import { useLazyQuery } from '@apollo/client'
-import { first, isArray, isEmpty, isNil, last, map, omit, values } from 'lodash/fp'
+import { first, isArray, isEmpty, isNil, last, map, omit, pick, values } from 'lodash/fp'
 import { Filters, Pagination } from './types'
 import { VerticalsMap, RequiredExperience } from '@/types/globals'
-import { trackDidSearch } from '@/services/telemetry'
+import { trackDidSearch, trackJobDisplayed } from '@/services/telemetry'
 import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_graphql/searchJobs'
 import { VERTICAL_LONG_WORDING, REQUIRED_EXPERIENCE_WORDING, YES_NO_WORDING, COMPANY_SIZE_WORDING , REMOTE_SHORT_WORDING, CONTRACT_TYPES_WORDING } from '@/constants/wording'
 import { useClient } from '@/context/ClientContext'
@@ -27,6 +27,13 @@ const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
     min10years: { min: 10, max: 100 },
   }
   return correspondingMap[value]
+}
+
+const sendTrackJobDisplayed = (job: Job) => {
+  trackJobDisplayed({
+    ...pick(['id', 'company.id', 'company.name'], job) as Job,
+    pageLocation: window.location.hostname + window.location.pathname,
+  })
 }
 
 const formatToTrackDidSearchInput = (filters: Filters, isAfen: boolean, totalJobs: number, fromLoadMore: boolean, totalJobsDisplayed: number) => {
@@ -56,7 +63,15 @@ const Page = () => {
   const isUSBC = clientName.toLowerCase() === 'usbiocharcoalition'
 
   const limit = isAfen ? 24 : 12
-  const defaultFilters = isAfen ? { openSearchToCountries: false } : {}
+  const defaultFilters = {
+    cdrCategory: [],
+    companySize: [],
+    remote: [],
+    requiredExperience: [],
+    contractType: [],
+    openSearchToCountries: isAfen ? false : true,
+  }
+
   let clientVerticals: Partial<VerticalsMap<string>> = VERTICAL_LONG_WORDING
   if (isDaccoalition) {
     clientVerticals = omit(['forest', 'biomass', 'mCdr', 'enhancedWeathering', 'soil'], VERTICAL_LONG_WORDING)
@@ -118,6 +133,7 @@ const Page = () => {
     const total = data.searchJobs.pagination.total
     const moreJobs = data.searchJobs.data.map((job: Job) => ({ ...job, sourceUrl: addUtmParams(job.sourceUrl)})) as Job[]
     const totalJobsDisplayed = (jobs?.length || 0) + moreJobs.length
+    moreJobs.forEach(job => sendTrackJobDisplayed(job))
     
     setPagination({ ...pagination, takeAfter: last(moreJobs)?.publishedAt, countAfter: first(jobs)?.publishedAt })
     setJobs((jobs) => append ? jobs.concat(moreJobs) : moreJobs)
@@ -137,8 +153,7 @@ const Page = () => {
   }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { queryNewJobs({ pagination, filters: defaultFilters, jobs }) }, [])
-  useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, filters, limit])
+  useEffect(() => { queryNewJobs({ pagination: { limit }, filters }) }, [queryNewJobs, JSON.stringify(filters), limit])
   useEffect(() => {
     new Pym.Child().sendHeight()
     setTimeout(() => new Pym.Child().sendHeight(), 500)

@@ -48,10 +48,23 @@ type TrackDidSearchInput = {
   pageLocation: string
 }
 
+type TrackJobDisplauedInput = {
+  id: string
+  company: {
+    id: string
+    name: string
+  }
+  pageLocation: string
+}
+
 export const trackViewJobClicked = (properties: TrackViewJobClickedInput) => {
   amplitude.track('clickedViewJob', properties)
 }
 
 export const trackDidSearch = (properties: TrackDidSearchInput) => {
   amplitude.track('didSearch', properties)
+}
+
+export const trackJobDisplayed = (properties: TrackJobDisplauedInput) => {
+  amplitude.track('displayedJob', properties)
 }
