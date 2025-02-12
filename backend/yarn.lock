@@ -6167,10 +6167,10 @@ koa2-ratelimit@1.1.3:
   resolved "https://registry.yarnpkg.com/koa2-ratelimit/-/koa2-ratelimit-1.1.3.tgz#9f839c4f5533151aa4d5b8d11381a9a07854f0ff"
   integrity sha512-gdrIw6m/D7pmScScL4dz50qLbRR3UGqvO1Vuy2dc7hVIuFAl1OVTnu6WFyEJ5GbfyLZFaCMWzRw6t4krvzvUTg==
 
-koa@2.15.3:
-  version "2.15.3"
-  resolved "https://registry.yarnpkg.com/koa/-/koa-2.15.3.tgz#062809266ee75ce0c75f6510a005b0e38f8c519a"
-  integrity sha512-j/8tY9j5t+GVMLeioLaxweJiKUayFhlGqNTzf2ZGwL0ZCQijd2RLHK0SLW5Tsko8YyyqCZC2cojIb0/s62qTAg==
+koa@2.15.4:
+  version "2.15.4"
+  resolved "https://registry.yarnpkg.com/koa/-/koa-2.15.4.tgz#7000b3d8354558671adb1ba1b1c09bedb5f8da75"
+  integrity sha512-7fNBIdrU2PEgLljXoPWoyY4r1e+ToWCmzS/wwMPbUNs7X+5MMET1ObhJBlUkF5uZG9B6QhM2zS1TsH6adegkiQ==
   dependencies:
     accepts "^1.3.5"
     cache-content-type "^1.0.0"
