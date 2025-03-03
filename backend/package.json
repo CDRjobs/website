@@ -21,7 +21,7 @@
     "gen-graphql-types": "graphql-codegen --config codegen.ts"
   },
   "dependencies": {
-    "@apollo/server": "4.11.2",
+    "@apollo/server": "4.11.3",
     "@apollo/server-plugin-landing-page-graphql-playground": "4.0.1",
     "@as-integrations/koa": "1.1.1",
     "@getbrevo/brevo": "^2.2.0",
