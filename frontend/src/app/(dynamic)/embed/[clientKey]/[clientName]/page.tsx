@@ -31,7 +31,7 @@ const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
 
 const sendTrackJobDisplayed = (job: Job) => {
   trackJobDisplayed({
-    ...pick(['id', 'company.id', 'company.name'], job) as Job,
+    ...pick(['id', 'title', 'company.id', 'company.name', 'sourceUrl'], job) as Job,
     pageLocation: window.location.hostname + window.location.pathname,
   })
 }
