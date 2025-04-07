@@ -6,13 +6,15 @@ import removeTypename from '@/utils/removeTypename'
 import { VERTICAL_MEDIUM_WORDING, COMPANY_SIZE_WORDING, REMOTE_LONG_WORDING } from '@/constants/wording'
 import { getLocationText, getMinYearsOfExperienceText, getSalaryText, Job } from '@/services/job'
 import ViewJobButton from '@/components/atoms/ViewJobButton'
+import FeaturedLabel from '../atoms/FeaturedLabel'
 
 type Props = { 
   job: Job,
   borderStyle: 'shadow' | 'left',
+  sponsored: boolean,
 }
 
-const JobCard = ({ job, borderStyle }: Props) => {
+const JobCard = ({ job, borderStyle, sponsored }: Props) => {
   const onClickViewJobButton = () => {
     trackViewJobClicked({
       ...removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>,
@@ -28,9 +30,10 @@ const JobCard = ({ job, borderStyle }: Props) => {
 
   return <div className={`flex w-full sm:w-[20.625rem] max-w-[20.625rem] p-3 flex-col justify-center items-center gap-2 rounded-lg ${cardBorderStyle}`}>
     <div className='flex flex-col items-start gap-1.5 self-stretch'>
-      <div className='h-14 flex items-center'>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+      <div className='h-14 flex items-center justify-between w-full'>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={urlJoin(process.env.NEXT_PUBLIC_PUBLIC_SERVER_URL!, job.company.logoUrl)} alt={`Logo of the company ${job.company.name}`} className='w-14 shrink-0 rounded-[0.3125rem]' />
+        {sponsored && <FeaturedLabel />}
       </div>
       <div className='flex items-start gap-1.5 self-stretch text-[#777] font-inter'>
         <p className='text-sm font-normal leading-[1.125rem] flex-[1_0_0]'>{truncate({ length: 39 }, job.company.name)}</p>
