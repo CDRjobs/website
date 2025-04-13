@@ -7,6 +7,7 @@ const GetClientQuery = gql`
         name
         key
         jobBoardTitle
+        hasFeaturedJobs
       }
     }
   }

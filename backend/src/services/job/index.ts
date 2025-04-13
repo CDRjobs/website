@@ -1,5 +1,5 @@
 import { CdrCategory, CompanySize, ContractType, CountryCode, Discipline, Job, Prisma, Remote } from '@prisma/client'
-import { flatten, map, omit, isEmpty } from 'lodash/fp'
+import { flatten, map, omit, isEmpty, keyBy } from 'lodash/fp'
 import pMap from 'p-map'
 import services from '..'
 import { knex } from '../../db/knex'
@@ -113,7 +113,7 @@ const getAllOpenJobs = async ({ limit, lastId }: CursorPagination = {}, include?
   return jobs
 }
 
-const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
+const applySearchQueryWithFilters = async (clientKey: string, filters: SearchFilters) => {
   const client = await prisma.client.findUnique({
     include: { companies: { select: { id: true } } },
     where: { iFrameKey: clientKey },
@@ -122,9 +122,6 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
   if (!client) {
     throw new ApplicationError('Client not found')
   }
-
-  const companiesIdsToInclude = map('id', client.companies)
-  const countriesToIncludes = client.countries
 
   const query = knex('Job as job')
     .leftJoin('Company as c', 'c.id', 'job.companyId')
@@ -175,15 +172,6 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     }
   }
 
-  if (!client.showAllJobs) {
-    query.where((builder) => {
-      builder.whereIn('c.id', companiesIdsToInclude)
-      if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
-        builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
-      }
-    })
-  }
-
   if (!isEmpty(filters.location)) {
     if (filters.location.coordinates) {
       const { lat, long } = filters.location.coordinates
@@ -199,6 +187,43 @@ const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limi
     }
   }
 
+  const companiesIdsToInclude = map('id', client.companies)
+  const countriesToIncludes = client.countries
+
+  if (!client.showAllJobs) {
+    query.where((builder) => {
+      builder.whereIn('c.id', companiesIdsToInclude)
+      if (filters.openSearchToCountries !== false && countriesToIncludes.length) {
+        builder.orWhereIn('l.country', countriesToIncludes.map(countryCode => knex.raw('?::"CountryCode"', [countryCode])))
+      }
+    })
+  }
+
+  return { query }
+}
+
+const searchFeaturedJobs = async (clientKey: string, filters: SearchFilters = {}, limit: number) => {
+  const { query } = await applySearchQueryWithFilters(clientKey, filters)
+  query
+    .where('isFeatured', true)
+    .orderByRaw('gen_random_uuid()')
+    .limit(limit)
+
+  const jobsToFind = await query.select('job.id as id').execWithPrisma(prisma) as { id: string }[]
+
+  const jobs = await prisma.job.findMany({
+    include: { locations: true, company: true },
+    where: { id: { in: map('id', jobsToFind) } },
+  })
+
+  const jobsById = keyBy('id', jobs)
+
+  // Using the order of jobsToFind as jobs seems to be sorted automatically by id
+  return jobsToFind.map(({ id }) => jobsById[id])
+}
+
+const searchJobs = async (clientKey: string, filters: SearchFilters = {}, { limit, countAfter, takeAfter }: Pagination) => {
+  const { query } = await applySearchQueryWithFilters(clientKey, filters)
 
   const countQuery = query.clone().count(knex.raw('DISTINCT "job"."id"'))
 
@@ -297,4 +322,5 @@ export default {
   createJobs,
   updateJob,
   searchJobs,
+  searchFeaturedJobs,
 }

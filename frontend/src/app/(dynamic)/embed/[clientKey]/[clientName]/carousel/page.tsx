@@ -56,7 +56,7 @@ const Page = () => {
     setTimeout(() => new Pym.Child().sendHeight(), 500)
   })
   
-  const jobcards = jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='left' />)
+  const jobcards = jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='left' sponsored={false} />)
 
   let categoriesText = <>in <strong>Carbon Dioxide Removal</strong></>
   if (verticals.length === 1) {
