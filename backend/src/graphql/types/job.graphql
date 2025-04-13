@@ -60,6 +60,11 @@ type searchJobsResults {
   data: [Job!]!
 }
 
+type searchFeaturedJobsResults {
+  data: [Job!]!
+}
+
 type Query {
   searchJobs(clientKey: String!, filters: jobFiltersInput, pagination: paginationInput): searchJobsResults
+  searchFeaturedJobs(clientKey: String!, filters: jobFiltersInput, limit: Int = 4): searchFeaturedJobsResults
 }

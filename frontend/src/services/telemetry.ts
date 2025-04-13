@@ -20,6 +20,7 @@ type TrackViewJobClickedInput = {
     cdrCategory: string
   }
   pageLocation: string
+  sponsored: boolean
 }
 
 type TrackDidSearchInput = {
@@ -48,13 +49,14 @@ type TrackDidSearchInput = {
   pageLocation: string
 }
 
-type TrackJobDisplauedInput = {
+type TrackJobDisplayedInput = {
   id: string
   company: {
     id: string
     name: string
   }
   pageLocation: string
+  sponsored: boolean
 }
 
 export const trackViewJobClicked = (properties: TrackViewJobClickedInput) => {
@@ -65,6 +67,6 @@ export const trackDidSearch = (properties: TrackDidSearchInput) => {
   amplitude.track('didSearch', properties)
 }
 
-export const trackJobDisplayed = (properties: TrackJobDisplauedInput) => {
+export const trackJobDisplayed = (properties: TrackJobDisplayedInput) => {
   amplitude.track('displayedJob', properties)
 }

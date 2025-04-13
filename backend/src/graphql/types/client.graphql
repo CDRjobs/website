@@ -1,7 +1,8 @@
 type Client {
-  name: String
-  key: String
+  name: String!
+  key: String!
   jobBoardTitle: String
+  hasFeaturedJobs: Boolean!
 }
 
 type GetClientResult {
@@ -9,5 +10,5 @@ type GetClientResult {
 }
 
 type Query {
-  getClient(clientKey: String!): GetClientResult
+  getClient(clientKey: String!): GetClientResult!
 }
