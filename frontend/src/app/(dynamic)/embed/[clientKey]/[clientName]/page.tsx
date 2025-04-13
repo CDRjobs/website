@@ -18,6 +18,7 @@ import SearchJobsQuery from '@/app/(dynamic)/embed/[clientKey]/[clientName]/_gra
 import { VERTICAL_LONG_WORDING, REQUIRED_EXPERIENCE_WORDING, YES_NO_WORDING, COMPANY_SIZE_WORDING , REMOTE_SHORT_WORDING, CONTRACT_TYPES_WORDING } from '@/constants/wording'
 import { useClient } from '@/context/ClientContext'
 import useAddUtmParams from '@/hooks/useAddUtmParams'
+import SearchFeaturedJobsQuery from './_graphql/searchFeaturedJobs'
 
 const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
   const correspondingMap = {
@@ -29,10 +30,11 @@ const toGraphqlRequiredExperienceInput = (value: RequiredExperience) => {
   return correspondingMap[value]
 }
 
-const sendTrackJobDisplayed = (job: Job) => {
+const sendTrackJobDisplayed = (job: Job, sponsored: boolean) => {
   trackJobDisplayed({
     ...pick(['id', 'title', 'company.id', 'company.name', 'sourceUrl'], job) as Job,
     pageLocation: window.location.hostname + window.location.pathname,
+    sponsored,
   })
 }
 
@@ -89,9 +91,11 @@ const Page = () => {
   const afenOnlyFilterRef = useRef<FilterListboxRef>(null)
   
   const [querySearchJobs] = useLazyQuery(SearchJobsQuery)
+  const [querySearchFeaturedJobs] = useLazyQuery(SearchFeaturedJobsQuery)
   const [filters, setFilters] = useState<Filters>(defaultFilters)
   const [pagination, setPagination] = useState<Pagination>({ limit })
   const [jobs, setJobs] = useState<Job[]>([])
+  const [featuredJobs, setFeaturedJobs] = useState<Job[]>([])
   const [totalCount, setTotalCount] = useState<number | null>(null)
   const [loadingJobs, setLoadingJobs] = useState(true)
   const [loadMore, setLoadMore] = useState(false)
@@ -129,13 +133,27 @@ const Page = () => {
 
   const queryNewJobs = useCallback(async ({ pagination, filters, append = false, jobs }: { pagination: Pagination, filters: Filters, append?: boolean, jobs?: Job[] }) => {
     setLoadingJobs(true)
-    const { data } = await querySearchJobs({ variables: { clientKey: client.key, filters, pagination } })
+    let offset = 0
+    let featuredJobs: Job[] = []
+    
+    const shouldLoadFeaturedJobs = client.hasFeaturedJobs && !pagination.takeAfter // Only for first page
+    if (shouldLoadFeaturedJobs) {
+      const { data } = await querySearchFeaturedJobs({ variables: { clientKey: client.key, filters, limit: 2 } })
+      featuredJobs = data.searchFeaturedJobs.data
+      offset = featuredJobs.length
+      featuredJobs.forEach(job => sendTrackJobDisplayed(job, true))
+    }
+    const paginationWithOffset = { ...pagination, limit: pagination.limit - offset }
+    const { data } = await querySearchJobs({ variables: { clientKey: client.key, filters, pagination: paginationWithOffset } })
     const total = data.searchJobs.pagination.total
     const moreJobs = data.searchJobs.data.map((job: Job) => ({ ...job, sourceUrl: addUtmParams(job.sourceUrl)})) as Job[]
     const totalJobsDisplayed = (jobs?.length || 0) + moreJobs.length
-    moreJobs.forEach(job => sendTrackJobDisplayed(job))
+    moreJobs.forEach(job => sendTrackJobDisplayed(job, false))
     
     setPagination({ ...pagination, takeAfter: last(moreJobs)?.publishedAt, countAfter: first(jobs)?.publishedAt })
+    if (shouldLoadFeaturedJobs) {
+      setFeaturedJobs(featuredJobs)
+    }
     setJobs((jobs) => append ? jobs.concat(moreJobs) : moreJobs)
     setTotalCount(total)
     setLoadMore(totalJobsDisplayed < total)
@@ -223,7 +241,8 @@ const Page = () => {
     </div>
 
     <div className='flex py-3 sm:p-3 justify-center items-center content-center gap-3 self-stretch flex-wrap'>
-      {jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='shadow' />)}
+      {featuredJobs.map((job) => <JobCard key={job.id} job={job} borderStyle='shadow' sponsored={true} />)}
+      {jobs.map((job) => <JobCard key={job.id} job={job} borderStyle='shadow' sponsored={false} />)}
     </div>
 
     {loadMore && <MainButton onClick={onClickLoadMore} loading={loadingJobs} fixedSize>Load More Jobs</MainButton>}

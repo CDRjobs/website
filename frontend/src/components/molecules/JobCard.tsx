@@ -19,6 +19,7 @@ const JobCard = ({ job, borderStyle, sponsored }: Props) => {
     trackViewJobClicked({
       ...removeTypename(omit('company.logoUrl', job)) as Omit<Job, 'company.logoUrl'>,
       pageLocation: window.location.hostname + window.location.pathname,
+      sponsored,
     })
   }
 

@@ -11,6 +11,7 @@ type ClientContext = {
 const emptyClient = {
   name: '',
   key: '',
+  hasFeaturedJobs: false,
 }
 
 const ClientContext = createContext<ClientContext>({ client: emptyClient })

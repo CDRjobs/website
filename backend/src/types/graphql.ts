@@ -18,9 +18,10 @@ export type Scalars = {
 
 export type Client = {
   __typename?: 'Client';
+  hasFeaturedJobs: Scalars['Boolean']['output'];
   jobBoardTitle?: Maybe<Scalars['String']['output']>;
-  key?: Maybe<Scalars['String']['output']>;
-  name?: Maybe<Scalars['String']['output']>;
+  key: Scalars['String']['output'];
+  name: Scalars['String']['output'];
 };
 
 export type Company = {
@@ -74,8 +75,9 @@ export type Pagination = {
 
 export type Query = {
   __typename?: 'Query';
-  getClient?: Maybe<GetClientResult>;
+  getClient: GetClientResult;
   searchCompanies?: Maybe<SearchCompaniesResults>;
+  searchFeaturedJobs?: Maybe<SearchFeaturedJobsResults>;
   searchJobs?: Maybe<SearchJobsResults>;
 };
 
@@ -88,6 +90,13 @@ export type QueryGetClientArgs = {
 export type QuerySearchCompaniesArgs = {
   clientKey: Scalars['String']['input'];
   ids: Array<Scalars['String']['input']>;
+};
+
+
+export type QuerySearchFeaturedJobsArgs = {
+  clientKey: Scalars['String']['input'];
+  filters?: InputMaybe<JobFiltersInput>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -133,6 +142,11 @@ export type PaginationInput = {
   countAfter?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   takeAfter?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type SearchFeaturedJobsResults = {
+  __typename?: 'searchFeaturedJobsResults';
+  data: Array<Job>;
 };
 
 export type SearchJobsResults = {
@@ -230,6 +244,7 @@ export type ResolversTypes = {
   locationInput: LocationInput;
   minMaxYearsOfExperience: MinMaxYearsOfExperience;
   paginationInput: PaginationInput;
+  searchFeaturedJobsResults: ResolverTypeWrapper<SearchFeaturedJobsResults>;
   searchJobsResults: ResolverTypeWrapper<SearchJobsResults>;
 };
 
@@ -253,13 +268,15 @@ export type ResolversParentTypes = {
   locationInput: LocationInput;
   minMaxYearsOfExperience: MinMaxYearsOfExperience;
   paginationInput: PaginationInput;
+  searchFeaturedJobsResults: SearchFeaturedJobsResults;
   searchJobsResults: SearchJobsResults;
 };
 
 export type ClientResolvers<ContextType = any, ParentType extends ResolversParentTypes['Client'] = ResolversParentTypes['Client']> = {
+  hasFeaturedJobs?: Resolver<ResolversTypes['Boolean'], ParentType, ContextType>;
   jobBoardTitle?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  key?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
-  name?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>;
+  key?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -313,13 +330,19 @@ export type PaginationResolvers<ContextType = any, ParentType extends ResolversP
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
-  getClient?: Resolver<Maybe<ResolversTypes['GetClientResult']>, ParentType, ContextType, RequireFields<QueryGetClientArgs, 'clientKey'>>;
+  getClient?: Resolver<ResolversTypes['GetClientResult'], ParentType, ContextType, RequireFields<QueryGetClientArgs, 'clientKey'>>;
   searchCompanies?: Resolver<Maybe<ResolversTypes['SearchCompaniesResults']>, ParentType, ContextType, RequireFields<QuerySearchCompaniesArgs, 'clientKey' | 'ids'>>;
+  searchFeaturedJobs?: Resolver<Maybe<ResolversTypes['searchFeaturedJobsResults']>, ParentType, ContextType, RequireFields<QuerySearchFeaturedJobsArgs, 'clientKey' | 'limit'>>;
   searchJobs?: Resolver<Maybe<ResolversTypes['searchJobsResults']>, ParentType, ContextType, RequireFields<QuerySearchJobsArgs, 'clientKey'>>;
 };
 
 export type SearchCompaniesResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['SearchCompaniesResults'] = ResolversParentTypes['SearchCompaniesResults']> = {
   data?: Resolver<Array<ResolversTypes['Company']>, ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type SearchFeaturedJobsResultsResolvers<ContextType = any, ParentType extends ResolversParentTypes['searchFeaturedJobsResults'] = ResolversParentTypes['searchFeaturedJobsResults']> = {
+  data?: Resolver<Array<ResolversTypes['Job']>, ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
@@ -338,6 +361,7 @@ export type Resolvers<ContextType = any> = {
   Pagination?: PaginationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   SearchCompaniesResults?: SearchCompaniesResultsResolvers<ContextType>;
+  searchFeaturedJobsResults?: SearchFeaturedJobsResultsResolvers<ContextType>;
   searchJobsResults?: SearchJobsResultsResolvers<ContextType>;
 };
 
