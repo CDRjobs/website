@@ -204,12 +204,19 @@ const applySearchQueryWithFilters = async (clientKey: string, filters: SearchFil
 
 const searchFeaturedJobs = async (clientKey: string, filters: SearchFilters = {}, limit: number) => {
   const { query } = await applySearchQueryWithFilters(clientKey, filters)
-  query
-    .where('isFeatured', true)
+
+  const mainquery = knex()
+    .from(
+      query
+        .select('job.id as id')
+        .distinct()
+        .where('isFeatured', true)
+        .groupBy('job.id')
+    )
     .orderByRaw('gen_random_uuid()')
     .limit(limit)
 
-  const jobsToFind = await query.select('job.id as id').execWithPrisma(prisma) as { id: string }[]
+  const jobsToFind = await mainquery.execWithPrisma(prisma) as { id: string }[]
 
   const jobs = await prisma.job.findMany({
     include: { locations: true, company: true },
