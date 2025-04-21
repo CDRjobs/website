@@ -29,6 +29,7 @@ const createJobSchema = z.object({
   foundAt: z.string().datetime(),
   lastCheckedAt: z.string().datetime(),
   minEducationLevel: z.nativeEnum(EducationLevel).nullish(),
+  isFeatured: z.boolean(),
 })
   .strict()
   .refine(({ minSalary, maxSalary }) => {
@@ -94,6 +95,7 @@ const updateJobSchemaWithoutRefine = z.object({
   foundAt: z.string().datetime().optional(),
   lastCheckedAt: z.string().datetime().optional(),
   minEducationLevel: z.nativeEnum(EducationLevel).nullish(),
+  isFeatured: z.boolean().optional(),
 }).strict()
 
 const getUpdateJobBodySchema = (currentJob: JobWithLocations) => z.object({
