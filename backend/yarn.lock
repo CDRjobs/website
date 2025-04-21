@@ -5080,10 +5080,10 @@ graphql-config@^5.1.1:
     string-env-interpolation "^1.0.1"
     tslib "^2.4.0"
 
-graphql-rate-limit-directive@2.0.5:
-  version "2.0.5"
-  resolved "https://registry.yarnpkg.com/graphql-rate-limit-directive/-/graphql-rate-limit-directive-2.0.5.tgz#928aa1dd9344681b09748135bb32d958078990f1"
-  integrity sha512-fQ3qGea8DP4SohppW+hsbOsl+MpX7jL495eSqrovFc3W+yJEzc+Hr5INi2+QMXHOYQF/F+sDpheRykmEK0bjVA==
+graphql-rate-limit-directive@2.0.6:
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/graphql-rate-limit-directive/-/graphql-rate-limit-directive-2.0.6.tgz#c520c64e30e88c761483c631ae58b7a3075ea441"
+  integrity sha512-2EYUwaVEsRfxZFyXEKse+EZ3xxLXHxN7ssIFoBt0GBNagWbIVhP5wG1mv1oEOp9CvDlSdC/hcM5zbhNMwAjYqw==
 
 graphql-request@^6.0.0:
   version "6.1.0"
