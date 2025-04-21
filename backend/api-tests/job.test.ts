@@ -65,6 +65,7 @@ describe('Job', () => {
               lastCheckedAt: '2024-06-27T12:30:00.164Z',
               publishedAt: '2024-07-15T23:27:00.164Z',
               realPublishedAt: '2024-07-15T23:27:00.165Z',
+              isFeatured: false,
             }]
           }
         }
@@ -101,6 +102,7 @@ describe('Job', () => {
         lastCheckedAt: '2024-06-29T12:30:00.164Z',
         publishedAt: '2024-07-19T23:27:00.164Z',
         realPublishedAt: '2024-07-19T23:27:00.165Z',
+        isFeatured: true,
       }
 
       const { status, body } = await restRequest({
@@ -162,6 +164,7 @@ describe('Job', () => {
         lastCheckedAt: '2024-06-29T12:30:00.164Z',
         publishedAt: '2024-07-19T23:27:00.164Z',
         realPublishedAt: '2024-07-19T23:27:00.165Z',
+        isFeatured: true,
       })
     })
   })
