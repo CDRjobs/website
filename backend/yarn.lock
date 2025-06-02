@@ -2175,10 +2175,10 @@
     semver "^7.3.5"
     tar "^6.1.11"
 
-"@mapbox/search-js-core@1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/search-js-core/-/search-js-core-1.0.0.tgz#80b0ed9f8b7c5af250df408a95744c75c3bcc8c2"
-  integrity sha512-wgc6o17H6qDKLSBAj0AmyohhSF9wU36aSWhOtHx1xUA/moFEp/KFex/bkpp0RfJcuLfUpq3hOvNayl/JC/9z0Q==
+"@mapbox/search-js-core@1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/search-js-core/-/search-js-core-1.1.0.tgz#4a69f1c387d677c782e9dc26b74026ae0d6ebe34"
+  integrity sha512-UVEg6C1XaXSZsLMHiYJ7vVxyun7rBY6umz02KvbUobyd0SzeQ8tO329O67RfwWAvjCnrArr7fcxB0ikgAOvUKQ==
   dependencies:
     "@types/geojson" "^7946.0.8"
 
