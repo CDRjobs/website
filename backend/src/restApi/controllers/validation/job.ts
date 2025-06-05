@@ -76,7 +76,7 @@ const updateJobSchemaWithoutRefine = z.object({
         }
       }
     }),
-  title: z.string().min(5).optional(),
+  title: z.string().min(1).optional(),
   sourceUrl: z.string().url().optional(),
   disciplines: z.array(z.nativeEnum(Discipline)).min(1).optional(),
   status: z.nativeEnum(JobStatus).optional(),
