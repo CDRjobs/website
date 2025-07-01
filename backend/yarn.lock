@@ -2162,10 +2162,10 @@
     koa-compose "^4.1.0"
     path-to-regexp "^6.3.0"
 
-"@mapbox/search-js-core@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@mapbox/search-js-core/-/search-js-core-1.1.0.tgz#4a69f1c387d677c782e9dc26b74026ae0d6ebe34"
-  integrity sha512-UVEg6C1XaXSZsLMHiYJ7vVxyun7rBY6umz02KvbUobyd0SzeQ8tO329O67RfwWAvjCnrArr7fcxB0ikgAOvUKQ==
+"@mapbox/search-js-core@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@mapbox/search-js-core/-/search-js-core-1.2.0.tgz#e6fa4affed5138d395580bf8e2e03a8d521e4dd5"
+  integrity sha512-iUXpAs3tIByzSy6goEoXfT5n4XGTrgnSSc+EA6g4oPBhErlm285aFOhb4aSAZ1bT64eg67KVqv0ODVhizO9h/Q==
   dependencies:
     "@types/geojson" "^7946.0.8"
 
