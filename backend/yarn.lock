@@ -50,10 +50,10 @@
   dependencies:
     "@apollographql/graphql-playground-html" "1.6.29"
 
-"@apollo/server@4.12.0":
-  version "4.12.0"
-  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.12.0.tgz#6aa92d7596ee59b724a0f16886b483ea0ed0d9af"
-  integrity sha512-Z5RNTCnIia+dFsP5HW2ugQMrIOWgyNWyKP+jMVXthp/ECjYyyRYPC41ukCDwxHQY4vNZ3rgbgqroWVQUGFt2gA==
+"@apollo/server@4.12.2":
+  version "4.12.2"
+  resolved "https://registry.yarnpkg.com/@apollo/server/-/server-4.12.2.tgz#b777b07010fcfcf4192aae328cc5c18e7054eeb2"
+  integrity sha512-jKRlf+sBMMdKYrjMoiWKne42Eb6paBfDOr08KJnUaeaiyWFj+/040FjVPQI7YGLfdwnYIsl1NUUqS2UdgezJDg==
   dependencies:
     "@apollo/cache-control-types" "^1.0.3"
     "@apollo/server-gateway-interface" "^1.1.1"
@@ -1697,7 +1697,7 @@
     "@graphql-tools/utils" "^9.2.1"
     tslib "^2.4.0"
 
-"@graphql-tools/merge@^9.0.0", "@graphql-tools/merge@^9.0.3":
+"@graphql-tools/merge@^9.0.0":
   version "9.0.4"
   resolved "https://registry.yarnpkg.com/@graphql-tools/merge/-/merge-9.0.4.tgz#66c34cbc2b9a99801c0efca7b8134b2c9aecdb06"
   integrity sha512-MivbDLUQ+4Q8G/Hp/9V72hbn810IJDEZQ57F01sHnlrrijyadibfVhaQfW/pNH+9T/l8ySZpaR/DpL5i+ruZ+g==
@@ -1751,17 +1751,7 @@
     "@graphql-tools/utils" "^10.0.13"
     tslib "^2.4.0"
 
-"@graphql-tools/schema@^10.0.0", "@graphql-tools/schema@^10.0.3", "@graphql-tools/schema@^10.0.4":
-  version "10.0.4"
-  resolved "https://registry.yarnpkg.com/@graphql-tools/schema/-/schema-10.0.4.tgz#d4fc739a2cc07b4fc5f31a714178a561cba210cd"
-  integrity sha512-HuIwqbKxPaJujox25Ra4qwz0uQzlpsaBOzO6CVfzB/MemZdd+Gib8AIvfhQArK0YIN40aDran/yi+E5Xf0mQww==
-  dependencies:
-    "@graphql-tools/merge" "^9.0.3"
-    "@graphql-tools/utils" "^10.2.1"
-    tslib "^2.4.0"
-    value-or-promise "^1.0.12"
-
-"@graphql-tools/schema@^10.0.23":
+"@graphql-tools/schema@^10.0.0", "@graphql-tools/schema@^10.0.23", "@graphql-tools/schema@^10.0.3", "@graphql-tools/schema@^10.0.4":
   version "10.0.23"
   resolved "https://registry.yarnpkg.com/@graphql-tools/schema/-/schema-10.0.23.tgz#d8865e96f37a04ca43303d7024add7edbe0c5ed4"
   integrity sha512-aEGVpd1PCuGEwqTXCStpEkmheTHNdMayiIKH1xDWqYp9i8yKv9FRDgkGrY4RD8TNxnf7iII+6KOBGaJ3ygH95A==
@@ -1799,7 +1789,7 @@
     value-or-promise "^1.0.11"
     ws "^8.12.0"
 
-"@graphql-tools/utils@^10.0.0", "@graphql-tools/utils@^10.0.13", "@graphql-tools/utils@^10.1.1", "@graphql-tools/utils@^10.2.1", "@graphql-tools/utils@^10.2.3", "@graphql-tools/utils@^10.3.0", "@graphql-tools/utils@^10.3.1", "@graphql-tools/utils@^10.8.6":
+"@graphql-tools/utils@^10.0.0", "@graphql-tools/utils@^10.0.13", "@graphql-tools/utils@^10.1.1", "@graphql-tools/utils@^10.2.3", "@graphql-tools/utils@^10.3.0", "@graphql-tools/utils@^10.3.1", "@graphql-tools/utils@^10.8.6":
   version "10.8.6"
   resolved "https://registry.yarnpkg.com/@graphql-tools/utils/-/utils-10.8.6.tgz#69ef29e408a27919108b2b2227fe8b465acf9e5c"
   integrity sha512-Alc9Vyg0oOsGhRapfL3xvqh1zV8nKoFUdtLhXX7Ki4nClaIJXckrA86j+uxEuG3ic6j4jlM1nvcWXRn/71AVLQ==
