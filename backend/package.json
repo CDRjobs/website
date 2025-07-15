@@ -73,7 +73,7 @@
     "@types/node": "24.0.3",
     "copyfiles": "2.4.1",
     "eslint": "9.x",
-    "globals": "16.2.0",
+    "globals": "16.3.0",
     "jest": "30.0.4",
     "nodemon": "3.1.10",
     "ts-jest": "29.4.0",
