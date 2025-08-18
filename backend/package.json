@@ -70,7 +70,7 @@
     "@types/koa__cors": "5.0.0",
     "@types/koa__router": "12.0.4",
     "@types/lodash": "4.17.20",
-    "@types/node": "24.1.0",
+    "@types/node": "24.3.0",
     "copyfiles": "2.4.1",
     "eslint": "9.x",
     "globals": "16.3.0",
