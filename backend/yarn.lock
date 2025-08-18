@@ -3175,15 +3175,15 @@
     "@types/koa" "*"
     "@types/koa-send" "*"
 
-"@types/koa2-ratelimit@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@types/koa2-ratelimit/-/koa2-ratelimit-0.9.6.tgz#5bc0926c9a581707ada14728d6749f0dc3128a21"
-  integrity sha512-ID+KPUlenR9RaJEazUMphzicrwZnG+cJ+9W+O+kQijJcKh5nTAo523YrRjLP0lMfAW7ouXjkvcL4M+z/Ihoydw==
+"@types/koa2-ratelimit@0.9.7":
+  version "0.9.7"
+  resolved "https://registry.yarnpkg.com/@types/koa2-ratelimit/-/koa2-ratelimit-0.9.7.tgz#45bda14a6d5db493093fc6a0f1e5dc6c5de6c648"
+  integrity sha512-KMiezIj9SAY2gaMLGQkOpq4ztxhZpDoeDRnL9IuQUdvjIrEgK3PDLtOJt5mzoYzWj0RvTkb42ePKjbv/G7Mb4w==
   dependencies:
     "@types/koa" "*"
     "@types/node" "*"
     "@types/redis" "^2.8.0"
-    "@types/sequelize" "*"
+    "@types/sequelize" "<6"
     mongoose "^6.3.0"
 
 "@types/koa@*", "@types/koa@2.15.0":
@@ -3276,7 +3276,7 @@
     "@types/mime" "^1"
     "@types/node" "*"
 
-"@types/sequelize@*":
+"@types/sequelize@<6":
   version "4.28.20"
   resolved "https://registry.yarnpkg.com/@types/sequelize/-/sequelize-4.28.20.tgz#b7313a54355f1d812cbffa0df6117a97835dbe01"
   integrity sha512-XaGOKRhdizC87hDgQ0u3btxzbejlF+t6Hhvkek1HyphqCI4y7zVBIVAGmuc4cWJqGpxusZ1RiBToHHnNK/Edlw==
