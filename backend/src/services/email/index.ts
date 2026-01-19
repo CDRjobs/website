@@ -17,9 +17,9 @@ const sendReportEmail = async ({ to, firstname, lastname, didRegisterToNL }: Sen
     to: [{ name: `${firstname} ${lastname}`, email: to }],
     templateId: didRegisterToNL ? config.email.reportWithNLTemplateId : config.email.reportNoNLTemplateId,
     params: { firstname },
-    tags: ['2024 report'],
+    tags: ['2025 report'],
     attachment: [{
-      name: 'CDRjobs - 2024 CDR Salary Report.pdf',
+      name: 'CDRjobs - 2025 CDR Salary Report.pdf',
       content: reportBuffer.toString('base64'),
     }],
   })
