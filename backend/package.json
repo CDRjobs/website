@@ -61,7 +61,7 @@
     "@graphql-codegen/introspection": "5.0.0",
     "@graphql-codegen/typescript": "4.1.6",
     "@graphql-codegen/typescript-resolvers": "4.5.1",
-    "@types/bcrypt": "5.0.2",
+    "@types/bcrypt": "6.0.0",
     "@types/jest": "30.0.0",
     "@types/koa": "3.0.1",
     "@types/koa-bodyparser": "4.3.12",
