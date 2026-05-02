@@ -89,6 +89,18 @@ const getOrCreateLocations = async (locations: LocationInput[], trx: PrismaClien
       .returning(['id', 'country', 'city', 'countryCityKey'])
       .execWithPrisma(trx) as LocationOutput[]
     locationsToReturn.push(...createdLocations)
+
+    // If some inserts were silently skipped due to a race condition (another
+    // concurrent transaction created the same location between our findMany
+    // and our insert), fetch those conflicting rows so locationMap stays complete.
+    const missingKeys = differenceBy('countryCityKey', locationsToCreate, createdLocations).map(l => l.countryCityKey)
+    if (missingKeys.length) {
+      const conflictedLocations = await trx.location.findMany({
+        select: { id: true, country: true, city: true, countryCityKey: true },
+        where: { countryCityKey: { in: missingKeys } },
+      })
+      locationsToReturn.push(...conflictedLocations)
+    }
   }
 
   return locationsToReturn as LocationOutput[]
