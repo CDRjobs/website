@@ -64,7 +64,7 @@ const LocationCombobox = ({ onSelect }: Props, ref: ForwardedRef<LocationCombobo
 
   useEffect(() => {
     if (selectedFeat?.properties.feature_type === 'place') {
-      onSelect({ coordinates: { lat: selectedFeat.properties.coordinates.latitude, long: selectedFeat.properties.coordinates.longitude }})
+      onSelect({ coordinates: { lat: selectedFeat.properties.coordinates.latitude, long: selectedFeat.properties.coordinates.longitude }, country: selectedFeat.properties.context.country?.country_code.toLowerCase() })
     } else if (selectedFeat?.properties.feature_type === 'country') {
       onSelect({ country: selectedFeat.properties.context.country?.country_code.toLowerCase() })
     } else {

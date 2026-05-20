@@ -177,6 +177,12 @@ const applySearchQueryWithFilters = async (clientKey: string, filters: SearchFil
       const { lat, long } = filters.location.coordinates
       query.andWhere((builder) => {
         builder.where(knex.raw('ST_DWithin(l.coordinates::geography, ST_geomFromText(?, 4326)::geography, 80000)', [`Point(${long} ${lat})`]))
+        if (filters.location?.country) {
+          builder.orWhere(builder2 => {
+            builder2.where('job.remote', knex.raw('?::"Remote"', ['yes']))
+            builder2.where('l.country', knex.raw('?::"CountryCode"', [filters.location!.country]))
+          })
+        }
         builder.orWhereNull('l.id')
       })
     } else if (filters.location.country) {

@@ -22,11 +22,7 @@ const filterSchema = z.object({
     }).strict().optional(),
   })
     .strict()
-    .optional()
-    .refine(
-      (location) => !location || Boolean(location.country) !== Boolean(location.coordinates),
-      { message: 'country and coordinates cannot be both defined at the same time.' }
-    ),
+    .optional(),
   discipline: z.nativeEnum(Discipline).optional(),
   cdrCategory: z.array(z.nativeEnum(CdrCategory)).optional(),
   requiredExperience: z.array(
