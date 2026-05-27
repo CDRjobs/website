@@ -4,6 +4,17 @@ import { API_ENDPOINT, BASE64_LOGO_A, BASE64_LOGO_B } from './utils/constants'
 
 const companiesIds: string[] = []
 
+const baseCompany = () => ({
+  name: 'CDRjobs',
+  airTableId: '1',
+  companyUrl: 'https://cdrjobs.earth',
+  careerPageUrl: 'https://cdrjobs.earth',
+  companySize: 'xxs',
+  hqCountry: 'it',
+  cdrCategory: 'biomass',
+  logo: BASE64_LOGO_A,
+})
+
 describe('Company', () => {
   describe('Create companies', () => {
     it('Successfully creates a company', async () => {
@@ -12,16 +23,7 @@ describe('Company', () => {
         url: `${API_ENDPOINT}/companies`,
         body: {
           data: {
-            companies: [{
-              name: 'CDRjobs',
-              airTableId: '1',
-              companyUrl: 'https://cdrjobs.earth',
-              careerPageUrl: 'https://cdrjobs.earth',
-              companySize: 'xxs',
-              hqCountry: 'it',
-              cdrCategory: 'biomass',
-              logo: BASE64_LOGO_A,
-            }],
+            companies: [baseCompany()],
           }
         }
       })
@@ -37,16 +39,7 @@ describe('Company', () => {
         url: `${API_ENDPOINT}/companies`,
         body: {
           data: {
-            companies: [{
-              name: 'CDRjobs',
-              airTableId: '1',
-              companyUrl: 'https://cdrjobs.earth',
-              careerPageUrl: 'https://cdrjobs.earth',
-              companySize: 'xxs',
-              hqCountry: 'it',
-              cdrCategory: 'biomass',
-              logo: BASE64_LOGO_A,
-            }],
+            companies: [baseCompany()],
           }
         }
       })
@@ -70,13 +63,8 @@ describe('Company', () => {
         body: {
           data: {
             companies: [{
+              ...omit(['name'], baseCompany()),
               airTableId: '2',
-              companyUrl: 'https://cdrjobs.earth',
-              careerPageUrl: 'https://cdrjobs.earth',
-              companySize: 'xxs',
-              hqCountry: 'it',
-              cdrCategory: 'biomass',
-              logo: BASE64_LOGO_A,
             }],
           }
         }
@@ -95,6 +83,148 @@ describe('Company', () => {
         },]
       })
     })
+
+    it('Returns an error when logo is not a valid base64 image', async () => {
+      const { status, body } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-logo',
+              logo: 'not-a-valid-base64',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body?.error?.name).toBe('ValidationError')
+    })
+
+    it('Returns an error when companyUrl is not a valid URL', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-url',
+              companyUrl: 'not-a-url',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when careerPageUrl is not a valid URL', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-career-url',
+              careerPageUrl: 'not-a-url',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when companySize is invalid', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-size',
+              companySize: 'invalid_size',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when hqCountry is invalid', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-country',
+              hqCountry: 'zz',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when cdrCategory is invalid', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'bad-cdr',
+              cdrCategory: 'nonExistentCategory',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when unknown fields are provided', async () => {
+      const { status, body } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          data: {
+            companies: [{
+              ...baseCompany(),
+              airTableId: 'unknown-fields',
+              extraField: 'should fail',
+            }],
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body.error.details).toContainEqual(expect.objectContaining({
+        code: 'unrecognized_keys',
+      }))
+    })
+
+    it('Returns an error with malformed body (missing data wrapper)', async () => {
+      const { status } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/companies`,
+        body: {
+          companies: [baseCompany()],
+        }
+      })
+
+      expect(status).toBe(400)
+    })
   })
 
   describe('Update company', () => {
@@ -111,7 +241,7 @@ describe('Company', () => {
 
       const { status, body } = await restRequest({
         method: 'PUT',
-        url: `http://localhost:4000/api/v1/company/${companiesIds[0]}`,
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
         body: {
           data: {
             company: {
@@ -126,7 +256,7 @@ describe('Company', () => {
         ...omit(['hqCountry', 'logo'], updateData),
         id: expect.any(String),
         airTableId: '1',
-        logoUrl: expect.any(String), // TODO: verify that the url changed
+        logoUrl: expect.any(String),
         hqLocation: {
           id: expect.any(String),
           city: null,
@@ -139,7 +269,7 @@ describe('Company', () => {
     it('Returns an error when trying to update airTableId', async () => {
       const { status, body } = await restRequest({
         method: 'PUT',
-        url: `http://localhost:4000/api/v1/company/${companiesIds[0]}`,
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
         body: {
           data: {
             company: {
@@ -159,6 +289,79 @@ describe('Company', () => {
           path: ['data', 'company']
         }]
       })
+    })
+
+    it('Returns an error when updating a non-existent company', async () => {
+      const { status, body } = await restRequest({
+        method: 'PUT',
+        url: `${API_ENDPOINT}/company/non-existent-id`,
+        body: {
+          data: {
+            company: { name: 'Updated' },
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body.error.message).toContain("doesn't exist")
+    })
+
+    it('Successfully updates only a single field', async () => {
+      const { status, body } = await restRequest({
+        method: 'PUT',
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
+        body: {
+          data: {
+            company: { name: 'Only name updated' },
+          }
+        }
+      })
+
+      expect(status).toBe(200)
+      expect(body.data.name).toBe('Only name updated')
+      expect(body.data.companySize).toBe('s')
+    })
+
+    it('Returns an error when updating with invalid logo', async () => {
+      const { status } = await restRequest({
+        method: 'PUT',
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
+        body: {
+          data: {
+            company: { logo: 'invalid-base64' },
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when updating with invalid URL', async () => {
+      const { status } = await restRequest({
+        method: 'PUT',
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
+        body: {
+          data: {
+            company: { companyUrl: 'not-a-url' },
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+    })
+
+    it('Returns an error when name is empty', async () => {
+      const { status } = await restRequest({
+        method: 'PUT',
+        url: `${API_ENDPOINT}/company/${companiesIds[0]}`,
+        body: {
+          data: {
+            company: { name: '' },
+          }
+        }
+      })
+
+      expect(status).toBe(400)
     })
   })
 
@@ -185,8 +388,18 @@ describe('Company', () => {
         },
         id: expect.any(String),
         logoUrl: expect.any(String),
-        name: 'CDRjobs updated'
+        name: 'Only name updated'
       })
+    })
+
+    it('Supports pagination with limit', async () => {
+      const { status, body } = await restRequest({
+        method: 'GET',
+        url: `${API_ENDPOINT}/companies?limit=1`,
+      })
+
+      expect(status).toBe(200)
+      expect(body.data.length).toBeLessThanOrEqual(1)
     })
   })
 })
