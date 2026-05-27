@@ -34,6 +34,92 @@ describe('Job', () => {
   })
 
   describe('Create job', () => {
+    const baseJob = () => ({
+      companyAirTableId: company.airTableId,
+      title: 'Accountant',
+      sourceUrl: 'https://clickin.fr/career/1',
+      disciplines: ['financialAndLegal'],
+      status: 'open',
+      description: 'I am job',
+      seniority: 'midLevel',
+      minSalary: 38000,
+      maxSalary: 42000,
+      currency: 'usd',
+      contractTypes: ['employeePT'],
+      minYearsOfExperience: 2,
+      guessedMinYearsOfExperience: 2,
+      minEducationLevel: 'bachelor',
+      foundAt: '2024-06-27T12:30:00.164Z',
+      lastCheckedAt: '2024-06-27T12:30:00.164Z',
+      isFeatured: false,
+    })
+
+    it('Fails to create a hybrid job without a city', async () => {
+      const { status, body } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/jobs`,
+        body: {
+          data: {
+            jobs: [{
+              ...baseJob(),
+              airTableId: 'city-validation-hybrid',
+              locations: [{ country: 'fr', city: null }],
+              remote: 'hybrid',
+              publishedAt: '2024-07-10T00:00:00.000Z',
+            }]
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body.error.details).toContainEqual(expect.objectContaining({ message: 'A city location is required when remote is hybrid or no' }))
+    })
+
+    it('Fails to create an on-site job without a city', async () => {
+      const { status, body } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/jobs`,
+        body: {
+          data: {
+            jobs: [{
+              ...baseJob(),
+              airTableId: 'city-validation-no',
+              locations: [{ country: 'fr', city: null }],
+              remote: 'no',
+              publishedAt: '2024-07-11T00:00:00.000Z',
+            }]
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body.error.details).toContainEqual(expect.objectContaining({ message: 'A city location is required when remote is hybrid or no' }))
+    })
+
+    it('Fails to create a hybrid job when only some locations have a city', async () => {
+      const { status, body } = await restRequest({
+        method: 'POST',
+        url: `${API_ENDPOINT}/jobs`,
+        body: {
+          data: {
+            jobs: [{
+              ...baseJob(),
+              airTableId: 'city-validation-hybrid-partial',
+              locations: [
+                { country: 'fr', city: 'Paris' },
+                { country: 'de', city: null },
+              ],
+              remote: 'hybrid',
+              publishedAt: '2024-07-12T00:00:00.000Z',
+            }]
+          }
+        }
+      })
+
+      expect(status).toBe(400)
+      expect(body.error.details).toContainEqual(expect.objectContaining({ message: 'A city location is required when remote is hybrid or no' }))
+    })
+
     it('Successfully create a job', async () => {
       const { status, body } = await restRequest({
         method: 'POST',

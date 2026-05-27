@@ -54,7 +54,7 @@ const createJobSchema = z.object({
     if (remote === 'yes') {
       return true
     }
-    return locations.some(l => l.city)
+    return locations.every(l => l.city)
   }, {
     message: 'A city location is required when remote is hybrid or no',
     path: ['locations'],
